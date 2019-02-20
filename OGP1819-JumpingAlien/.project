@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>OGP1819-JumpingAlien</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>resources/levels</name>
+			<type>2</type>
+			<locationURI>PROJECT_LOC/levels</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PROJECT_LOC</name>
+			<value>$%7BPARENT-4-PROJECT_LOC%7D/Didactiek/OGP-1819/ogp-assignment-1819/code/OGP1819-JumpingAlien</value>
+		</variable>
+	</variableList>
+</projectDescription>
