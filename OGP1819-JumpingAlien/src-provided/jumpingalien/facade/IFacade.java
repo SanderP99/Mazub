@@ -1,5 +1,6 @@
 package jumpingalien.facade;
 
+import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.model.Mazub;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.ShouldNotImplementException;
@@ -134,7 +135,10 @@ public interface IFacade {
 	 * their own may ignore this method. 
 	 */
 	default Sprite[] getSprites(Mazub alien) throws ModelException, ShouldNotImplementException {
-		throw new ShouldNotImplementException("Not to be implemented by individual students");
+		if (!isTeamSolution()) {
+			throw new ShouldNotImplementException("Not to be implemented by individual students");
+		}
+		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
 	}
 
 	/**
@@ -144,7 +148,10 @@ public interface IFacade {
 	 * their own may stick to the default implementation. 
 	 */
 	default Sprite getCurrentSprite(Mazub alien) throws ModelException {
-		return Sprite.DEFAULT_MAZUB_SPRITE;
+		if (!isTeamSolution()) {
+			return JumpingAlienSprites.DEFAULT_MAZUB_SPRITE;
+		}
+		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
 	}
 	
 	/**

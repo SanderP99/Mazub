@@ -10,6 +10,9 @@ public class JumpingAlienSprites {
 	protected static final int FULL_HEIGHT = 97;
 	protected static final int DUCK_HEIGHT = 70;
 
+	public static final Sprite DEFAULT_MAZUB_SPRITE = createSprite("levels/player/p1_front.png")
+	.resizeTo(50, 100);
+	
 	public static final Sprite[] ALIEN_SPRITESET = new Sprite[30];
 
 	static {

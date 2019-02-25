@@ -21,8 +21,8 @@ class FullFacadeTest {
 	public static final double V_VELOCITY_JUMPING = 8.0;
 	public final static double HORIZONTAL_ACCELERATION = 0.9;
 	public static final double V_ACCELERATION_JUMPING = -10.0;
-	public static final double WORLD_WIDTH = 1024.0;
-	public static final double WORLD_HEIGHT = 768.0;
+	public static final double WORLD_WIDTH = 10.24;
+	public static final double WORLD_HEIGHT = 7.68;
 
 	// Variable referencing the facade.
 	static IFacade facade = new Facade();
@@ -143,8 +143,8 @@ class FullFacadeTest {
 	@Test
 	void changeActualPosition_LegalCase() throws Exception {
 		maximumScore += 2;
-		facade.changeActualPosition(mazub_0_0, new double[] { 20.4, 33.6 });
-		assertArrayEquals(new double[] { 20.4, 33.6 },
+		facade.changeActualPosition(mazub_0_0, new double[] { 2.04, 3.36 });
+		assertArrayEquals(new double[] { 2.04, 3.36 },
 				facade.getActualPosition(mazub_0_0), HIGH_PRECISION);
 		actualScore += 2;
 	}
@@ -493,7 +493,7 @@ class FullFacadeTest {
 	public void advanceTime_MazubReachingTop() throws Exception {
 		maximumScore += 6;
 		facade.changeActualPosition(mazub_100_0,
-				new double[] { 100.0, WORLD_HEIGHT - 0.8 });
+				new double[] { 1.0, WORLD_HEIGHT - 0.8 });
 		facade.startJump(mazub_100_0);
 		// Note:
 		// If Mazub reaches a border and keeps on jumping, its position will no
@@ -560,11 +560,11 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubFalling() throws Exception {
 		maximumScore += 6;
-		facade.changeActualPosition(mazub_100_0, new double[] { 100.0, 25.0 });
+		facade.changeActualPosition(mazub_100_0, new double[] { 1.0, 0.25 });
 		// After 0.1 seconds, Mazub will have fallen over 5 cm; its velocity has changed
 		// to -1 m/s.
 		facade.advanceTime(mazub_100_0, 0.1);
-		assertArrayEquals(new double[] { 100.0, 25.0 - 0.05 },
+		assertArrayEquals(new double[] { 1.0, 0.25 - 0.05 },
 				facade.getActualPosition(mazub_100_0), LOW_PRECISION);
 		assertEquals(-1.0, facade.getVelocity(mazub_100_0)[1], LOW_PRECISION);
 		if (facade.isTeamSolution())

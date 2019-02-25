@@ -57,11 +57,6 @@ public class Sprite {
 	}
 	
 	/**
-	 * Default sprites to be used by students working out the project on their own.
-	 */
-	public static final Sprite DEFAULT_MAZUB_SPRITE = new Sprite("Default Mazub",100,50);
-
-	/**
 	 * Return the name of this sprite.
 	 */
 	@Basic
