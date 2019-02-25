@@ -183,6 +183,7 @@ public class Mazub {
 	}
 	
 	private int yPos;
+	
 	@Basic
 	public String getOrientation() {
 		return this.orientation;
