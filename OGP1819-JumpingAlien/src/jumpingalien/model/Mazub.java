@@ -219,7 +219,9 @@ public class Mazub {
 	private final double maxSpeedRunning;
 	private final double maxSpeedDucking;
 	
-	
+	/**
+	 * Returns the minimum horizontal speed.
+	 */
 	@Basic @Immutable
 	public double getMinSpeed() {
 		return this.minSpeed;
