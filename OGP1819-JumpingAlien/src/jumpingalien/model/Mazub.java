@@ -22,11 +22,14 @@ public class Mazub {
 	 * @param Y_size
 	 * 			The y size of Mazub given in pixels.
 	 */
-	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size) {
+	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeed, double minSpeed, double maxSpeed) {
 		setYSize(Y_size);
 		setXSize(X_size);
 		setXPosition(X_pos);
 		setYPosition(Y_pos);
+		setHorizontalSpeed(horizontalSpeed);
+		setMinSpeed(minSpeed);
+		setMaxSpeed(maxSpeed);
 	}
 	
 	public Mazub() {
@@ -34,11 +37,13 @@ public class Mazub {
 		setXSize(1);
 		setXPosition(0);
 		setYPosition(0);
+		setHorizontalSpeed(0);
+		setMinSpeed(1);
+		setMaxSpeed(3);
 	}
 	
 	private int maxXPosition = 1024;
 	private int maxYPosition = 768;
-	
 	
 	private void setYSize(int Y_size) {
 		this.ySize = Y_size;
@@ -112,4 +117,42 @@ public class Mazub {
 	}
 	
 	private String orientation;
+	
+	private double horizontalSpeed;
+	
+	public double getHorizontalSpeed() {
+		return this.horizontalSpeed;
+	}
+	
+	private void setHorizontalSpeed(double speed) {
+		if (Math.abs(speed) < getMinSpeed() && speed < 0)
+			this.horizontalSpeed = -1*getMinSpeed();
+		else if (Math.abs(speed) < getMinSpeed() && speed > 0)
+			this.horizontalSpeed = getMinSpeed();
+		else if (speed == 0)
+			this.horizontalSpeed = 0;
+		else if (Math.abs(speed) > getMaxSpeed() && speed > 0)
+			this.horizontalSpeed = getMaxSpeed();
+		else
+			this.horizontalSpeed = -1*getMaxSpeed();
+	}
+	
+	private double minSpeed;
+	private double maxSpeed;
+	
+	public double getMinSpeed() {
+		return this.minSpeed;
+	}
+	
+	private void setMinSpeed(double speed) {
+		this.minSpeed = Math.abs(speed);
+	}
+	
+	public double getMaxSpeed() {
+		return this.maxSpeed;
+	}
+	
+	private void setMaxSpeed(double speed) {
+		this.maxSpeed = Math.abs(speed);
+	}
 }
