@@ -236,4 +236,25 @@ public class Mazub {
 	public double getMaxSpeedDucking() {
 		return maxSpeedDucking;
 	}
+	
+	
+	
+	private double verticalSpeed;
+	
+	@Basic
+	public double getVerticalSpeed() {
+		return this.verticalSpeed;
+	}
+	
+	private void setVerticalSpeed(double verticalSpeed) {
+		if( verticalSpeed <= getMaxVerticalSpeed())
+			this.verticalSpeed = verticalSpeed;
+		else this.verticalSpeed = getMaxVerticalSpeed();
+	}
+	private final double maxVerticalSpeed = 8;
+	
+	@Basic @Immutable
+	public double getMaxVerticalSpeed() {
+		return maxVerticalSpeed;
+	}
 }
