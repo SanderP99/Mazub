@@ -161,6 +161,7 @@ public class Mazub {
 	/**
 	 * Returns the y position on the canvas.
 	 */
+	@Basic
 	public int getYPosition() {
 		return this.yPos;
 	}
