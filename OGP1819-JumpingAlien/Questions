@@ -1,0 +1,6 @@
+Questions:
+
+Do we need to rewrite using the templates?
+Do we need to create our own exceptions? (Currently using RuntimeException)
+Do we need to implement the Facade-code in the src-provided folder?
+Is it best to use enum for the orientation?

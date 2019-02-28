@@ -216,9 +216,10 @@ public class Mazub {
 			this.horizontalSpeed = -1*getMaxSpeedRunning();
 	}
 	
-	private final double minSpeed;
-	private final double maxSpeedRunning;
-	private final double maxSpeedDucking;
+	public final double minSpeed;
+	public final double maxSpeedRunning;
+	public final double maxSpeedDucking;
+	
 	
 	/**
 	 * Returns the minimum horizontal speed.
