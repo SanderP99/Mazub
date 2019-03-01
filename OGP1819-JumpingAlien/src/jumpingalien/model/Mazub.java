@@ -298,4 +298,27 @@ public class Mazub {
 			return false;
 		return true;
 	}
+	
+	public void startJump() throws RuntimeException {
+		if (this.yPos != 0)
+			throw new RuntimeException();
+		else {
+			this.setVerticalSpeedMeters(maxVerticalSpeed);
+			this.fall();
+		}
+	}
+	
+	public void endJump() throws RuntimeException {
+		if (this.yPos == 0)
+			throw new RuntimeException();
+		else {
+			this.setVerticalSpeedMeters(0);
+			this.fall();
+		}
+	}
+	
+	private void fall() {
+		while (this.yPos != 0)
+			this.setVerticalSpeedMeters(this.getVerticalSpeedMeters() - 10 * t);
+	}
 }
