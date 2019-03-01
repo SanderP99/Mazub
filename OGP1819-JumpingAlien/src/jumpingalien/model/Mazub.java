@@ -24,24 +24,24 @@ public class Mazub {
 	 * 			The x position of the bottom left pixel of Mazub.
 	 * @param Y_size
 	 * 			The y size of Mazub given in pixels.
-	 * @param horizontalSpeed
+	 * @param horizontalSpeedMeters
 	 * 			The horizontal speed of Mazub given in meters/second
-	 * @param minSpeed
+	 * @param minSpeedMeters
 	 * 			The minimal horizontal speed of Mazub given in meters/second
-	 * @param maxSpeedRunning
+	 * @param maxSpeedRunningMeters
 	 * 			The maximal horizontal speed of Mazub while running given in meters/second
-	 * @param maxSpeedDucking
+	 * @param maxSpeedDuckingMeters
 	 * 			The maximal horizontal speed of Mazub while ducking given in meters/second
 	 */
-	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeed, double minSpeed, double maxSpeedRunning, double maxSpeedDucking) {
+	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters) {
 		setYSize(Y_size);
 		setXSize(X_size);
 		setXPosition(X_pos);
 		setYPosition(Y_pos);
-		setHorizontalSpeed(horizontalSpeed);
-		this.minSpeed = minSpeed;
-		this.maxSpeedDucking = maxSpeedDucking;
-		this.maxSpeedRunning = maxSpeedRunning;
+		setHorizontalSpeedMeters(horizontalSpeedMeters);
+		this.minSpeed = minSpeedMeters;
+		this.maxSpeedDucking = maxSpeedDuckingMeters;
+		this.maxSpeedRunning = maxSpeedRunningMeters;
 	}
 	
 	public Mazub() {
@@ -49,7 +49,7 @@ public class Mazub {
 		setXSize(1);
 		setXPosition(0);
 		setYPosition(0);
-		setHorizontalSpeed(0);
+		setHorizontalSpeedMeters(0);
 		this.minSpeed = 1;
 		this.maxSpeedDucking = 1;
 		this.maxSpeedRunning = 3;
@@ -199,21 +199,21 @@ public class Mazub {
 	private double horizontalSpeed;
 	
 	@Basic
-	public double getHorizontalSpeed() {
+	public double getHorizontalSpeedMeters() {
 		return this.horizontalSpeed;
 	}
 	
-	private void setHorizontalSpeed(double speed) {
-		if (Math.abs(speed) < getMinSpeed() && speed < 0)
-			this.horizontalSpeed = -1*getMinSpeed();
-		else if (Math.abs(speed) < getMinSpeed() && speed > 0)
-			this.horizontalSpeed = getMinSpeed();
+	private void setHorizontalSpeedMeters(double speed) {
+		if (Math.abs(speed) < getMinSpeedMeters() && speed < 0)
+			this.horizontalSpeed = -1*getMinSpeedMeters();
+		else if (Math.abs(speed) < getMinSpeedMeters() && speed > 0)
+			this.horizontalSpeed = getMinSpeedMeters();
 		else if (speed == 0)
 			this.horizontalSpeed = 0;
-		else if (Math.abs(speed) > getMaxSpeedRunning() && speed > 0)
-			this.horizontalSpeed = getMaxSpeedRunning();
+		else if (Math.abs(speed) > getMaxSpeedRunningMeters() && speed > 0)
+			this.horizontalSpeed = getMaxSpeedRunningMeters();
 		else
-			this.horizontalSpeed = -1*getMaxSpeedRunning();
+			this.horizontalSpeed = -1*getMaxSpeedRunningMeters();
 	}
 	
 	public final double minSpeed;
@@ -225,37 +225,77 @@ public class Mazub {
 	 * Returns the minimum horizontal speed.
 	 */
 	@Basic @Immutable
-	public double getMinSpeed() {
+	public double getMinSpeedMeters() {
 		return this.minSpeed;
 	}
 	
 	@Basic @Immutable	
-	public double getMaxSpeedRunning() {
+	public double getMaxSpeedRunningMeters() {
 		return maxSpeedRunning;
 	}
 	@Basic @Immutable
-	public double getMaxSpeedDucking() {
+	public double getMaxSpeedDuckingMeters() {
 		return maxSpeedDucking;
 	}
 	
-	
+	private boolean isValidHorizontalSpeed() {
+		if (this.getHorizontalSpeedMeters() != 0 || this.getHorizontalSpeedMeters() < this.getMinSpeedMeters()
+				 || this.getHorizontalSpeedMeters() > this.getMaxSpeedRunningMeters())
+			return false;
+		return true;
+	}
 	
 	private double verticalSpeed;
 	
 	@Basic
-	public double getVerticalSpeed() {
+	public double getVerticalSpeedMeters() {
 		return this.verticalSpeed;
 	}
 	
-	private void setVerticalSpeed(double verticalSpeed) {
-		if( verticalSpeed <= getMaxVerticalSpeed())
-			this.verticalSpeed = verticalSpeed;
-		else this.verticalSpeed = getMaxVerticalSpeed();
+	private void setVerticalSpeedMeters(double verticalSpeedMeters) {
+		if( Math.abs(verticalSpeedMeters) <= getMaxVerticalSpeedMeters())
+			this.verticalSpeed = verticalSpeedMeters;
+		else if (verticalSpeedMeters > 0)
+			this.verticalSpeed = getMaxVerticalSpeedMeters();
+		else
+			this.verticalSpeed = -1* getMaxVerticalSpeedMeters();
 	}
 	private final double maxVerticalSpeed = 8;
 	
 	@Basic @Immutable
-	public double getMaxVerticalSpeed() {
+	public double getMaxVerticalSpeedMeters() {
 		return maxVerticalSpeed;
+	}
+	
+	private boolean isValidVerticalSpeed() {
+		if (this.getVerticalSpeedMeters() != 0 || Math.abs(this.getVerticalSpeedMeters()) > this.getMaxVerticalSpeedMeters())
+			return false;
+		return true;
+	}
+	
+	public void startMove(Mazub alien) {
+		assert alien.isValidAlien();
+		
+		if (alien.getHorizontalSpeedMeters() == 0)
+			while (alien.getHorizontalSpeedMeters() < alien.getMaxSpeedRunningMeters())
+				alien.setHorizontalSpeedMeters(alien.getHorizontalSpeedMeters() + acceleration*t);
+		//TODO AdvanceTime
+	}
+	
+	public void endMove(Mazub alien) {
+		assert alien.isValidAlien();
+		
+		if (alien.getHorizontalSpeedMeters() != 0)
+			alien.setHorizontalSpeedMeters(0);
+	}
+	
+	private final double acceleration = 0.9;
+	
+	private boolean isValidAlien() {
+		if (!isValidXPosition(this.xPos) || !isValidYPosition(this.yPos))
+			return false;
+		if (!isValidHorizontalSpeed() || !isValidVerticalSpeed())
+			return false;
+		return true;
 	}
 }
