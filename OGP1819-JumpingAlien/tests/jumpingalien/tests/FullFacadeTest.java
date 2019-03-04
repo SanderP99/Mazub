@@ -85,10 +85,10 @@ class FullFacadeTest {
 		assertFalse(facade.isDucking(newMazub));
 		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(newMazub),
 				HIGH_PRECISION);
-		assertEquals(0.0 , facade.getAcceleration(newMazub)[1], HIGH_PRECISION);
-		assertTrue((Math.abs(facade.getAcceleration(newMazub)[0]) <= HIGH_PRECISION) ||
-				( (Math.abs(facade.getAcceleration(newMazub)[0]) >= 10.0-HIGH_PRECISION) &&
-				  (Math.abs(facade.getAcceleration(newMazub)[0]) <= 10.0+HIGH_PRECISION)));
+		assertEquals(0.0 , facade.getAcceleration(newMazub)[0], HIGH_PRECISION);
+		assertTrue((Math.abs(facade.getAcceleration(newMazub)[1]) <= HIGH_PRECISION) ||
+				( (Math.abs(facade.getAcceleration(newMazub)[1]) >= 10.0-HIGH_PRECISION) &&
+				  (Math.abs(facade.getAcceleration(newMazub)[1]) <= 10.0+HIGH_PRECISION)));
 		if (facade.isTeamSolution()) {
 			assertArrayEquals(sprites, facade.getSprites(newMazub));
 			assertSame(sprites[0], facade.getCurrentSprite(newMazub));
