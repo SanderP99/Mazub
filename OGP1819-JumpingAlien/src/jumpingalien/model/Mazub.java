@@ -370,7 +370,7 @@ public class Mazub {
 			return false;
 		return true;
 	}
-	private double getHorizontalAcceleration() {
+	public double getHorizontalAcceleration() {
 		return horizontalAcceleration;
 	}
 	private void setHorizontalAcceleration(double horizontalAcceleration) {
@@ -381,7 +381,7 @@ public class Mazub {
 	private double horizontalAcceleration;
 	private final double maxHorizontalAcceleration = 0.9;
 	
-	private double getVerticalAcceleration() {
+	public double getVerticalAcceleration() {
 		return verticalAcceleration;
 	}
 	private void setVerticalAcceleration(double verticalAcceleration) {
@@ -393,13 +393,13 @@ public class Mazub {
 	
 	
 	
-	public void startMove(Mazub alien,int  direction) {
-		assert alien.isValidAlien();
+	public void startMove(int  direction) {
+		assert this.isValidAlien();
 		assert (direction == -1 || direction == 1);
 		
-		if (alien.getHorizontalSpeedMeters() == 0) {
-			alien.setHorizontalSpeedMeters(minSpeed * direction);
-			alien.setHorizontalAcceleration(direction * maxHorizontalAcceleration);
+		if (this.getHorizontalSpeedMeters() == 0) {
+			this.setHorizontalSpeedMeters(minSpeed * direction);
+			this.setHorizontalAcceleration(direction * maxHorizontalAcceleration);
 		}
 		
 			
@@ -407,12 +407,12 @@ public class Mazub {
 		
 	}
 	
-	public void endMove(Mazub alien) {
-		assert alien.isValidAlien();
+	public void endMove() {
+		assert this.isValidAlien();
 		
-		if (alien.getHorizontalSpeedMeters() != 0)
-			alien.setHorizontalSpeedMeters(0);
-			alien.setHorizontalAcceleration(0);
+		if (this.getHorizontalSpeedMeters() != 0)
+			this.setHorizontalSpeedMeters(0);
+			this.setHorizontalAcceleration(0);
 	}
 	
 	
