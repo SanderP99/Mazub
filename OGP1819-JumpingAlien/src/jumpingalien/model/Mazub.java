@@ -120,7 +120,7 @@ public class Mazub {
 	 * 			Throws an exception when the wanted position isn't on the canvas.
 	 * 			| !isValidXPosition(X_pos)
 	 */
-	private void setXPosition(double X_pos) throws RuntimeException{
+	public void setXPosition(double X_pos) throws RuntimeException{
 		if (!isValidXPosition(X_pos))
 			throw new RuntimeException();
 		this.xPos = (int) X_pos * 100;
@@ -147,7 +147,7 @@ public class Mazub {
 	 * @param X_pos
 	 * 			The given coordinate to check.
 	 */
-	private boolean isValidXPosition(double X_pos) {
+	public boolean isValidXPosition(double X_pos) {
 		return (X_pos < (getMaxXPosition() - 1) &&  X_pos >= 0);		
 	}
 	
@@ -163,7 +163,7 @@ public class Mazub {
 	 * 			Throws an exception when the wanted position isn't on the canvas.
 	 * 			| !isValidYPosition(Y_pos)
 	 */
-	private void setYPosition(double Y_pos) throws RuntimeException{
+	public void setYPosition(double Y_pos) throws RuntimeException{
 		if (!isValidYPosition(Y_pos)) 
 			throw new RuntimeException();
 		this.yPos = (int) Y_pos * 100;
@@ -182,7 +182,7 @@ public class Mazub {
 	 * @param X_pos
 	 * 			The given coordinate to check.
 	 */
-	private boolean isValidYPosition(double Y_pos) {
+	public boolean isValidYPosition(double Y_pos) {
 		return (Y_pos < (getMaxYPosition() - 1) &&  Y_pos >= 0);
 	}
 	
@@ -382,7 +382,7 @@ public class Mazub {
 	
 	private final double acceleration = 0.9;
 	
-	private boolean isValidAlien() {
+	public boolean isValidAlien() {
 		if (!isValidXPosition(this.xPos) || !isValidYPosition(this.yPos))
 			return false;
 		if (!isValidHorizontalSpeed() || !isValidVerticalSpeed())
