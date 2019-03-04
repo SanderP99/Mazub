@@ -444,8 +444,6 @@ public class Mazub {
 		}
 	}
 	
-	@Raw
-	}
 	private void advanceTime(double t) {
 		if (t > maxTimeFrame )
 			t = maxTimeFrame;
