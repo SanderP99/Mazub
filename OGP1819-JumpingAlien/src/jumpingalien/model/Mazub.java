@@ -1,9 +1,12 @@
 package jumpingalien.model;
 
+import com.sun.glass.ui.Size;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
-import oiltank.Mazub;
+import jumpingalien.util.Sprite;
+import java.util.ArrayList.*; 
 
 /**
  * A class that implements a player character with the ability to jump, to run to the left and to the right.
@@ -42,7 +45,8 @@ public class Mazub {
 	 * @param maxSpeedDuckingMeters
 	 * 			The maximal horizontal speed of Mazub while ducking given in meters/second
 	 */
-	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters) {
+	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, 
+			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite ... sprites) {
 		setYSize(Y_size);
 		setXSize(X_size);
 		setXPosition(X_pos);
@@ -51,6 +55,7 @@ public class Mazub {
 		this.minSpeed = minSpeedMeters;
 		this.maxSpeedDucking = maxSpeedDuckingMeters;
 		this.maxSpeedRunning = maxSpeedRunningMeters;
+		this.setSpriteArray(sprites);
 	}
 	
 	/**
@@ -447,37 +452,65 @@ public class Mazub {
 	private void advanceTime(double t) {
 		if (t > maxTimeFrame )
 			t = maxTimeFrame;
-		if (t <0)
-			t = 0;
-		if (this.getHorizontalSpeedMeters() >= getMaxSpeedRunningMeters())
-			this.setHorizontalSpeedMeters(getMaxSpeedRunningMeters());
-			this.setHorizontalAcceleration(0);
-		double newPosX = getXPosition() + getHorizontalSpeedMeters()*100*t + 0.5*getHorizontalAcceleration()*t*t*100;
-		if (isValidXPosition(newPosX/100)) {
-			this.setXPosition(newPosX/100);
-			double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*t;
-			this.setHorizontalSpeedMeters(newSpeedX);}
-		if (this.getYPosition() ==0 && this.getVerticalSpeedMeters()!= 0) {
-			this.setVerticalAcceleration(0);
-			this.setVerticalSpeedMeters(0);
-			}
-		else {
-			double newPosY = getYPosition() + getVerticalSpeedMeters()*100*t + 0.5*getVerticalAcceleration()*t*t*100;
-			if (isValidYPosition(newPosY/100)) {
-				this.setYPosition(newPosY/100);
-				double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*t;
-				this.setVerticalSpeedMeters(newSpeedY);
-				}
-			else{
+		if (t <0) {
+			t = 0;}
+		
+			if (this.getHorizontalSpeedMeters() >= getMaxSpeedRunningMeters())
+				this.setHorizontalSpeedMeters(getMaxSpeedRunningMeters());
+				this.setHorizontalAcceleration(0);
+			double newPosX = getXPosition() + getHorizontalSpeedMeters()*100*t + 0.5*getHorizontalAcceleration()*t*t*100;
+			if (isValidXPosition(newPosX/100)) {
+				this.setXPosition(newPosX/100);
+				double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*t;
+				this.setHorizontalSpeedMeters(newSpeedX);}
+			if (this.getYPosition() ==0 && this.getVerticalSpeedMeters()!= 0) {
 				this.setVerticalAcceleration(0);
 				this.setVerticalSpeedMeters(0);
-				this.setYPosition(0);
-			}
-			}
-		//TODO change sprites 
+				}
+			else {
+				double newPosY = getYPosition() + getVerticalSpeedMeters()*100*t + 0.5*getVerticalAcceleration()*t*t*100;
+				if (isValidYPosition(newPosY/100)) {
+					this.setYPosition(newPosY/100);
+					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*t;
+					this.setVerticalSpeedMeters(newSpeedY);
+					}
+				else{
+					this.setVerticalAcceleration(0);
+					this.setVerticalSpeedMeters(0);
+					this.setYPosition(0);
+				}	
+		}
+		
 	}
 	private double maxTimeFrame = 0.2;
 	
+	public Sprite getCurrentSprite() {
+		return this.sprite;
+		
+	}
 	
+	public void setSprite(Sprite sprite) throws RuntimeException {
+		if (! isValidSprite(sprite))
+			throw new RuntimeException();	
+		this.sprite = sprite;	
+	}
+	public boolean isValidSprite(Sprite sprite) {
+		return (sprite.canHaveAsHeight(sprite.getHeight()) &&
+				sprite.canHaveAsWidth(sprite.getWidth()) &&
+				sprite.canHaveAsName(sprite.getName()));
+	}
+	public boolean isValidSpriteArray(Sprite ... sprites) {
+		return (sprites.length >= 10 && sprites.length%2 == 0);		
+	}
+	public void setSpriteArray (Sprite ... sprites) {
+		this.spriteArray = sprites;
+	}
+	private Sprite[] spriteArray;
+	public int getSpriteLoopSize(Sprite ... sprites) throws RuntimeException {
+		if(! isValidSpriteArray(sprites))
+			throw new RuntimeException();
+		return ((sprites.length -8)/2);
+	}
+	public Sprite sprite;
 }
  
