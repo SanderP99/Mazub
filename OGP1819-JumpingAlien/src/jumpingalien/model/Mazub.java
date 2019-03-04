@@ -3,6 +3,7 @@ package jumpingalien.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
+import oiltank.Mazub;
 
 /**
  * A class that implements a player character with the ability to jump, to run to the left and to the right.
@@ -202,10 +203,16 @@ public class Mazub {
 	}
 	
 	private void setOrientation(String orientation) {
-		
+		assert isValidOrientation(orientation);
+		this.orientation = orientation;
 	}
 	
+	private Boolean isValidOrientation(String orientation) {
+		return orientation == "L" || orientation == "R" || orientation == "M";
+		
+	}
 	private String orientation;
+	
 	
 	private double horizontalSpeed;
 	
@@ -363,14 +370,41 @@ public class Mazub {
 			return false;
 		return true;
 	}
-	
-	public void startMove(Mazub alien) {
-		assert alien.isValidAlien();
+	private double getHorizontalAcceleration() {
+		return horizontalAcceleration;
+	}
+	private void setHorizontalAcceleration(double horizontalAcceleration) {
+		if (Math.abs(horizontalAcceleration== 0 || Math.abs(horizontalAcceleration) == maxHorizontalAcceleration))
+			this.horizontalAcceleration =  horizontalAcceleration;
 		
-		if (alien.getHorizontalSpeedMeters() == 0)
-			while (alien.getHorizontalSpeedMeters() < alien.getMaxSpeedRunningMeters())
-				alien.setHorizontalSpeedMeters(alien.getHorizontalSpeedMeters() + acceleration*t);
-		//TODO AdvanceTime
+	}
+	private double horizontalAcceleration;
+	private final double maxHorizontalAcceleration = 0.9;
+	
+	private double getVerticalAcceleration() {
+		return verticalAcceleration;
+	}
+	private void setVerticalAcceleration(double verticalAcceleration) {
+		this.verticalAcceleration =  verticalAcceleration;
+	}
+	private double verticalAcceleration;
+	private final double maxVerticalAcceleration = 10;
+	
+	
+	
+	
+	public void startMove(Mazub alien,int  direction) {
+		assert alien.isValidAlien();
+		assert (direction == -1 || direction == 1);
+		
+		if (alien.getHorizontalSpeedMeters() == 0) {
+			alien.setHorizontalSpeedMeters(minSpeed * direction);
+			alien.setHorizontalAcceleration(direction * maxHorizontalAcceleration);
+		}
+		
+			
+			
+		
 	}
 	
 	public void endMove(Mazub alien) {
@@ -378,9 +412,9 @@ public class Mazub {
 		
 		if (alien.getHorizontalSpeedMeters() != 0)
 			alien.setHorizontalSpeedMeters(0);
+			alien.setHorizontalAcceleration(0);
 	}
 	
-	private final double acceleration = 0.9;
 	
 	public boolean isValidAlien() {
 		if (!isValidXPosition(this.xPos) || !isValidYPosition(this.yPos))
@@ -395,24 +429,55 @@ public class Mazub {
 			throw new RuntimeException();
 		else {
 			this.setVerticalSpeedMeters(maxVerticalSpeed);
-			this.fall();
+			this.setVerticalAcceleration(maxVerticalAcceleration);
 		}
 	}
 	
 	public void endJump() throws RuntimeException {
+		if(this.getVerticalSpeedMeters() < 0)
+			throw new RuntimeException();
 		if (this.yPos == 0)
 			throw new RuntimeException();
 		else {
 			this.setVerticalSpeedMeters(0);
-			this.fall();
+			this.setVerticalAcceleration(maxVerticalAcceleration);
 		}
 	}
 	
-	@Raw
-	private void fall() {
-		while (this.yPos > 0)
-			this.setVerticalSpeedMeters(this.getVerticalSpeedMeters() - 10 * t);
-		if (this.yPos < 0)
-			this.setYPosition(0);
+	private void advanceTime(double t) {
+		if (t > maxTimeFrame )
+			t = maxTimeFrame;
+		if (t <0)
+			t = 0;
+		if (this.getHorizontalSpeedMeters() >= getMaxSpeedRunningMeters())
+			this.setHorizontalSpeedMeters(getMaxSpeedRunningMeters());
+			this.setHorizontalAcceleration(0);
+		double newPosX = getXPosition() + getHorizontalSpeedMeters()*100*t + 0.5*getHorizontalAcceleration()*t*t*100;
+		if (isValidXPosition(newPosX/100)) {
+			this.setXPosition(newPosX/100);
+			double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*t;
+			this.setHorizontalSpeedMeters(newSpeedX);}
+		if (this.getYPosition() ==0 && this.getVerticalSpeedMeters()!= 0) {
+			this.setVerticalAcceleration(0);
+			this.setVerticalSpeedMeters(0);
+			}
+		else {
+			double newPosY = getYPosition() + getVerticalSpeedMeters()*100*t + 0.5*getVerticalAcceleration()*t*t*100;
+			if (isValidYPosition(newPosY/100)) {
+				this.setYPosition(newPosY/100);
+				double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*t;
+				this.setVerticalSpeedMeters(newSpeedY);
+				}
+			else{
+				this.setVerticalAcceleration(0);
+				this.setVerticalSpeedMeters(0);
+				this.setYPosition(0);
+			}
+			}
+		//TODO change sprites 
 	}
+	private double maxTimeFrame = 0.2;
+	
+	
 }
+ 
