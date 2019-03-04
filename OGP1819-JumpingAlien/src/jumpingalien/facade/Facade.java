@@ -20,7 +20,6 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getActualPosition(Mazub alien) throws ModelException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -32,8 +31,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public int[] getPixelPosition(Mazub alien) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] position = new int[] {alien.getXPosition(), alien.getYPosition()};
+		return position;
 	}
 
 	@Override

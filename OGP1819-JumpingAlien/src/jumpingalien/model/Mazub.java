@@ -2,6 +2,7 @@ package jumpingalien.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 
 /**
  * A class that implements a player character with the ability to jump, to run to the left and to the right.
@@ -9,7 +10,14 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * @author Warre Dreesen
  * @author Sander Prenen
  * 
- *
+ * @invar The left most x coordinate of Mazub is a valid coordinate
+ * 			| isValidXPosition() == true
+ * @invar The bottom most y coordinate of Mazub is a valid coordinate
+ * 			| isValidYPosition() == true
+ * @invar The horizontal speed of a Mazub is a valid speed
+ * 			| isValidHorizontalSpeed() == true
+ * @invar The vertical speed of a Mazub is a valid speed
+ * 			| isValidVerticalSpeed() == true
  */
 public class Mazub {
 	
@@ -18,10 +26,10 @@ public class Mazub {
 	 * .
 	 * @param X_pos
 	 * 			The x position of the bottom left pixel of Mazub.
-	 * @param Y_pos
-	 * 			The x size of Mazub given in pixels.
 	 * @param X_size
-	 * 			The x position of the bottom left pixel of Mazub.
+	 * 			The x size of Mazub given in pixels.
+	 * @param Y_pos
+	 * 			The y position of the bottom left pixel of Mazub.
 	 * @param Y_size
 	 * 			The y size of Mazub given in pixels.
 	 * @param horizontalSpeedMeters
@@ -44,6 +52,9 @@ public class Mazub {
 		this.maxSpeedRunning = maxSpeedRunningMeters;
 	}
 	
+	/**
+	 * Create a new player in the origin with size 1x2.
+	 */
 	public Mazub() {
 		setYSize(2);
 		setXSize(1);
@@ -198,11 +209,38 @@ public class Mazub {
 	
 	private double horizontalSpeed;
 	
+	/**
+	 * Returns the horizontal speed of a Mazub given in meters per second.
+	 */
 	@Basic
 	public double getHorizontalSpeedMeters() {
 		return this.horizontalSpeed;
 	}
+	/**
+	 * Returns the horizontal speed of Mazub given in pixels per second
+	 */
+	public double getHorizontalSpeedPixels() {
+		return (this.horizontalSpeed * 100);
+	}
 	
+	/**
+	 *  Sets the the horizontal speed of Mazub to the given speed.
+	 *  
+	 * @param speed
+	 * 			The horizontal speed to give to Mazub
+	 * @post The new speed of Mazub is equal to the given speed if the given speed is 0.
+	 * 			| if (speed == 0) then new.horizontalSpeed == 0
+	 * @post The new speed of Mazub is equal to the given speed if the speed an allowed speed.
+	 * 			| if (Math.abs(speed) > getMinSpeedMeters() && Math.abs(speed) < getMaxSpeedMeters()) then new.horizontalSpeed == speed 
+	 * @post The new speed of Mazub is equal to the minimal speed if the speed is positive and less than the allowed minimum speed.
+	 * 			| if (speed < getMinSpeedMeters() && speed > 0) then new.horizontalSpeed == this.getMinSpeedMeters() 
+	 * @post The new speed of Mazub is equal to the minimal speed times -1 if the speed is negative and less than the allowed minimum speed in absolute value.
+	 * 			| if (speed < getMinSpeedMeters() && speed < 0) then new.horizontalSpeed == (this.getMinSpeedMeters())*-1
+	 * @post The new speed of Mazub is equal to the maximal speed if the speed is positive and greater than the allowed maximum speed.
+	 * 			| if (speed > getMaxSpeedMeters() && speed > 0) then new.horizontalSpeed == this.getMaxSpeedMeters() 
+	 * @post The new speed of Mazub is equal to the maximal speed times -1 if the speed is negative and greater than the allowed maximum speed in absolute value.
+	 * 			| if (speed > getMaxSpeedMeters() && speed < 0) then new.horizontalSpeed == (this.getMaxSpeedMeters())*-1
+	 */
 	private void setHorizontalSpeedMeters(double speed) {
 		if (Math.abs(speed) < getMinSpeedMeters() && speed < 0)
 			this.horizontalSpeed = -1*getMinSpeedMeters();
@@ -216,26 +254,68 @@ public class Mazub {
 			this.horizontalSpeed = -1*getMaxSpeedRunningMeters();
 	}
 	
+	/**
+	 * Sets the horizontal speed of a given Mazub to the given speed in pixels per second
+	 * @param speed 
+	 * 			The speed in pixels per second
+	 * @effect Has the same effect as setting the speed in meters to the given speed/100
+	 * 		| setHorizontalSpeedMeters(speed/100)
+	 */
+	private void setHorizontalSpeedPixels(double speed) {
+		setHorizontalSpeedMeters(speed / 100);
+	}
+	
 	public final double minSpeed;
 	public final double maxSpeedRunning;
 	public final double maxSpeedDucking;
 	
 	
 	/**
-	 * Returns the minimum horizontal speed.
+	 * Returns the minimum horizontal speed in meters per second.
 	 */
 	@Basic @Immutable
 	public double getMinSpeedMeters() {
 		return this.minSpeed;
 	}
 	
+	/**
+	 * Returns the minimal horizontal speed in pixels per second0.
+	 */
+	@Immutable
+	public double getMinSpeedPixels() {
+		return (this.minSpeed * 100);
+	}
+	
+	/**
+	 * Returns the maximal horizontal speed in meters per second while running.
+	 */
 	@Basic @Immutable	
 	public double getMaxSpeedRunningMeters() {
 		return maxSpeedRunning;
 	}
+	
+	/**
+	 * Returns the maximal horizontal speed in pixels per second while running.
+	 */
+	@Immutable	
+	public double getMaxSpeedRunningPixels() {
+		return maxSpeedRunning * 100;
+	}
+	
+	/**
+	 * Returns the maximal horizontal speed in meters per second while ducking.
+	 */
 	@Basic @Immutable
 	public double getMaxSpeedDuckingMeters() {
 		return maxSpeedDucking;
+	}
+	
+	/**
+	 * Returns the maximal horizontal speed in pixels per second while ducking.
+	 */
+	@Immutable
+	public double getMaxSpeedDuckingPixels() {
+		return maxSpeedDucking * 100;
 	}
 	
 	private boolean isValidHorizontalSpeed() {
@@ -247,9 +327,20 @@ public class Mazub {
 	
 	private double verticalSpeed;
 	
-	@Basic
+	/**
+	 * Returns the vertical speed of a given Mazub in meters per second.
+	 */
+	@Basic @Immutable
 	public double getVerticalSpeedMeters() {
 		return this.verticalSpeed;
+	}
+	
+	/**
+	 * Returns the vertical speed of a given Mazub in pixels per second.
+	 */
+	@Immutable
+	public double getVerticalSpeedPixels() {
+		return this.verticalSpeed * 100;
 	}
 	
 	private void setVerticalSpeedMeters(double verticalSpeedMeters) {
@@ -317,8 +408,11 @@ public class Mazub {
 		}
 	}
 	
+	@Raw
 	private void fall() {
-		while (this.yPos != 0)
+		while (this.yPos > 0)
 			this.setVerticalSpeedMeters(this.getVerticalSpeedMeters() - 10 * t);
+		if (this.yPos < 0)
+			this.setYPosition(0);
 	}
 }
