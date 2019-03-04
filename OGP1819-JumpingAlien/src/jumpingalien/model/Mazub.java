@@ -512,5 +512,8 @@ public class Mazub {
 		return ((sprites.length -8)/2);
 	}
 	public Sprite sprite;
+	/**
+	 * iets bijschrijven
+	 */
 }
  
