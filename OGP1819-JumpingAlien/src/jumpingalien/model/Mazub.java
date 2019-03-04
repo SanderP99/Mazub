@@ -198,20 +198,20 @@ public class Mazub {
 	private int yPos;
 	
 	@Basic
-	public String getOrientation() {
+	public int getOrientation() {
 		return this.orientation;
 	}
 	
-	private void setOrientation(String orientation) {
+	private void setOrientation(int orientation) {
 		assert isValidOrientation(orientation);
 		this.orientation = orientation;
 	}
 	
-	private Boolean isValidOrientation(String orientation) {
-		return orientation == "L" || orientation == "R" || orientation == "M";
+	public Boolean isValidOrientation(int orientation) {
+		return orientation == -1 || orientation == 0 || orientation == 1;
 		
 	}
-	private String orientation;
+	private int orientation;
 	
 	
 	private double horizontalSpeed;

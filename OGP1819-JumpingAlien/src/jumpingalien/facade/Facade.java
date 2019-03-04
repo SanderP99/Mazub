@@ -13,7 +13,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Mazub createMazub(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-		
+		//TODO
 	}
 
 	@Override
@@ -53,8 +53,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getOrientation(Mazub alien) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (alien == null)
+			throw new ModelException("The alien is null");
+		if (!alien.isValidAlien())
+			throw new ModelException("The alien is not valid");
+		return alien.getOrientation();
 	}
 
 	@Override
