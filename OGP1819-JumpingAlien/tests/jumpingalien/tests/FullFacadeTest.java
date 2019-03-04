@@ -27,7 +27,7 @@ class FullFacadeTest {
 	// Variable referencing the facade.
 	static IFacade facade = new Facade();
 
-	// Variables referencing some prdefined mazub's
+	// Variables referencing some predefined mazub's
 	private static Mazub mazub_0_0, mazub_100_0;
 
 	// Variable referencing a proper arrays of sprites
