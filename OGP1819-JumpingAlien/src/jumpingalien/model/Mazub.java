@@ -59,6 +59,37 @@ public class Mazub {
 	}
 	
 	/**
+	 * Initialize a new player with a given position (X_pos, Y_pos), a given size (X_size, Y_size) and speed
+	 * .
+	 * @param X_pos
+	 * 			The x position of the bottom left pixel of Mazub in pixels.
+	 * @param X_size
+	 * 			The x size of Mazub given in pixels.
+	 * @param Y_pos
+	 * 			The y position of the bottom left pixel of Mazub in pixels.
+	 * @param Y_size
+	 * 			The y size of Mazub given in pixels.
+	 * @param horizontalSpeedMeters
+	 * 			The horizontal speed of Mazub given in meters/second
+	 * @param minSpeedMeters
+	 * 			The minimal horizontal speed of Mazub given in meters/second
+	 * @param maxSpeedRunningMeters
+	 * 			The maximal horizontal speed of Mazub while running given in meters/second
+	 * @param maxSpeedDuckingMeters
+	 * 			The maximal horizontal speed of Mazub while ducking given in meters/second
+	 */
+	public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters) {
+		setYSize(Y_size);
+		setXSize(X_size);
+		setXPositionPixel(X_pos);
+		setYPositionPixel(Y_pos);
+		setHorizontalSpeedMeters(horizontalSpeedMeters);
+		this.minSpeed = minSpeedMeters;
+		this.maxSpeedDucking = maxSpeedDuckingMeters;
+		this.maxSpeedRunning = maxSpeedRunningMeters;
+	}
+	
+	/**
 	 * Create a new player in the origin with size 1x2.
 	 */
 	public Mazub() {
@@ -107,6 +138,19 @@ public class Mazub {
 	private void setXSize(int X_size) {
 		this.xSize = X_size;
 	}
+	
+	/**
+	 * Sets the x position of the bottom left pixel of a given Mazub to the specified x pixel.
+	 * @param X_pos
+	 * 			The wanted x position in pixels.
+	 * @throws RuntimeException
+	 * 			Throws an exception when the wanted position isn't on the canvas.
+	 * 			| !isValidXPosition(X_pos/100)
+	 */
+	public void setXPositionPixel(int X_pos) throws RuntimeException{
+		if (!isValidXPosition(X_pos/100))
+			throw new RuntimeException();
+		this.xPos =X_pos;
 	
 	/**
 	 * Returns the x size of a given Mazub.
@@ -175,6 +219,20 @@ public class Mazub {
 		this.yPos = (int) Y_pos * 100;
 	}
 	
+	/**
+	 * Sets the y position of the bottom left pixel of a given Mazub to the specified y pixel.
+	 * @param Y_pos
+	 * 			The wanted y position in pixels.
+	 * @throws RuntimeException
+	 * 			Throws an exception when the wanted position isn't on the canvas.
+	 * 			| !isValidXPosition(Y_pos/100)
+	 */
+	public void setYPositionPixel(int Y_pos) throws RuntimeException{
+		if (!isValidXPosition(Y_pos))
+			throw new RuntimeException();
+		this.yPos = Y_pos;
+	}	
+		
 	/**
 	 * Returns the y position on the canvas.
 	 */
