@@ -72,8 +72,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getAcceleration(Mazub alien) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		if (alien == null)
+			throw new ModelException("The alien is null");
+		if (!alien.isValidAlien())
+			throw new ModelException("The alien is not valid");
+		
+		double[] acceleration = new double[] {alien.getHorizontalAcceleration(), alien.getVerticalAcceleration()};
+		return acceleration;
 	}
 
 	@Override
@@ -90,13 +95,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startMoveLeft(Mazub alien) throws ModelException {
-		// TODO Auto-generated method stub
+		alien.startMove(-1);
 
 	}
 
 	@Override
 	public void startMoveRight(Mazub alien) throws ModelException {
-		// TODO Auto-generated method stub
+		alien.startMove(1);
 
 	}
 
