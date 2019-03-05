@@ -48,8 +48,8 @@ public class Mazub {
 			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite ... sprites) {
 		setYSize(Y_size);
 		setXSize(X_size);
-		setXPosition(X_pos);
-		setYPosition(Y_pos);
+		setXPositionActual(X_pos);
+		setYPositionActual(Y_pos);
 		setHorizontalSpeedMeters(horizontalSpeedMeters);
 		this.minSpeed = minSpeedMeters;
 		this.maxSpeedDucking = maxSpeedDuckingMeters;
@@ -101,8 +101,8 @@ public class Mazub {
 	public Mazub() {
 		setYSize(2);
 		setXSize(1);
-		setXPosition(0);
-		setYPosition(0);
+		setXPositionActual(0);
+		setYPositionActual(0);
 		setHorizontalSpeedMeters(0);
 		this.minSpeed = 1;
 		this.maxSpeedDucking = 1;
@@ -156,7 +156,7 @@ public class Mazub {
 	 * 			| !isValidXPosition(X_pos/100)
 	 */
 	public void setXPositionPixel(int X_pos) throws RuntimeException{
-		if (!isValidXPosition(X_pos/100))
+		if (!isValidPixelXPosition(X_pos))
 			throw new RuntimeException();
 		this.xPosPixel = X_pos;
 		this.xPosMeter = (double) X_pos/100;
@@ -180,8 +180,8 @@ public class Mazub {
 	 * 			Throws an exception when the wanted position isn't on the canvas.
 	 * 			| !isValidXPosition(X_pos)
 	 */
-	public void setXPosition(double X_pos) throws RuntimeException{
-		if (!isValidXPosition(X_pos))
+	public void setXPositionActual(double X_pos) throws RuntimeException{
+		if (!isValidActualXPosition(X_pos))
 			throw new RuntimeException();
 		this.xPosPixel = (int) X_pos * 100;
 		this.xPosMeter = X_pos;
@@ -212,8 +212,12 @@ public class Mazub {
 	 * @param X_pos
 	 * 			The coordinate to check.
 	 */
-	public boolean isValidXPosition(double X_pos) {
-		return (X_pos < (getMaxXPosition() - 1) &&  X_pos >= 0);		
+	public boolean isValidActualXPosition(double X_pos) {
+		return (X_pos*100 <= (getMaxXPosition() - 1) &&  X_pos >= 0);		
+	}
+	
+	public boolean isValidPixelXPosition(int X_pos) {
+		return (X_pos >= 0 && X_pos < getMaxXPosition());
 	}
 	
 	
@@ -229,8 +233,8 @@ public class Mazub {
 	 * 			Throws an exception when the wanted position isn't on the canvas.
 	 * 			| !isValidYPosition(Y_pos)
 	 */
-	public void setYPosition(double Y_pos) throws RuntimeException{
-		if (!isValidYPosition(Y_pos)) 
+	public void setYPositionActual(double Y_pos) throws RuntimeException{
+		if (!isValidActualYPosition(Y_pos)) 
 			throw new RuntimeException();
 		this.yPosPixel = (int) Y_pos * 100;
 		this.yPosMeter = Y_pos;
@@ -245,7 +249,7 @@ public class Mazub {
 	 * 			| !isValidXPosition(Y_pos/100)
 	 */
 	public void setYPositionPixel(int Y_pos) throws RuntimeException{
-		if (!isValidXPosition(Y_pos))
+		if (!isValidPixelYPosition(Y_pos))
 			throw new RuntimeException();
 		this.yPosPixel = Y_pos;
 		this.yPosMeter = (double) Y_pos/100;
@@ -268,8 +272,12 @@ public class Mazub {
 	 * @param X_pos
 	 * 			The given coordinate to check.
 	 */
-	public boolean isValidYPosition(double Y_pos) {
-		return (Y_pos < (getMaxYPosition() - 1) &&  Y_pos >= 0);
+	public boolean isValidActualYPosition(double Y_pos) {
+		return (Y_pos*100 < (getMaxYPosition() - 1) &&  Y_pos >= 0);
+	}
+	
+	public boolean isValidPixelYPosition(int Y_pos) {
+		return (Y_pos >= 0 && Y_pos < getMaxYPosition());
 	}
 	
 	/**
@@ -576,7 +584,8 @@ public class Mazub {
 	 * Returns whether the given alien is valid
 	 */
 	public boolean isValidAlien() {
-		if (!isValidXPosition(this.xPosPixel) || !isValidYPosition(this.yPosPixel))
+		if (!isValidActualXPosition(this.xPosMeter) || !isValidActualYPosition(this.yPosMeter)
+				|| !isValidPixelXPosition(this.xPosPixel) || !isValidPixelYPosition(this.yPosPixel))
 			return false;
 		if (!isValidHorizontalSpeed() || !isValidVerticalSpeed())
 			return false;

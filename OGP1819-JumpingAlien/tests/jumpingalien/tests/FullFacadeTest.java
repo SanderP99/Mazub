@@ -21,13 +21,13 @@ class FullFacadeTest {
 	public static final double V_VELOCITY_JUMPING = 8.0;
 	public final static double HORIZONTAL_ACCELERATION = 0.9;
 	public static final double V_ACCELERATION_JUMPING = -10.0;
-	public static final double WORLD_WIDTH = 1024.0;
-	public static final double WORLD_HEIGHT = 768.0;
+	public static final double WORLD_WIDTH = 10.24;
+	public static final double WORLD_HEIGHT = 7.68;
 
 	// Variable referencing the facade.
 	static IFacade facade = new Facade();
 
-	// Variables referencing some predefined mazub's
+	// Variables referencing some prdefined mazub's
 	private static Mazub mazub_0_0, mazub_100_0;
 
 	// Variable referencing a proper arrays of sprites
@@ -85,8 +85,10 @@ class FullFacadeTest {
 		assertFalse(facade.isDucking(newMazub));
 		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(newMazub),
 				HIGH_PRECISION);
-		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getAcceleration(newMazub),
-				HIGH_PRECISION);
+		assertEquals(0.0 , facade.getAcceleration(newMazub)[0], HIGH_PRECISION);
+		assertTrue((Math.abs(facade.getAcceleration(newMazub)[1]) <= HIGH_PRECISION) ||
+				( (Math.abs(facade.getAcceleration(newMazub)[1]) >= 10.0-HIGH_PRECISION) &&
+				  (Math.abs(facade.getAcceleration(newMazub)[1]) <= 10.0+HIGH_PRECISION)));
 		if (facade.isTeamSolution()) {
 			assertArrayEquals(sprites, facade.getSprites(newMazub));
 			assertSame(sprites[0], facade.getCurrentSprite(newMazub));
@@ -143,8 +145,8 @@ class FullFacadeTest {
 	@Test
 	void changeActualPosition_LegalCase() throws Exception {
 		maximumScore += 2;
-		facade.changeActualPosition(mazub_0_0, new double[] { 20.4, 33.6 });
-		assertArrayEquals(new double[] { 20.4, 33.6 },
+		facade.changeActualPosition(mazub_0_0, new double[] { 2.04, 3.36 });
+		assertArrayEquals(new double[] { 2.04, 3.36 },
 				facade.getActualPosition(mazub_0_0), HIGH_PRECISION);
 		actualScore += 2;
 	}
@@ -399,7 +401,7 @@ class FullFacadeTest {
 		assertEquals(1.183, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
 		assertEquals(1.153, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(sprites[9], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(sprites[10], facade.getCurrentSprite(mazub_100_0));
 		actualScore += 3;
 	}
 
@@ -423,7 +425,7 @@ class FullFacadeTest {
 		assertEquals(-1.0 - 0.171 - 0.108, facade.getVelocity(mazub_100_0)[0],
 				LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(sprites[15], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(sprites[17], facade.getCurrentSprite(mazub_100_0));
 		actualScore += 5;
 	}
 
@@ -447,7 +449,7 @@ class FullFacadeTest {
 		assertEquals(1.0 + 0.171 + 0.072, facade.getVelocity(mazub_100_0)[0],
 				LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(sprites[10], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(sprites[11], facade.getCurrentSprite(mazub_100_0));
 		actualScore += 3;
 	}
 
@@ -493,7 +495,7 @@ class FullFacadeTest {
 	public void advanceTime_MazubReachingTop() throws Exception {
 		maximumScore += 6;
 		facade.changeActualPosition(mazub_100_0,
-				new double[] { 100.0, WORLD_HEIGHT - 0.8 });
+				new double[] { 1.0, WORLD_HEIGHT - 0.8 });
 		facade.startJump(mazub_100_0);
 		// Note:
 		// If Mazub reaches a border and keeps on jumping, its position will no
@@ -560,11 +562,11 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubFalling() throws Exception {
 		maximumScore += 6;
-		facade.changeActualPosition(mazub_100_0, new double[] { 100.0, 25.0 });
+		facade.changeActualPosition(mazub_100_0, new double[] { 1.0, 0.25 });
 		// After 0.1 seconds, Mazub will have fallen over 5 cm; its velocity has changed
 		// to -1 m/s.
 		facade.advanceTime(mazub_100_0, 0.1);
-		assertArrayEquals(new double[] { 100.0, 25.0 - 0.05 },
+		assertArrayEquals(new double[] { 1.0, 0.25 - 0.05 },
 				facade.getActualPosition(mazub_100_0), LOW_PRECISION);
 		assertEquals(-1.0, facade.getVelocity(mazub_100_0)[1], LOW_PRECISION);
 		if (facade.isTeamSolution())
@@ -601,17 +603,17 @@ class FullFacadeTest {
 		if (facade.isTeamSolution())
 			assertEquals(sprites[8], facade.getCurrentSprite(mazub_100_0));
 		assertFalse(facade.isDucking(mazub_100_0));
-		// After another 0.15 seconds, mazub has moved further over 16.0125 cm. Its
-		// velocity is
-		// raised to 1.135 m/s.
-		facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(1.1488 + 0.1 + 0.160125, facade.getActualPosition(mazub_100_0)[0],
+		// After another 0.16 seconds, mazub has moved further over 17.152 cm. Its
+		// velocity is raised to 1.144 m/s.
+		facade.advanceTime(mazub_100_0, 0.16);
+		assertEquals(1.1488 + 0.1 + 0.17152, facade.getActualPosition(mazub_100_0)[0],
 				LOW_PRECISION);
-		assertEquals(1.135, facade.getVelocity(mazub_100_0)[0], HIGH_PRECISION);
+		assertEquals(1.144, facade.getVelocity(mazub_100_0)[0], HIGH_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(sprites[9], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(sprites[10], facade.getCurrentSprite(mazub_100_0));
 		actualScore += 12;
 	}
+
 
 	@Test
 	public void advanceTime_MazubMovingLeftAndDucking() throws Exception {
@@ -643,15 +645,14 @@ class FullFacadeTest {
 		if (facade.isTeamSolution())
 			assertEquals(sprites[13], facade.getCurrentSprite(mazub_100_0));
 		assertFalse(facade.isDucking(mazub_100_0));
-		// After another 0.15 seconds, mazub has moved further over 16.0125 cm. Its
-		// velocity is
-		// raised to 1.135 m/s.
-		facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(1.0 - 0.1488 - 0.1 - 0.160125,
+		// After another 0.16 seconds, mazub has moved further over 17.152 cm. Its
+		// velocity is raised to 1.144 m/s.
+		facade.advanceTime(mazub_100_0, 0.16);
+		assertEquals(1.0 - 0.1488 - 0.1 - 0.17152,
 				facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
-		assertEquals(-1.135, facade.getVelocity(mazub_100_0)[0], HIGH_PRECISION);
+		assertEquals(-1.144, facade.getVelocity(mazub_100_0)[0], HIGH_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(sprites[14], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(sprites[15], facade.getCurrentSprite(mazub_100_0));
 		actualScore += 4;
 	}
 
