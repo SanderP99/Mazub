@@ -1,5 +1,6 @@
 package jumpingalien.model;
 
+import java.util.concurrent.TimeUnit;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -159,7 +160,7 @@ public class Mazub {
 		if (!isValidPixelXPosition(X_pos))
 			throw new RuntimeException();
 		this.xPosPixel = X_pos;
-		this.xPosMeter = (double) X_pos/100;
+		this.xPosMeter = ((double) X_pos)/100;
 	}
 	
 	/**
@@ -183,7 +184,7 @@ public class Mazub {
 	public void setXPositionActual(double X_pos) throws RuntimeException{
 		if (!isValidActualXPosition(X_pos))
 			throw new RuntimeException();
-		this.xPosPixel = (int) X_pos * 100;
+		this.xPosPixel = (int) (X_pos * 100);
 		this.xPosMeter = X_pos;
 	}
 	
@@ -236,7 +237,7 @@ public class Mazub {
 	public void setYPositionActual(double Y_pos) throws RuntimeException{
 		if (!isValidActualYPosition(Y_pos)) 
 			throw new RuntimeException();
-		this.yPosPixel = (int) Y_pos * 100;
+		this.yPosPixel = (int) (Y_pos * 100);
 		this.yPosMeter = Y_pos;
 	}
 	
@@ -252,7 +253,7 @@ public class Mazub {
 		if (!isValidPixelYPosition(Y_pos))
 			throw new RuntimeException();
 		this.yPosPixel = Y_pos;
-		this.yPosMeter = (double) Y_pos/100;
+		this.yPosMeter = ((double) Y_pos)/100;
 	}	
 		
 	/**
@@ -360,7 +361,9 @@ public class Mazub {
 	 * 			| if (speed > getMaxSpeedMeters() && speed < 0) then new.horizontalSpeed == (this.getMaxSpeedMeters())*-1
 	 */
 	private void setHorizontalSpeedMeters(double speed) {
-		if (Math.abs(speed) <= getMinSpeedMeters() && speed < 0)
+		if(Math.abs(speed)>= getMinSpeedMeters() && Math.abs(speed)<= getMaxSpeed())
+			this.horizontalSpeed = speed;
+		else if (Math.abs(speed) <= getMinSpeedMeters() && speed < 0)
 			this.horizontalSpeed = -1*getMinSpeedMeters();
 		else if (Math.abs(speed) <= getMinSpeedMeters() && speed > 0)
 			this.horizontalSpeed = getMinSpeedMeters();
@@ -606,6 +609,7 @@ public class Mazub {
 		return true;
 	}
 	
+	
 	public void startJump() throws RuntimeException {
 		if (this.isJumping)
 			throw new RuntimeException();
@@ -626,46 +630,38 @@ public class Mazub {
 		else {
 			this.setVerticalSpeedMeters(0);
 			this.setVerticalAcceleration(maxVerticalAcceleration);
-			this.isJumping = false;
+
 		}
 	}
 	
 	public boolean isJumping;
+	public void updatePosition(double dt) {
+		this.setMaxSpeed();
+		double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
+		if(!isValidActualXPosition(newPosX)) {
+			if( newPosX <0) {
+				newPosX = 0;
+			}
+			else newPosX = ((double) this.getMaxXPosition())/100;
+		}
+		setXPositionActual(newPosX);
+		double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
+		setHorizontalSpeedMeters(newSpeedX);
+		double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
+		if(!isValidActualYPosition(newPosY)) {
+			if( newPosY <0) {
+				newPosY = 0;
+			}
+			else newPosY = ((double) this.getMaxYPosition())/100;
+			}
+		setYPositionActual(newPosY);
+		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
+		this.setVerticalSpeedMeters(newSpeedY);
+		if(newPosY <=0)
+			this.isJumping=false;
+				}
 	
-//	
-//	public void advanceTime(double t) {
-//		if (t > maxTimeFrame )
-//			t = maxTimeFrame;
-//		if (t <0) {
-//			t = 0;}
-//		
-//			if (this.getHorizontalSpeedMeters() >= getMaxSpeedRunningMeters())
-//				this.setHorizontalSpeedMeters(getMaxSpeedRunningMeters());
-//				this.setHorizontalAcceleration(0);
-//			double newPosX = getXPositionPixel() + getHorizontalSpeedMeters()*100*t + 0.5*getHorizontalAcceleration()*t*t*100;
-//			if (isValidXPosition(newPosX/100)) {
-//				this.setXPosition(newPosX/100);
-//				double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*t;
-//				this.setHorizontalSpeedMeters(newSpeedX);}
-//			if (this.getYPositionPixel() ==0 && this.getVerticalSpeedMeters()!= 0) {
-//				this.setVerticalAcceleration(0);
-//				this.setVerticalSpeedMeters(0);
-//				}
-//			else {
-//				double newPosY = getYPositionPixel() + getVerticalSpeedMeters()*100*t + 0.5*getVerticalAcceleration()*t*t*100;
-//				if (isValidYPosition(newPosY/100)) {
-//					this.setYPosition(newPosY/100);
-//					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*t;
-//					this.setVerticalSpeedMeters(newSpeedY);
-//					}
-//				else{
-//					this.setVerticalAcceleration(0);
-//					this.setVerticalSpeedMeters(0);
-//					this.setYPosition(0);
-//				}	
-//		}	
-//	}
-	
+
 	public void advanceTime(double dt) {
 		if (dt == Double.NaN)
 			dt = 0.0;
@@ -673,48 +669,115 @@ public class Mazub {
 			dt = maxTimeFrame;
 		if (dt < 0)
 			dt = 0.0;
+		updatePosition(dt);
 		
-		if (this.getYPositionActual() <= 0)
-			setVerticalAcceleration(0.0);
-		if (getYPositionActual() <= 0 && getVerticalSpeedMeters() < 0)
-			endJump();
+
 		
 		
-		if (this.isDucking) {
-			if (this.isMoving) {
-				if (this.getHorizontalSpeedMeters() < 0) {
-					setSprite(this.spriteArray[7]);
-					this.setMaxSpeed();
-					this.setHorizontalSpeedMeters(-1*maxSpeed);
-					double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
-					setXPositionActual(newPosX);
-					double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
-					setHorizontalSpeedMeters(newSpeedX);
-//					double newPosY = getYPositionPixel() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
-//					setYPositionActual(newPosY);
-				}
-					
-				else {
-					setSprite(this.spriteArray[6]);
-					this.setMaxSpeed();
-					this.setHorizontalSpeedMeters(maxSpeed);
-					double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
-					setXPositionActual(newPosX);
-					double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
-					setHorizontalSpeedMeters(newSpeedX);
-//					double newPosY = getYPositionPixel() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
-//					setYPositionActual(newPosY);
-				}
-			}
-			else {
-				setSprite(this.spriteArray[1]);
-				this.setMaxSpeed();
-				
-			}
-		}
 	}
+//	public void advanceTime(double dt) {
+//		if (dt == Double.NaN)
+//			dt = 0.0;
+//		if (dt > maxTimeFrame)
+//			dt = maxTimeFrame;
+//		if (dt < 0)
+//			dt = 0.0;
+//		
+//		if (this.getYPositionActual() <= 0)
+//			setVerticalAcceleration(0.0);
+//		if (getYPositionActual() <= 0 && getVerticalSpeedMeters() < 0)
+//			endJump();
+//		
+//		
+//		if (this.isDucking) {
+//			if (this.isMoving) {
+//				if(! this.isJumping) {
+//				if (this.getHorizontalSpeedMeters() < 0) {
+//					setSprite(this.spriteArray[7]);
+//					this.setMaxSpeed();
+//					this.setHorizontalSpeedMeters(-1*maxSpeed);
+//					double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
+//					setXPositionActual(newPosX);
+//					double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
+//					setHorizontalSpeedMeters(newSpeedX);
+//					double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
+//					setYPositionActual(newPosY);
+//					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
+//					this.setVerticalSpeedMeters(newSpeedY);
+//				}
+//					
+//				else {
+//					setSprite(this.spriteArray[6]);
+//					this.setMaxSpeed();
+//					this.setHorizontalSpeedMeters(maxSpeed);
+//					double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
+//					setXPositionActual(newPosX);
+//					double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
+//					setHorizontalSpeedMeters(newSpeedX);
+//					double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
+//					setYPositionActual(newPosY);
+//					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
+//					this.setVerticalSpeedMeters(newSpeedY);
+//				}
+//			}
+//				
+//			else {
+//				setSprite(this.spriteArray[1]);
+//				this.setMaxSpeed();
+//				fall(frameRate);
+//				
+//			}
+//		}
+//		else {
+//			if(this.getOrientation() ==1) {
+//				this.setSprite(this.spriteArray[6]);
+//				
+//				this.setOrientation(0);
+//				this.setSprite(this.spriteArray[1]);
+//			}
+//			if (this.getOrientation()== -1) {
+//				this.setSprite(this.spriteArray[7]);
+//				
+//				this.setOrientation(0);
+//				this.setSprite(this.spriteArray[1]);
+//			}
+//			else this.setSprite(this.spriteArray[1]);
+//			
+//		}}
+//		else {
+//			if(this.isJumping) {
+//				if(this.isMoving) {
+//					int direction = this.getOrientation();
+//					if (direction == 1)
+//						this.setSprite(spriteArray[4]);
+//					else this.setSprite(spriteArray[5]);
+//					
+//					this.setMaxSpeed();
+//					this.setHorizontalSpeedMeters(maxSpeed);
+//					double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
+//					setXPositionActual(newPosX);
+//					double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
+//					setHorizontalSpeedMeters(newSpeedX);
+//					double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
+//					setYPositionActual(newPosY);
+//					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
+//					this.setVerticalSpeedMeters(newSpeedY);
+//				}
+//				else {
+//					this.setSprite(spriteArray[0]);
+//					this.setMaxSpeed();
+//					double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
+//					setYPositionActual(newPosY);
+//					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
+//					this.setVerticalSpeedMeters(newSpeedY);
+//				}
+//			fall(frameRate);
+//			}
+//		}
+//	}
 	
 	private double maxTimeFrame = 0.2;
+	private double frameRate = 0.075;
 	
 	public Sprite getCurrentSprite() {
 		return this.sprite;
@@ -754,15 +817,18 @@ public class Mazub {
 	}
 	
 	public Sprite sprite;
-	/**
-	 * iets bijschrijven
-	 */
+	
 	
 	
 	public void startDuck() {
 		this.setSprite(this.spriteArray[1]);
-		if (this.getHorizontalSpeedMeters() != 0)
-			this.setHorizontalSpeedMeters(this.getMaxSpeedDuckingMeters());
+		if (this.getHorizontalSpeedMeters() != 0) {
+			this.setHorizontalSpeedMeters(this.getMaxSpeedDuckingMeters()*this.getOrientation());
+			if(this.getOrientation() >0)
+				this.setSprite(this.spriteArray[6]);
+			else this.setSprite(this.spriteArray[7]);}
+
+		
 		this.setHorizontalAcceleration(0.0);
 		this.isDucking = true;
 

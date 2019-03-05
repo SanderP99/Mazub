@@ -20,8 +20,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getActualPosition(Mazub alien) throws ModelException {
-//		if (!alien.isValidAlien())
-//			throw new ModelException("The alien is not valid");
+	if (!alien.isValidAlien())
+			throw new ModelException("The alien is not valid");
 		double actualX = alien.getXPositionActual();
 		double actualY = alien.getYPositionActual();
 		double[] position = new double[] {actualX, actualY};
