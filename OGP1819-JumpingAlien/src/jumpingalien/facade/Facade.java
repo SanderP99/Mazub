@@ -50,7 +50,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getOrientation(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+	if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
 		return alien.getOrientation();
 	}
@@ -86,11 +86,11 @@ public class Facade implements IFacade {
 	
 	@Override
 	public boolean isMoving(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
-			throw new ModelException("The alien is not valid");
-		else
-			if (alien.getVerticalSpeedMeters() != 0 || alien.getHorizontalSpeedMeters() != 0)
-				return true;
+//		if (!alien.isValidAlien())
+//			throw new ModelException("The alien is not valid");
+		
+		if (alien.getVerticalSpeedMeters() != 0 || alien.getHorizontalSpeedMeters() != 0)
+			return true;
 		return false;
 	}
 
@@ -122,7 +122,7 @@ public class Facade implements IFacade {
 	public boolean isJumping(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
-		if (getVelocity(alien)[1] != 0)
+		if (alien.isJumping)
 			return true;
 		return false;
 	}
