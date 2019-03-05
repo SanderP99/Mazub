@@ -30,8 +30,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public void changeActualPosition(Mazub alien, double[] newPosition) throws ModelException {
+		if (newPosition == null)
+			throw new ModelException("Position can not be null");
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
+		if (newPosition.length != 2)
+			throw new ModelException("Only 2  coordinates allowed");
 		if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1]))
 			throw new ModelException("The position is not valid");
 		

@@ -191,7 +191,7 @@ public class Mazub {
 	 * Returns the maximal x position on the canvas in pixels.
 	 */
 	@Basic
-	private int getMaxXPosition() {
+	public int getMaxXPosition() {
 		return maxXPosition;
 	}
 	
