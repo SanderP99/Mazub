@@ -56,6 +56,7 @@ public class Mazub {
 		this.maxSpeedRunning = maxSpeedRunningMeters;
 		this.setSpriteArray(sprites);
 		setSprite(sprites[0]);
+		this.isDucking = false;
 	}
 	
 	/**
@@ -525,12 +526,31 @@ public class Mazub {
 	public void startMove(int  direction) {
 		assert this.isValidAlien();
 		assert (direction == -1 || direction == 1);
-		assert this.getHorizontalSpeedMeters() == 0;
+		assert !this.isMoving;
 		
 
 		this.setHorizontalSpeedMeters(minSpeed * direction);
 		this.setHorizontalAcceleration(direction * maxHorizontalAcceleration);
+		this.isMoving = true;
+//		if (direction == 1 && this.isDucking)
+//			setSprite(this.spriteArray[6]);
+//		if (direction == -1 && this.isDucking)
+//			setSprite(this.spriteArray[7]);
+		
 
+	}
+	
+	public void setMaxSpeed() {
+		if (this.isDucking)
+			maxSpeed = maxSpeedDucking;
+		else
+			maxSpeed = maxSpeedRunning;
+	}
+	
+	private double maxSpeed;
+	
+	public double getMaxSpeed() {
+		return maxSpeed;
 	}
 	
 	/**
@@ -538,16 +558,19 @@ public class Mazub {
 	 * @pre The given alien is valid
 	 * 		| this.isValidAlien()
 	 * @pre The alien is moving
-	 * 		| this.getHorizontalSpeedMeters() != 0
+	 * 		| this.isMoving
 	 */
+	@Raw
 	public void endMove() {
 		assert this.isValidAlien();
-		assert this.getHorizontalSpeedMeters() != 0;
+		assert this.isMoving;
 		
-		if (this.getHorizontalSpeedMeters() != 0)
-			this.setHorizontalSpeedMeters(0);
-			this.setHorizontalAcceleration(0);
+		this.isMoving = false;
+		this.setHorizontalSpeedMeters(0);
+		this.setHorizontalAcceleration(0);
 	}
+	
+	public boolean isMoving; 
 	
 	/**
 	 * Returns whether the given alien is valid
@@ -564,56 +587,92 @@ public class Mazub {
 	}
 	
 	public void startJump() throws RuntimeException {
-		if (this.yPosPixel != 0)
+		if (this.isJumping)
 			throw new RuntimeException();
 		else {
 			this.setVerticalSpeedMeters(maxVerticalSpeed);
 			this.setVerticalAcceleration(maxVerticalAcceleration);
+			this.isJumping = true;
+			
 		}
 	}
 	
 	public void endJump() throws RuntimeException {
 		if(this.getVerticalSpeedMeters() < 0)
 			throw new RuntimeException();
-		if (this.yPosPixel == 0)
+		if (!this.isJumping)
 			throw new RuntimeException();
 		else {
 			this.setVerticalSpeedMeters(0);
 			this.setVerticalAcceleration(maxVerticalAcceleration);
+			this.isJumping = false;
 		}
 	}
 	
-	public void advanceTime(double t) {
-		if (t > maxTimeFrame )
-			t = maxTimeFrame;
-		if (t <0) {
-			t = 0;}
+	public boolean isJumping;
+	
+//	
+//	public void advanceTime(double t) {
+//		if (t > maxTimeFrame )
+//			t = maxTimeFrame;
+//		if (t <0) {
+//			t = 0;}
+//		
+//			if (this.getHorizontalSpeedMeters() >= getMaxSpeedRunningMeters())
+//				this.setHorizontalSpeedMeters(getMaxSpeedRunningMeters());
+//				this.setHorizontalAcceleration(0);
+//			double newPosX = getXPositionPixel() + getHorizontalSpeedMeters()*100*t + 0.5*getHorizontalAcceleration()*t*t*100;
+//			if (isValidXPosition(newPosX/100)) {
+//				this.setXPosition(newPosX/100);
+//				double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*t;
+//				this.setHorizontalSpeedMeters(newSpeedX);}
+//			if (this.getYPositionPixel() ==0 && this.getVerticalSpeedMeters()!= 0) {
+//				this.setVerticalAcceleration(0);
+//				this.setVerticalSpeedMeters(0);
+//				}
+//			else {
+//				double newPosY = getYPositionPixel() + getVerticalSpeedMeters()*100*t + 0.5*getVerticalAcceleration()*t*t*100;
+//				if (isValidYPosition(newPosY/100)) {
+//					this.setYPosition(newPosY/100);
+//					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*t;
+//					this.setVerticalSpeedMeters(newSpeedY);
+//					}
+//				else{
+//					this.setVerticalAcceleration(0);
+//					this.setVerticalSpeedMeters(0);
+//					this.setYPosition(0);
+//				}	
+//		}	
+//	}
+	
+	public void advanceTime(double dt) {
+		if (dt > maxTimeFrame)
+			dt = maxTimeFrame;
+		if (dt < 0)
+			dt = 0.0;
 		
-			if (this.getHorizontalSpeedMeters() >= getMaxSpeedRunningMeters())
-				this.setHorizontalSpeedMeters(getMaxSpeedRunningMeters());
-				this.setHorizontalAcceleration(0);
-			double newPosX = getXPositionPixel() + getHorizontalSpeedMeters()*100*t + 0.5*getHorizontalAcceleration()*t*t*100;
-			if (isValidXPosition(newPosX/100)) {
-				this.setXPosition(newPosX/100);
-				double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*t;
-				this.setHorizontalSpeedMeters(newSpeedX);}
-			if (this.getYPositionPixel() ==0 && this.getVerticalSpeedMeters()!= 0) {
-				this.setVerticalAcceleration(0);
-				this.setVerticalSpeedMeters(0);
+		if (this.isDucking) {
+			if (this.isMoving) {
+				if (this.getHorizontalSpeedMeters() < 0) {
+					setSprite(this.spriteArray[7]);
+					this.setMaxSpeed();
+					this.setHorizontalSpeedMeters(-1*maxSpeed);
+					double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
 				}
+					
+				else {
+					setSprite(this.spriteArray[6]);
+					this.setMaxSpeed();
+					this.setHorizontalSpeedMeters(maxSpeed);
+					double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
+				}
+			}
 			else {
-				double newPosY = getYPositionPixel() + getVerticalSpeedMeters()*100*t + 0.5*getVerticalAcceleration()*t*t*100;
-				if (isValidYPosition(newPosY/100)) {
-					this.setYPosition(newPosY/100);
-					double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*t;
-					this.setVerticalSpeedMeters(newSpeedY);
-					}
-				else{
-					this.setVerticalAcceleration(0);
-					this.setVerticalSpeedMeters(0);
-					this.setYPosition(0);
-				}	
-		}	
+				setSprite(this.spriteArray[1]);
+				this.setMaxSpeed();
+				
+			}
+		}
 	}
 	
 	private double maxTimeFrame = 0.2;
@@ -636,7 +695,7 @@ public class Mazub {
 	}
 	
 	public boolean isValidSpriteArray(Sprite ... sprites) {
-		return (sprites.length >= 10 && sprites.length%2 == 0);		
+		return (sprites.length >= 10 && sprites.length % 2 == 0);		
 	}
 	
 	public void setSpriteArray (Sprite ... sprites) {
@@ -665,17 +724,17 @@ public class Mazub {
 		this.setSprite(this.spriteArray[1]);
 		if (this.getHorizontalSpeedMeters() != 0)
 			this.setHorizontalSpeedMeters(this.getMaxSpeedDuckingMeters());
+		this.isDucking = true;
 
 	}
 	
 	public void endDuck() {
 		this.setSprite(this.spriteArray[0]);
+		this.isDucking = false;
 	}
 	
-	public boolean isDucking() {
-		return false;
-		
-	}
+	public boolean isDucking; 
+	
 	
 }
  

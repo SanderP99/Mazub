@@ -151,15 +151,13 @@ public class Facade implements IFacade {
 	public boolean isDucking(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
-		return alien.isDucking();
+		return alien.isDucking;
 	}
 
 	@Override
 	public void startDuck(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
-		if (isDucking(alien))
-			throw new ModelException("The alien is already ducking");
 		alien.startDuck();
 
 	}
@@ -168,8 +166,6 @@ public class Facade implements IFacade {
 	public void endDuck(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
-		if (!isDucking(alien))
-			throw new ModelException("The alien is already ducking");
 		alien.endDuck();
 
 	}
