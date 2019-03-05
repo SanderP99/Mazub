@@ -86,8 +86,8 @@ public class Facade implements IFacade {
 	
 	@Override
 	public boolean isMoving(Mazub alien) throws ModelException {
-//		if (!alien.isValidAlien())
-//			throw new ModelException("The alien is not valid");
+		if (!alien.isValidAlien())
+			throw new ModelException("The alien is not valid");
 		
 		if (alien.getVerticalSpeedMeters() != 0 || alien.getHorizontalSpeedMeters() != 0)
 			return true;
@@ -98,6 +98,8 @@ public class Facade implements IFacade {
 	public void startMoveLeft(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
+		if (alien.isMoving)
+			throw new ModelException("The alien is already moving");
 		alien.startMove(-1);
 
 	}
@@ -106,6 +108,8 @@ public class Facade implements IFacade {
 	public void startMoveRight(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
+		if (alien.isMoving)
+			throw new ModelException("The alien is already moving");
 		alien.startMove(1);
 
 	}
@@ -114,6 +118,8 @@ public class Facade implements IFacade {
 	public void endMove(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
+		if (!alien.isMoving)
+			throw new ModelException("The alien is not moving");
 		alien.endMove();
 
 	}

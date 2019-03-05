@@ -586,6 +586,7 @@ public class Mazub {
 		this.isMoving = false;
 		this.setHorizontalSpeedMeters(0);
 		this.setHorizontalAcceleration(0);
+		this.setSprite(this.spriteArray[3]);
 	}
 	
 	public boolean isMoving; 
@@ -618,8 +619,8 @@ public class Mazub {
 	}
 	
 	public void endJump() throws RuntimeException {
-		if(this.getVerticalSpeedMeters() < 0)
-			throw new RuntimeException();
+//		if(this.getVerticalSpeedMeters() < 0)
+//			throw new RuntimeException();
 		if (!this.isJumping)
 			throw new RuntimeException();
 		else {
@@ -666,10 +667,18 @@ public class Mazub {
 //	}
 	
 	public void advanceTime(double dt) {
+		if (dt == Double.NaN)
+			dt = 0.0;
 		if (dt > maxTimeFrame)
 			dt = maxTimeFrame;
 		if (dt < 0)
 			dt = 0.0;
+		
+		if (this.getYPositionActual() <= 0)
+			setVerticalAcceleration(0.0);
+		if (getYPositionActual() <= 0 && getVerticalSpeedMeters() < 0)
+			endJump();
+		
 		
 		if (this.isDucking) {
 			if (this.isMoving) {
@@ -729,7 +738,7 @@ public class Mazub {
 	}
 	
 	public void setSpriteArray (Sprite ... sprites) {
-		this.spriteArray = sprites;
+		this.spriteArray = sprites.clone();
 	}
 	
 	public Sprite[] getSpriteArray() {
