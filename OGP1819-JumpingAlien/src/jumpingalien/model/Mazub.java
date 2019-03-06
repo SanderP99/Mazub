@@ -666,11 +666,8 @@ public class Mazub {
 			}
 		setYPositionActual(newPosY);
 		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
-		if (newSpeedY <0 && newPosY==0) {
-			this.setVerticalSpeedMeters(0);
-			this.setVerticalAcceleration(0);
-		}
-		else this.setVerticalSpeedMeters(newSpeedY);
+
+		this.setVerticalSpeedMeters(newSpeedY);
 		if(newPosY <=0)
 			this.isFalling=false;
 		if (newSpeedY <0) {
