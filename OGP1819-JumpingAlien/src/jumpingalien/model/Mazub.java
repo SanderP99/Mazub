@@ -483,12 +483,9 @@ public class Mazub {
 	 * 		| if Math.abs(verticalSpeedMeters) = getMaxVerticalSpeedMeters() && verticalSpeedMeters > 0 then new.verticalSpeed = -1* getMaxVerticalSpeedMeters()
 	 */
 	private void setVerticalSpeedMeters(double verticalSpeedMeters) {
-		if( Math.abs(verticalSpeedMeters) <= getMaxVerticalSpeedMeters())
+		if( verticalSpeedMeters <= getMaxVerticalSpeedMeters())
 			this.verticalSpeed = verticalSpeedMeters;
-		else if (verticalSpeedMeters > 0)
-			this.verticalSpeed = getMaxVerticalSpeedMeters();
-		else
-			this.verticalSpeed = -1 * getMaxVerticalSpeedMeters();
+		else this.verticalSpeed = getMaxVerticalSpeedMeters();
 	}
 	private final double maxVerticalSpeed = 8.0;
 	
@@ -629,8 +626,9 @@ public class Mazub {
 			this.setVerticalAcceleration(maxVerticalAcceleration);
 			this.isJumping = false;
 		}
+		else if( this.isFalling);
 		else {
-//			throw new RuntimeException();
+			throw new RuntimeException();
 		}
 	}
 	
@@ -872,6 +870,9 @@ public class Mazub {
 	public void endDuck() {
 		this.setSprite(this.spriteArray[0]);
 		this.isDucking = false;
+		this.setMaxSpeed();
+		this.setHorizontalAcceleration(maxHorizontalAcceleration);
+		
 	}
 	
 	public boolean isDucking; 

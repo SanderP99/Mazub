@@ -151,7 +151,7 @@ public class Facade implements IFacade {
 	public void endJump(Mazub alien) throws ModelException {
 		if (!alien.isValidAlien())
 			throw new ModelException("The alien is not valid");
-		if (!isJumping(alien))
+		if (!isJumping(alien) && !alien.isFalling)
 			throw new ModelException("The alien is not jumping");
 		alien.endJump();
 
