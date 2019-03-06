@@ -214,11 +214,11 @@ public class Mazub {
 	 * 			The coordinate to check.
 	 */
 	public boolean isValidActualXPosition(double X_pos) {
-		return (X_pos*100 <= (getMaxXPosition() - 1) &&  X_pos >= 0);		
+		return (X_pos*100 <= (getMaxXPosition() ) &&  X_pos >= 0);		
 	}
 	
 	public boolean isValidPixelXPosition(int X_pos) {
-		return (X_pos >= 0 && X_pos < getMaxXPosition());
+		return (X_pos >= 0 && X_pos <= getMaxXPosition());
 	}
 	
 	
@@ -274,11 +274,11 @@ public class Mazub {
 	 * 			The given coordinate to check.
 	 */
 	public boolean isValidActualYPosition(double Y_pos) {
-		return (Y_pos*100 < (getMaxYPosition() - 1) &&  Y_pos >= 0);
+		return (Y_pos*100 <= (getMaxYPosition()) &&  Y_pos >= 0);
 	}
 	
 	public boolean isValidPixelYPosition(int Y_pos) {
-		return (Y_pos >= 0 && Y_pos < getMaxYPosition());
+		return (Y_pos >= 0 && Y_pos <= getMaxYPosition());
 	}
 	
 	/**
@@ -662,7 +662,7 @@ public class Mazub {
 			if( newPosY <0) {
 				newPosY = 0;
 			}
-			else newPosY = ((double) this.getMaxYPosition())/100;
+			else newPosY = (((double) this.getMaxYPosition()))/100;
 			}
 		setYPositionActual(newPosY);
 		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
@@ -674,13 +674,13 @@ public class Mazub {
 			this.isJumping = false;
 			this.isFalling = true;
 			}
-		if(newPosY <= 0)
+		if(newPosY == 0)
 			this.isFalling=false;
 		}
 	
 
 	public void advanceTime(double dt) {
-		if (dt == Double.NaN)
+		if (dt != dt)
 			dt = 0.0;
 		if (dt > maxTimeFrame)
 			dt = maxTimeFrame;
@@ -870,7 +870,9 @@ public class Mazub {
 		this.setSprite(this.spriteArray[0]);
 		this.isDucking = false;
 		this.setMaxSpeed();
-		this.setHorizontalAcceleration(maxHorizontalAcceleration);
+		if (this.isMoving) {
+			this.setHorizontalAcceleration(maxHorizontalAcceleration*this.getOrientation());
+		}
 		
 	}
 	
