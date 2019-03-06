@@ -674,6 +674,8 @@ public class Mazub {
 			this.isJumping = false;
 			this.isFalling = true;
 			}
+		if(newPosY <= 0)
+			this.isFalling=false;
 		}
 	
 
