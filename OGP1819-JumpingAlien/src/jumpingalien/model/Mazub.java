@@ -609,11 +609,12 @@ public class Mazub {
 		return true;
 	}
 	
-	
 	public void startJump() throws RuntimeException {
 		if (this.isJumping)
 			throw new RuntimeException();
+		else if (this.isFalling);
 		else {
+			this.isFalling = false;
 			this.setVerticalSpeedMeters(maxVerticalSpeed);
 			this.setVerticalAcceleration(maxVerticalAcceleration);
 			this.isJumping = true;
@@ -623,20 +624,31 @@ public class Mazub {
 	}
 	
 	public void endJump() throws RuntimeException {
-//		if(this.getVerticalSpeedMeters() < 0)
-//			throw new RuntimeException();
-		if (!this.isJumping)
-			throw new RuntimeException();
-		else {
+		if (this.isJumping) {
 			this.setVerticalSpeedMeters(0);
 			this.setVerticalAcceleration(maxVerticalAcceleration);
-
+			this.isJumping = false;
+		}
+		else {
+//			throw new RuntimeException();
 		}
 	}
 	
 	public boolean isJumping;
+	
+	public void fall() {
+		if (this.getYPositionActual() >0)
+			this.setVerticalAcceleration(maxVerticalAcceleration);
+		if (this.getYPositionActual()<=0 && this.getVerticalSpeedMeters()<0)
+			this.setVerticalAcceleration(0);
+	}
+	
+	public boolean isFalling;
+	
+	
 	public void updatePosition(double dt) {
 		this.setMaxSpeed();
+		fall();
 		double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
 		if(!isValidActualXPosition(newPosX)) {
 			if( newPosX <0) {
@@ -656,10 +668,18 @@ public class Mazub {
 			}
 		setYPositionActual(newPosY);
 		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
-		this.setVerticalSpeedMeters(newSpeedY);
+		if (newSpeedY <0 && newPosY==0) {
+			this.setVerticalSpeedMeters(0);
+			this.setVerticalAcceleration(0);
+		}
+		else this.setVerticalSpeedMeters(newSpeedY);
 		if(newPosY <=0)
-			this.isJumping=false;
-				}
+			this.isFalling=false;
+		if (newSpeedY <0) {
+			this.isJumping = false;
+			this.isFalling = true;
+			}
+		}
 	
 
 	public void advanceTime(double dt) {
@@ -668,13 +688,29 @@ public class Mazub {
 		if (dt > maxTimeFrame)
 			dt = maxTimeFrame;
 		if (dt < 0)
-			dt = 0.0;
+			dt = 0.0;	
 		updatePosition(dt);
-		
-
-		
-		
+//		if(!this.isDucking && !this.isJumping) {
+//			Sprite[] spriteArray =this.getSpriteArray();
+//			int loopsize = this.getSpriteLoopSize(this.getSpriteArray());
+//			double timer = 0;
+//			int counter = 0;
+//			while (timer <= dt) {
+//				
+//				this.setSprite(spriteArray[8+counter]);
+//				updatePosition(frameRate);
+//				counter += 1;
+//				timer += frameRate;
+//				if (counter >loopsize) {
+//					counter = 0;
+//				}
+//			}
+//			
+//		}
+//			
 	}
+	private double maxTimeFrame = 0.2;
+	private double frameRate = 0.0075;
 //	public void advanceTime(double dt) {
 //		if (dt == Double.NaN)
 //			dt = 0.0;
@@ -776,8 +812,7 @@ public class Mazub {
 //		}
 //	}
 	
-	private double maxTimeFrame = 0.2;
-	private double frameRate = 0.075;
+	
 	
 	public Sprite getCurrentSprite() {
 		return this.sprite;
@@ -805,7 +840,7 @@ public class Mazub {
 	}
 	
 	public Sprite[] getSpriteArray() {
-		return this.spriteArray;
+		return this.spriteArray.clone();
 	}
 	
 	private Sprite[] spriteArray;
@@ -813,7 +848,7 @@ public class Mazub {
 	public int getSpriteLoopSize(Sprite ... sprites) throws RuntimeException {
 		if(! isValidSpriteArray(sprites))
 			throw new RuntimeException();
-		return ((sprites.length -9)/2);
+		return ((sprites.length -8)/2);
 	}
 	
 	public Sprite sprite;
