@@ -13,6 +13,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public Mazub createMazub(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+		if (sprites == null)
+			throw new ModelException("The sprites are not valid");
+		if (sprites.length < 10 || ((sprites.length % 2) != 0))
+			throw new ModelException("The sprites are not valid");
+		for (int i = 0; i < sprites.length; i++)
+			if (sprites[i] == null)
+				throw new ModelException("The sprites are not valid");
 		Sprite sprite = sprites[0];
 		Mazub mazub = new Mazub(pixelLeftX, pixelBottomY, sprite.getWidth(), sprite.getHeight(), 0.0, 1.0, 3.0, 1.0, sprites);
 		return mazub;
