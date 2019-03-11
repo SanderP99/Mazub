@@ -20,4 +20,6 @@ public interface AlienInfoProvider<T> {
 
 	public Optional<double[]> getAlienAcceleration();
 
+	public Optional<Integer> getAlienHealth();
+
 }

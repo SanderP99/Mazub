@@ -21,12 +21,12 @@ public class JumpingAlienGUI extends
 
 	@Override
 	protected String getTitle() {
-		return "Jumping Alien (Part 1)";
+		return "Jumping Alien (Part 2)";
 	}
 
 	@Override
 	protected Dimension getDefaultSize() {
-		return new Dimension(1100, 800);
+		return new Dimension(1024, 768);
 	}
 
 	@SuppressWarnings("serial")

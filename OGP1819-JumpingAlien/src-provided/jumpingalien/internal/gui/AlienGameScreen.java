@@ -1,31 +1,26 @@
 package jumpingalien.internal.gui;
 
-import jumpingalien.internal.gui.AlienScreenPanel;
-import jumpingalien.internal.gui.JumpingAlienGUI;
-import jumpingalien.internal.gui.JumpingAlienGUIOptions;
-import jumpingalien.internal.gui.painters.*;
-
 import java.awt.Color;
-import java.util.Optional;
 
 import jumpingalien.internal.game.IActionHandler;
 import jumpingalien.internal.game.JumpingAlienGame;
+import jumpingalien.internal.gui.painters.*;
+import ogp.framework.gui.InputMode;
 import ogp.framework.gui.MessagePainter;
 import ogp.framework.gui.Screen;
 import ogp.framework.gui.SolidBackgroundPainter;
 import ogp.framework.gui.camera.Camera;
 import ogp.framework.gui.camera.CameraScreen;
-import ogp.framework.gui.camera.Camera.Rectangle;
+import ogp.framework.gui.camera.SimpleCamera;
 
 public class AlienGameScreen
 		extends CameraScreen<JumpingAlienGame, JumpingAlienGUI> {
 
 
-	private static final int DEBUG_PIXELS_ZOOM = 8;
+	private Camera mainCamera, zoomCamera;
 
-	private Camera mainCamera;
-
-	public AlienGameScreen(AlienScreenPanel panel, JumpingAlienGUI gui,
+	public AlienGameScreen(AlienScreenPanel panel,
+			JumpingAlienGUI gui,
 			Screen<JumpingAlienGame, JumpingAlienGUI> previous) {
 		super(panel, gui, previous);
 	}
@@ -37,7 +32,7 @@ public class AlienGameScreen
 	public IActionHandler getActionHandler() {
 		return getGame().getActionHandler();
 	}
-
+	
 	@Override
 	public void screenStarted() {
 		super.screenStarted();
@@ -50,54 +45,67 @@ public class AlienGameScreen
 		getGUI().exit();
 	}
 	
-
 	@Override
 	protected void setupCameras() {
-		Optional<int[]> worldSize = getGame().getWorldInfoProvider()
-				.getWorldSize();
-		if (!worldSize.isPresent()) {
-			throw new IllegalStateException("World size must be set!");
+		if (!getOptions().getDebugShowEntireWorld()) {
+			setupDefaultCamera();
+		} else {
+			setupOverviewCamera();
 		}
-		int worldWidth = worldSize.get()[0];
-		int worldHeight = worldSize.get()[1];
 
 		if (getOptions().getDebugShowPixels()) {
-			mainCamera = new Camera(new Rectangle(0, 0, worldWidth
-					/ DEBUG_PIXELS_ZOOM, worldHeight / DEBUG_PIXELS_ZOOM),
-					new Rectangle(0, 0, getScreenWidth(), getScreenHeight()));
-		} else {
-			int widthOnScreen = getScreenWidth();
-			int heightOnScreen = getScreenHeight();
-
-			double scale = 1.0;
-
-			if (widthOnScreen < worldWidth) {
-				scale = (double) widthOnScreen / worldWidth;
-			}
-
-			if (heightOnScreen < worldHeight) {
-				scale = Math.min(scale, (double) heightOnScreen / worldHeight);
-			}
-
-			heightOnScreen = (int) (scale * worldHeight);
-			widthOnScreen = (int) (scale * worldWidth);
-			int screenX = (getScreenWidth() - widthOnScreen) / 2;
-			int screenY = (getScreenHeight() - heightOnScreen) / 2;
-
-			mainCamera = new Camera(
-					new Rectangle(0, 0, worldWidth, worldHeight),
-					new Rectangle(screenX, screenY, widthOnScreen,
-							heightOnScreen));
+			int zoom = 20;
+			int zoomCameraHeight = 250;
+			int zoomCameraWidth = 500;
+			zoomCamera = new Camera(new Camera.Rectangle(0, 0, zoomCameraWidth
+					/ zoom, zoomCameraHeight / zoom), new Camera.Rectangle(
+					getScreenWidth() - zoomCameraWidth, getScreenHeight()
+							- zoomCameraHeight, zoomCameraWidth,
+					zoomCameraHeight));
+			zoomCamera.showBorder(true);
+			addCamera(zoomCamera);
 		}
+	}
+
+	private void setupOverviewCamera() {
+		int[] size = getGame().getWorldSize();
+		double ratioW = (double) getScreenWidth() / size[0];
+		double ratioH = (double) getScreenHeight() / size[1];
+		double ratio = Math.min(ratioW, ratioH);
+
+		int scaledScreenWidth = (int) (ratio / ratioW * getScreenWidth());
+		int scaledScreenHeight = (int) (ratio / ratioH * getScreenHeight());
+		mainCamera = new Camera(new Camera.Rectangle(0, 0, size[0], size[1]),
+				new Camera.Rectangle(
+						(getScreenWidth() - scaledScreenWidth) / 2,
+						(getScreenHeight() - scaledScreenHeight) / 2,
+						scaledScreenWidth, scaledScreenHeight));
 		addCamera(mainCamera);
 	}
-	
+
+	private void setupDefaultCamera() {
+		mainCamera = new SimpleCamera(0, 0, getScreenWidth(), getScreenHeight());
+		addCamera(mainCamera);
+	}
+
+	@Override
+	public Camera getMainCamera() {
+		return mainCamera;
+	}
+
 	@Override
 	protected void setupPainters() {
 		addPainter(new SolidBackgroundPainter(Color.BLACK, this));
 
+		addPainter(new TilePainter(this, getGame().getMap(), getGame()
+				.getWorldInfoProvider()));
+
 		if (getOptions().getDebugShowInfo()) {
 			addPainter(new DebugInfoPainter(this));
+		}
+
+		if (getOptions().getDebugShowEntireWorld()) {
+			addPainter(new VisibleWindowPainter(this));
 		}
 
 		if (getOptions().getDebugShowAxes()) {
@@ -112,32 +120,60 @@ public class AlienGameScreen
 			addPainter(new HistoryPainter(this));
 		}
 
+		addPainter(new GameObjectPainter(this,
+				getGame().getAlienInfoProvider(), getGame()
+						.getObjectInfoProvider()));
+
 		addPainter(new PlayerPainter(this));
 
 		addPainter(new WorldBorderPainter(this));
 
+		addPainter(new HealthPainter(this, getGame().getAlienInfoProvider()));
+
 		addPainter(new MessagePainter<>(this,
 				getGame()::getCurrentMessage));
+
+		addPainter(new GameOverPainter(this, getGame().getWorldInfoProvider()));
 	}
 
 	@Override
 	public void updateState(double dt) {
-		if (getOptions().getDebugShowPixels()) {
+		positionMainCamera();
+		positionZoomCamera();
+
+	}
+
+	private void positionZoomCamera() {
+		if (zoomCamera != null) {
 			getGame()
 					.getAlienInfoProvider()
 					.getAlienXYPixel()
 					.ifPresent(
-							xy -> mainCamera.moveToWorldLocation(xy[0], xy[1]));
+							position -> zoomCamera.moveToWorldLocation(
+									position[0] - 5, position[1] - 5));
+		}
+	}
+
+	private void positionMainCamera() {
+		if (!getOptions().getDebugShowEntireWorld()) {
+			getGame()
+					.getWorldInfoProvider()
+					.getVisibleWindow()
+					.ifPresent(
+							activeRegion -> {
+								if (mainCamera != null) {
+									mainCamera.moveToWorldLocation(
+											activeRegion[0], activeRegion[1]);
+								}
+
+							});
 		}
 	}
 
 	@Override
-	protected AlienInputMode createDefaultInputMode() {
+	protected InputMode<JumpingAlienGame, JumpingAlienGUI> createDefaultInputMode() {
 		return new AlienInputMode(this, null);
 	}
 
-	@Override
-	public Camera getMainCamera() {
-		return mainCamera;
-	}
+
 }
