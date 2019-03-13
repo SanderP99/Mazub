@@ -191,13 +191,13 @@ public class Facade implements IFacade {
 
 	}
 
-	@Override
-	public void advanceTime(Mazub alien, double dt) throws ModelException {
-		if (!alien.isValidAlien())
-			throw new ModelException("The alien is not valid");
-		alien.advanceTime(dt);
+//	@Override
+//	public void advanceTime(Mazub alien, double dt) throws ModelException {
+//		if (!alien.isValidAlien())
+//			throw new ModelException("The alien is not valid");
+//		alien.advanceTime(dt);
 
-	}
+//	}
 
 	@Override
 	public World createWorld(int tileSize, int nbTilesX, int nbTilesY, int[] targetTileCoordinate,
