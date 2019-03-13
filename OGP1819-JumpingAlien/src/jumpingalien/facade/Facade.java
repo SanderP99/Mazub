@@ -1,6 +1,10 @@
 package jumpingalien.facade;
 
+import java.util.Set;
+
 import jumpingalien.model.Mazub;
+import jumpingalien.model.Plant;
+import jumpingalien.model.World;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.Sprite;
 
@@ -193,6 +197,193 @@ public class Facade implements IFacade {
 			throw new ModelException("The alien is not valid");
 		alien.advanceTime(dt);
 
+	}
+
+	@Override
+	public World createWorld(int tileSize, int nbTilesX, int nbTilesY, int[] targetTileCoordinate,
+			int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void terminateWorld(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int[] getSizeInPixels(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getTileLength(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getGeologicalFeature(World world, int pixelX, int pixelY) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setGeologicalFeature(World world, int pixelX, int pixelY, int geologicalFeature) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int[] getVisibleWindowDimension(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasAsGameObject(Object object, World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Set<Object> getAllGameObjects(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Mazub getMazub(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addGameObject(Object object, World world) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeGameObject(Object object, World world) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int[] getTargetTileCoordinate(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setTargetTileCoordinate(World world, int[] tileCoordinate) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startGame(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isGameOver(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean didPlayerWin(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void advanceWorldTime(World world, double dt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void terminateGameObject(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isTerminatedGameObject(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isDeadGameObject(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public double[] getActualPosition(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void changeActualPosition(Object gameObject, double[] newPosition) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int[] getPixelPosition(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getOrientation(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double[] getVelocity(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public World getWorld(Object object) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getHitPoints(Object object) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Sprite[] getSprites(Object gameObject) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void advanceTime(Object gameObject, double dt) throws ModelException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
