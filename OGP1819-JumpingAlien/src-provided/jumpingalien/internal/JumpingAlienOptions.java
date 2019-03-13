@@ -45,6 +45,32 @@ public class JumpingAlienOptions implements JumpingAlienGameOptions, JumpingAlie
 	 */
 	private boolean debugShowHistory = false;
 	
+
+	/**
+	 * Color-code the different tiles based on their type (default: false).
+	 */
+	private boolean debugShowTileTypes = false;
+
+	/**
+	 * Draw tile gridlines (default: false).
+	 */
+	private boolean debugShowTileGridlines = false;
+
+	/**
+	 * Shade tiles that overlap with Mazub (default: false).
+	 */
+	private boolean debugShowAlienOverlappingTiles = false;
+
+	/**
+	 * Paint result of toString() method of game objects below their sprite
+	 * (default: false).
+	 */
+	private boolean debugShowObjectString = false;
+
+	/**
+	 * Show the entire world on screen, scaled (default: false).
+	 */
+	private boolean debugShowEntireWorld = false;
 	
 	
 	@Override
@@ -116,6 +142,58 @@ public class JumpingAlienOptions implements JumpingAlienGameOptions, JumpingAlie
 	public void setDebugShowHistory(boolean debugShowHistory) {
 		this.debugShowHistory = debugShowHistory;
 	}
+	
+
+	@Override
+	public boolean getDebugShowTileTypes() {
+		return debugShowTileTypes;
+	}
+
+	@Override
+	public void setDebugShowTileTypes(boolean debugShowTileTypes) {
+		this.debugShowTileTypes = debugShowTileTypes;
+	}
+	
+	@Override
+	public boolean getDebugShowTileGridlines() {
+		return debugShowTileGridlines;
+	}
+
+	@Override
+	public void setDebugShowTileGridlines(boolean debugShowTileGridlines) {
+		this.debugShowTileGridlines = debugShowTileGridlines;
+	}
+
+	@Override
+	public boolean getDebugShowAlienOverlappingTiles() {
+		return debugShowAlienOverlappingTiles;
+	}
+
+	@Override
+	public void setDebugShowAlienOverlappingTiles(
+			boolean debugShowAlienOverlappingTiles) {
+		this.debugShowAlienOverlappingTiles = debugShowAlienOverlappingTiles;
+	}
+
+	@Override
+	public boolean getDebugShowObjectString() {
+		return debugShowObjectString;
+	}
+
+	@Override
+	public void setDebugShowObjectString(boolean value) {
+		this.debugShowObjectString = value;
+	}
+	
+	@Override
+	public boolean getDebugShowEntireWorld() {
+		return debugShowEntireWorld;
+	}
+
+	@Override
+	public void setDebugShowEntireWorld(boolean debugShowEntireWorld) {
+		this.debugShowEntireWorld = debugShowEntireWorld;
+	}
 
 	public static JumpingAlienOptions parse(String[] args) {
 		JumpingAlienOptions options = new JumpingAlienOptions();
@@ -144,6 +222,9 @@ public class JumpingAlienOptions implements JumpingAlienGameOptions, JumpingAlie
 				break;
 			case "-debughistory":
 				options.debugShowHistory = Boolean.parseBoolean(args[++i]);
+				break;
+			case "-showtiletypes":
+				options.debugShowTileTypes = Boolean.parseBoolean(args[++i]);
 				break;
 			}
 		}

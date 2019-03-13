@@ -27,14 +27,29 @@ public class DebugMenu extends
 
 		addDebugOption("Show info", JumpingAlienGUIOptions::getDebugShowInfo,
 				JumpingAlienGUIOptions::setDebugShowInfo);
-		addDebugOption("Show alien location and size",
+		addDebugOption("Show game object location and size",
 				JumpingAlienGUIOptions::getDebugShowObjectLocationAndSize,
 				JumpingAlienGUIOptions::setDebugShowObjectLocationAndSize);
+		addDebugOption("Show game object toString()",
+				JumpingAlienGUIOptions::getDebugShowObjectString,
+				JumpingAlienGUIOptions::setDebugShowObjectString);
 		addDebugOption("Show axes", JumpingAlienGUIOptions::getDebugShowAxes,
 				JumpingAlienGUIOptions::setDebugShowAxes);
 		addDebugOption("Show location history",
 				JumpingAlienGUIOptions::getDebugShowHistory,
 				JumpingAlienGUIOptions::setDebugShowHistory);
+		addDebugOption("Color overlapping tiles",
+				JumpingAlienGUIOptions::getDebugShowAlienOverlappingTiles,
+				JumpingAlienGUIOptions::setDebugShowAlienOverlappingTiles);
+		addDebugOption("Color-code tile types",
+				JumpingAlienGUIOptions::getDebugShowTileTypes,
+				JumpingAlienGUIOptions::setDebugShowTileTypes);
+		addDebugOption("Show tile gridlines",
+				JumpingAlienGUIOptions::getDebugShowTileGridlines,
+				JumpingAlienGUIOptions::setDebugShowTileGridlines);
+		addDebugOption("Show entire world on screen",
+				JumpingAlienGUIOptions::getDebugShowEntireWorld,
+				JumpingAlienGUIOptions::setDebugShowEntireWorld);
 
 		addOption(new MenuOption("Start game", this::startGame));
 

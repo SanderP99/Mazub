@@ -59,6 +59,17 @@ public class DebugInfoPainter extends
 						.getAlienAcceleration()
 						.map(acc -> String.format("(%.3f, %.3f) [m/s²]",
 								acc[0], acc[1])).orElse("Unknown"));
+		
+		addInfo("Tile size", () -> String.format("%dx%d",
+				getGame().getWorldInfoProvider().getTileLength(), getGame()
+						.getWorldInfoProvider().getTileLength()));
+		
+		addInfo("Visible window", () -> getGame()
+						.getWorldInfoProvider()
+						.getVisibleWindow()
+						.map(ar -> String.format("(%d,%d), (%d, %d)",
+								ar[0], ar[1], ar[2], ar[3]))
+						.orElse("Unknown"));
 	}
 
 	@Override

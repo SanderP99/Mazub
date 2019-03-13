@@ -23,5 +23,20 @@ public interface JumpingAlienGUIOptions extends GUIOptions {
 
 	public abstract boolean getDebugShowInfo();
 	public abstract void setDebugShowInfo(boolean value);
+	
+	public abstract boolean getDebugShowEntireWorld();
+	public abstract void setDebugShowEntireWorld(boolean value);
 
+	public abstract boolean getDebugShowTileTypes();
+	public abstract void setDebugShowTileTypes(boolean debugShowTileTypes);
+
+	public abstract boolean getDebugShowTileGridlines();
+	public abstract void setDebugShowTileGridlines(boolean debugShowTileGridlines);
+
+	public abstract boolean getDebugShowAlienOverlappingTiles();
+	public abstract void setDebugShowAlienOverlappingTiles(
+			boolean debugShowAlienOverlappingTiles);
+
+	public abstract boolean getDebugShowObjectString();
+	public abstract void setDebugShowObjectString(boolean value);
 }

@@ -1,16 +1,29 @@
 package jumpingalien.internal.game;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import jumpingalien.facade.IFacade;
+import jumpingalien.internal.Resources;
 import jumpingalien.internal.game.AlienInfoProvider;
 import jumpingalien.internal.game.IActionHandler;
 import jumpingalien.internal.game.JumpingAlienGameOptions;
 import jumpingalien.internal.game.WorldInfoProvider;
+import jumpingalien.internal.gui.sprites.ImageSprite;
 import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.model.Mazub;
+import jumpingalien.model.Plant;
+import jumpingalien.model.World;
+import jumpingalien.internal.tmxfile.TMXFileReader;
+import jumpingalien.internal.tmxfile.data.ImageTile;
+import jumpingalien.internal.tmxfile.data.Layer;
+import jumpingalien.internal.tmxfile.data.Map;
+import jumpingalien.internal.tmxfile.data.MapObject;
+import jumpingalien.internal.tmxfile.data.ImageTile.TileType;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.Sprite;
 import ogp.framework.command.Command;
@@ -20,15 +33,18 @@ import ogp.framework.messages.MessageType;
 
 public class JumpingAlienGame extends Game {
 
-	private static final int WORLD_HEIGHT = 768;
-	private static final int WORLD_WIDTH = 1024;
-
-	
 	private static final int MAX_MISSED_DEADLINES = 4;
 
 	private static final double MAX_TIME_STEP = 0.200;
 
 	private Mazub alien;
+	private World world;
+
+	private Map map;
+
+	private int tileSize;
+	private final ObjectInfoProvider objectInfoProvider;
+	private String currentMap;
 	
 	private IActionHandler handler;
 
@@ -45,6 +61,7 @@ public class JumpingAlienGame extends Game {
 		this.handler = createActionHandler();
 		this.worldInfoProvider = createWorldInfoProvider();
 		this.alienInfoProvider = createAlienInfoProvider();
+		this.objectInfoProvider = createObjectInfoProvider();		
 		this.facade = facade;
 	}
 
@@ -58,7 +75,35 @@ public class JumpingAlienGame extends Game {
 	}
 
 	public void restart() {
+		this.world = null;
+		this.alien = null;
 		start();
+	}
+	
+
+	private boolean readLevelFile(String filename) {
+		try {
+			TMXFileReader reader = new TMXFileReader("levels/");
+			map = reader.read(filename);
+
+			if (map.getTileSizeY() != map.getTileSizeX()) {
+				throw new IllegalArgumentException(
+						"Can only work with square tile sizes");
+			}
+
+			if (map.getLayer("Terrain") == null) {
+				throw new IllegalArgumentException(
+						"The map must have a layer called 'Terrain'");
+			}
+
+			tileSize = map.getTileSizeY();
+		} catch (Throwable e) {
+			addMessage(new Message(MessageType.ERROR, "Error while reading "
+					+ filename + ": " + e.getMessage()));
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -81,11 +126,25 @@ public class JumpingAlienGame extends Game {
 	}
 
 	protected void createModel() {
-		int initialPositionX = 0;
-		int initialPositionY = 0;
+		int visibleWidth = Math.min(getVisibleScreenWidth(), map.getPixelWidth());
+		int visibleHeight = Math.min(getVisibleScreenHeight(), map.getPixelHeight());
+		setWorld(getFacade().createWorld(tileSize, map.getNbTilesX(),
+				map.getNbTilesY(),
+				new int[] { map.getTargetTileX(), map.getTargetTileY() },
+				visibleWidth, visibleHeight,
+				getTileTypes()));
 
-		setAlien(getFacade().createMazub(initialPositionX, initialPositionY,
-				JumpingAlienSprites.ALIEN_SPRITESET));
+		setAlien(getFacade().createMazub(map.getInitialPositionX(),
+				map.getInitialPositionY(), JumpingAlienSprites.ALIEN_SPRITESET));
+
+		getFacade().addGameObject(getAlien(), getWorld());
+
+		for (MapObject obj : map.getObjects()) {
+			addObject(obj);
+		}
+
+		// no more object creations or tile changes after starting
+		getFacade().startGame(getWorld());
 	}
 	
 	private void setAlien(Mazub alien) {
@@ -98,13 +157,69 @@ public class JumpingAlienGame extends Game {
 	Mazub getAlien() {
 		return alien;
 	}
+	
+	public int[] getWorldSize() {
+		return new int[] { map.getPixelWidth(), map.getPixelHeight() };
+	}
+	
+	private int[] getTileTypes() {
+		Layer terrainLayer = map.getLayer("Terrain");
 
+		int[] types = new int[map.getNbTilesX() * map.getNbTilesY()];
+		int index = 0;
+		
+		for (int tileY = 0; tileY < map.getNbTilesY(); tileY++) {
+			for (int tileX = 0; tileX < map.getNbTilesX(); tileX++) {
+				ImageTile tile = terrainLayer.getTile(tileX, tileY);
+				if (tile != null) {
+					types[index++] = tile.getType().getValue();					
+				} else {
+					types[index++] = TileType.AIR.getValue();
+				}
+			}
+		}
+		return types;
+	}
+	
+	private void addObject(MapObject obj) {
+		switch (obj.getTile().getOSIndependentFilename()) {
+		case Resources.PLANT_LEFT_FILENAME:
+			getFacade().addGameObject(
+					getFacade().createPlant(
+							obj.getX(),
+							obj.getY(),
+							new Sprite[] { Resources.PLANT_SPRITE_LEFT,
+									Resources.PLANT_SPRITE_RIGHT }),
+					getWorld());
+			break;
+		default:
+			System.out
+					.println("ERROR while loading level: don't know how to deal with object "
+							+ obj);
+			break;
+		}
+	}
+	
+	public Map getMap() {
+		return map;
+	}
+
+	private void setWorld(World world) {
+		if (this.world != null) {
+			throw new IllegalStateException("World already created!");
+		}
+		this.world = world;
+	}
+
+	private World getWorld() {
+		return world;
+	}
 
 	protected IActionHandler createActionHandler() {
 		return new ActionHandler(this);
 	}
 	
-
+	
 	@Override
 	public void load() {		
 	}
@@ -191,7 +306,10 @@ public class JumpingAlienGame extends Game {
 	}
 
 	protected void advanceTime(double dt) {
-		getFacade().advanceTime(getAlien(), dt);
+		getFacade().advanceWorldTime(getWorld(), dt);
+		if (getFacade().isGameOver(getWorld())) {
+			stop();
+		}
 	}
 
 	public double getElapsedTime() {
@@ -256,6 +374,12 @@ public class JumpingAlienGame extends Game {
 				return catchErrorGet(() -> getFacade().getCurrentSprite(
 						getAlien()));
 			}
+
+			@Override
+			public Optional<Integer> getAlienHealth() {
+				return catchErrorGet(() -> getFacade().getHitPoints(
+						getAlien()));
+			}
 		};
 	}
 
@@ -264,11 +388,110 @@ public class JumpingAlienGame extends Game {
 	protected WorldInfoProvider createWorldInfoProvider() {
 		return new WorldInfoProvider() {
 
+
+			@Override
+			public Optional<int[]> getVisibleWindow() {
+				return catchErrorGet(() -> {
+					int[] pos = getFacade().getVisibleWindowPosition(getWorld());
+					int[] size = getFacade().getVisibleWindowDimension(getWorld());
+					// left, bottom, right, top
+					return new int[] { pos[0], pos[1], pos[0] + size[0], pos[1] + size[1] };
+				});
+			}
+
+			@Override
+			public Optional<int[][]> getTilesIn(int pixelLeft, int pixelBottom,
+					int pixelRight, int pixelTop) {
+				int startTileX = pixelLeft / tileSize;
+				int endTileX = pixelRight / tileSize + 1;
+				int startTileY = pixelBottom / tileSize;
+				int endTileY = pixelTop / tileSize + 1;
+				
+				int ntiles = (endTileX - startTileX + 1) * (endTileY - startTileY + 1);
+				int[][] result = new int[ntiles][];
+				int index = 0;
+				for (int x = startTileX; x <= endTileX; x++) {
+					for (int y = startTileY; y <= endTileY; y++) {
+						result[index++] = new int[] { x , y };
+					}
+				}
+				return Optional.of(result);
+			}
+
+			@Override
+			public Optional<TileType> getGeologicalFeature(int bottomLeftX,
+					int bottomLeftY) {
+				return catchErrorGet(() -> TileType.fromValue(getFacade()
+						.getGeologicalFeature(getWorld(), bottomLeftX,
+								bottomLeftY)));
+			}
+
+			@Override
+			public Optional<int[]> getBottomLeftPixelOfTile(int tileX, int tileY) {
+				return Optional.of(new int[] { tileX * tileSize, tileY * tileSize });
+			}
+
 			@Override
 			public Optional<int[]> getWorldSize() {
-				return Optional.of(new int[] { WORLD_WIDTH, WORLD_HEIGHT });
+				return Optional.of(JumpingAlienGame.this.getWorldSize());
 			}
+
+			@Override
+			public int getTileLength() {
+				return catchErrorGet(
+						() -> getFacade().getTileLength(getWorld())).orElse(
+						tileSize);
+			}
+
+			@Override
+			public Optional<Boolean> isGameOver() {
+				return catchErrorGet(() -> getFacade().isGameOver(getWorld()));
+			}
+
+			@Override
+			public Optional<Boolean> didPlayerWin() {
+				return catchErrorGet(() -> getFacade().didPlayerWin(getWorld()));
+			}
+
 		};
+	}
+	
+
+	protected ObjectInfoProvider createObjectInfoProvider() {
+		return new ObjectInfoProvider() {
+
+			@Override
+			public Collection<Plant> getPlants() {
+				return getFacade().getAllGameObjects(getWorld()).stream().filter(Plant.class::isInstance).map(Plant.class::cast).collect(Collectors.toSet());
+			}
+
+			@Override
+			public Optional<int[]> getLocation(Plant plant) {
+				return Optional.of(getFacade().getPixelPosition(plant));
+			}
+
+			@Override
+			public Optional<ImageSprite> getCurrentSprite(Plant plant) {
+				return Optional.of((ImageSprite) getFacade().getCurrentSprite(
+						plant));
+			}
+
+		};
+	}
+	
+	public String[] getAvailableMaps() {
+		return new File("levels").list((file, name) -> name.endsWith(".tmx"));
+	}
+	
+
+	public boolean setMapFile(String currentMap) {
+		this.currentMap = currentMap;
+		return readLevelFile(currentMap);
+	}
+
+
+	public String getMapFile() {
+		return currentMap;
 	}
 
 	public AlienInfoProvider<Mazub> getAlienInfoProvider() {
@@ -278,6 +501,12 @@ public class JumpingAlienGame extends Game {
 	public WorldInfoProvider getWorldInfoProvider() {
 		return worldInfoProvider;
 	}
+	
+
+	public ObjectInfoProvider getObjectInfoProvider() {
+		return objectInfoProvider;
+	}
+
 
 	@Override
 	public void addCommand(Command command) {

@@ -1,6 +1,9 @@
 package jumpingalien.facade;
 
-import jumpingalien.model.Mazub;
+import java.util.Set;
+import jumpingalien.model.*;
+import jumpingalien.internal.Resources;
+import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.ShouldNotImplementException;
 import jumpingalien.util.Sprite;
@@ -12,12 +15,18 @@ import jumpingalien.util.Sprite;
  * <ul>
  * <li>For separating the code that you wrote from the code that was provided to
  * you, put <b>ALL your code in the <code>src</code> folder.</b> The code that
- * is provided to you stays in the <code>src-provided</code> folder.</li>
+ * is provided to you stays in the <code>src-provided</code> folder.
+ * Note: classes that belong to some package can be spread over multiple source
+ * folders. For example, two classes, one in <code>src</code> and one in
+ * <code>src-provided</code>, can be declared to belong to the same package,
+ * even though they are not located in the same source folder.</li>
  * 
  * <li>You should at least <b>create the following classes</b> in the package
  * <code>jumpingalien.model</code>:
  * <ul>
  * <li>a class <code>Mazub</code> for representing Mazub the alien</li>
+ * <li>a class <code>World</code> for representing the game world</li>
+ * <li>a class <code>Plant</code> for representing a plant</li>
  * </ul>
  * You may, of course, add additional classes as you see fit.
  * 
@@ -43,10 +52,9 @@ import jumpingalien.util.Sprite;
  * <li>Methods in this interface are <b>only allowed to throw exceptions of type
  * <code>jumpingalien.util.ModelException</code></b> (this class is provided).
  * No other exception types are allowed. This exception can be thrown only if
- * (1) calling a method of your <code>Mazub</code> class with the given parameters
- * would violate a precondition or (2)if the method of your <code>Mazub</code>
- * class throws an exception (if so, wrap the exception in a
- * <code>ModelException</code>).</li>
+ * calling a method of your classes with the given parameters would (1) violate
+ * a precondition or (2) if the method of your throws an exception (if so,
+ * wrap the exception in a <code>ModelException</code>).</li>
  * 
  * <li><b>ModelException should not be used anywhere outside of your Facade
  * implementation.</b></li>
@@ -134,7 +142,10 @@ public interface IFacade {
 	 * their own may ignore this method. 
 	 */
 	default Sprite[] getSprites(Mazub alien) throws ModelException, ShouldNotImplementException {
-		throw new ShouldNotImplementException("Not to be implemented by individual students");
+		if (!isTeamSolution()) {
+			throw new ShouldNotImplementException("Not to be implemented by individual students");
+		}
+		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
 	}
 
 	/**
@@ -144,7 +155,10 @@ public interface IFacade {
 	 * their own may stick to the default implementation. 
 	 */
 	default Sprite getCurrentSprite(Mazub alien) throws ModelException {
-		return Sprite.DEFAULT_MAZUB_SPRITE;
+		if (!isTeamSolution()) {
+			return JumpingAlienSprites.DEFAULT_MAZUB_SPRITE;
+		}
+		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
 	}
 	
 	/**
@@ -197,8 +211,244 @@ public interface IFacade {
 	 */
 	void endDuck(Mazub alien) throws ModelException;
 
+	/*****************
+	 * World methods *
+	 *****************/
+	
 	/**
-	 * Advance the state of the given alien by the given time period.
+	 * Create a new game world with given tile size, given number of tiles in both
+	 * directions, with given coordinate for the target tile, with given width and height
+	 * for the visible window, with its tiles filled with the given geological features, 
+	 * and with no game objects yet.
+	 *   The geological features are given in the order from left to right and (then) from
+	 *   bottom to top. Tiles for which no geological feature is given, are filled with AIR. 
 	 */
-	void advanceTime(Mazub alien, double dt) throws ModelException;
+	World createWorld(int tileSize, int nbTilesX, int nbTilesY, int[] targetTileCoordinate,
+				int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures)
+		throws ModelException;
+	
+	/**
+	 * Terminate the given world.
+	 */
+	void terminateWorld(World world) throws ModelException;
+	
+	/**
+	 * Return the size of the given game world in number of pixels.
+	 *   The resulting array contains the width of the given world in pixels followed
+	 *   by the height of the given world in pixels.
+	 */
+	int[] getSizeInPixels(World world) throws ModelException;
+
+	/**
+	 * Return the length of the side of a tile in the given world.
+	 *   The length is expressed as a number of pixels.
+	 */
+	int getTileLength(World world) throws ModelException;
+
+	/**
+	 * Return the geological feature of the tile in the given world at the given pixel position.
+	 *   The function returns 0 for AIR, 1 for SOLID GROUND, 2 for WATER and 3 for MAGMA.
+	 *   Throws ModelException if there is no tile at the given position.
+	 *   This method must return its result in (nearly) constant time.
+	 */
+	int getGeologicalFeature(World world, int pixelX, int pixelY) throws ModelException;
+
+	/**
+	 * Set the geological feature of the tile in the given world at the given pixel position
+	 * to the given geological feature.
+	 */
+	void setGeologicalFeature(World world, int pixelX, int pixelY, int geologicalFeature) throws ModelException;
+	
+	/**
+	 * Return the dimension of the visible window of the given world.
+	 *   The resulting array contains the width of the visible window in pixels followed
+	 *   by the height of the visible window in pixels.
+	 */
+	int[] getVisibleWindowDimension(World world) throws ModelException;
+	
+	/**
+	 * Return the position of the bottom left corner of the visible window of the given world.
+	 * 
+	 * This method must only be implemented by teams of 2 students. Students working on
+	 * their own may stick to the default implementation. 
+	 */
+	default int[] getVisibleWindowPosition(World world) throws ModelException {
+		if (!isTeamSolution()) {
+			try {
+				int[] mazubPixelPosition = getPixelPosition(getMazub(world));
+				return new int[]
+					{ (int)Math.max(mazubPixelPosition[0]-100, 0),
+					  (int)Math.max(mazubPixelPosition[1]-50, 0.0)};
+			} catch (Exception exc) {
+				throw new ModelException(exc);
+			}
+		}
+		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
+	}
+
+	/**
+	 * Check whether the given world has has the given object as one of its game objects.
+	 */
+	boolean hasAsGameObject(Object object, World world) throws ModelException;
+	
+	/**
+	 * Return a collection of all the game objects in the given world.
+	 */
+	Set<Object> getAllGameObjects(World world) throws ModelException;
+	
+	/**
+	 * Return the mazub under control of the end user in the given world.
+	 */
+	Mazub getMazub(World world) throws ModelException;
+	
+	/**
+	 * Add the given object to the given world.
+	 */
+	void addGameObject(Object object, World world) throws ModelException;
+	
+	/**
+	 * Remove the given object to the given world.
+	 */
+	void removeGameObject(Object object, World world) throws ModelException;
+	
+	/**
+	 * Return the coordinate of the target tile in the given world.
+	 *   Returns an array of 2 integers {x, y} that represents the tile coordinate
+	 *   of the target tile.
+	 */
+	int[] getTargetTileCoordinate(World world) throws ModelException;
+	
+	/**
+	 * Set the coordinate of the target tile in the given world to the given
+	 * tile coordinate.
+	 */
+	void setTargetTileCoordinate(World world, int[] tileCoordinate) throws ModelException;
+	
+	/**
+	 * Start a game in the given world.
+	 */
+	void startGame(World world) throws ModelException;
+
+	/**
+	 * Returns whether the game, played in the given game world, is over.
+	 * The game is over when either Mazub is terminated and removed from its world, 
+	 * or when mazub has reached the target tile.
+	 */
+	boolean isGameOver(World world) throws ModelException;
+
+	/**
+	 * Returns whether the game played in the given world has finished and the
+	 * player has won. The player wins when Mazub has reached the target tile.
+	 */
+	boolean didPlayerWin(World world) throws ModelException;
+
+	/**
+	 * Advance the time for the world and all its objects by the given amount.
+	 */
+	void advanceWorldTime(World world, double dt);
+
+	/***********************
+	 * Game Object methods *
+	 ***********************/
+	
+	/**
+	 * Create an instance of Plant with given pixel position and given sprites.
+	 *   The actual position of the new plant will correspond with the coordinates
+	 *   of the left-bottom corner of the left-bottom pixel occupied by the new plant.
+	 */
+	Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException;
+	
+	/**
+	 * Terminate the given game object.
+	 */
+	void terminateGameObject(Object gameObject) throws ModelException;
+	
+	/**
+	 * Check whether the given game object is terminated.
+	 *    Terminated game objects can not be located in a world.
+	 */
+	boolean isTerminatedGameObject(Object gameObject) throws ModelException;
+	
+	/**
+	 * Check whether the given game object is dead.
+	 *    Dead game objects can still be located in a world. After some period of time,
+	 *    dead game objects are terminated.
+	 */
+	boolean isDeadGameObject(Object gameObject) throws ModelException;
+
+	/**
+	 * Return the actual position of the given game object.
+	 *   Returns an array of 2 doubles {x, y} that represents the coordinates of the
+	 *   bottom-left corner of the given game object.
+	 *   Coordinates are expressed in meters.
+	 */
+	double[] getActualPosition(Object gameObject) throws ModelException;
+
+	/**
+	 * Change the actual position of the given game object to the given position.
+	 */
+	void changeActualPosition(Object gameObject, double[] newPosition) throws ModelException;
+
+	/**
+	 * Return the pixel position of the given game object.
+	 *   Returns an array of 2 integers {x, y} that represents the coordinates of the
+	 *   pixel occupied by the bottom-left pixel of the given game object.
+	 */
+	int[] getPixelPosition(Object gameObject) throws ModelException;
+
+	/**
+	 * Return the orientation of the given game object.
+	 *   The resulting value is negative if the given game object is oriented to the left,
+	 *   0 if the given game object is oriented to the front and positive if the given
+	 *   game object is oriented to the right.
+	 */
+	int getOrientation(Object gameObject) throws ModelException;
+	
+	/**
+	 * Return the current velocity of the given game object.
+	 *   Returns an array consisting of 2 doubles {vx, vy} that represents the
+	 *   horizontal and vertical components of the given game object's current
+	 *   velocity in m/s.
+	 */
+	double[] getVelocity(Object gameObject) throws ModelException;
+
+	/**
+	 * Return the world in which the given game object is positioned.
+	 *   Returns null if the object is not positioned in a world.
+	 */
+	World getWorld(Object object) throws ModelException;
+	
+	/**
+	 * Return the hit points of the given game object.
+	 */
+	int getHitPoints(Object object) throws ModelException;
+	
+	/**
+	 * Return the sprites to be used to animate the given game object.
+	 */
+	Sprite[] getSprites(Object gameObject) throws ModelException;
+
+	/**
+	 * Return the current sprite image for the given game object.
+	 * 
+	 * This method must only be implemented by teams of 2 students. Students working on
+	 * their own may stick to the default implementation. 
+	 */
+	default Sprite getCurrentSprite(Object gameObject) throws ModelException {
+		if (!isTeamSolution()) {
+			if (gameObject instanceof Mazub) {
+				return JumpingAlienSprites.DEFAULT_MAZUB_SPRITE;
+			} else {
+				return Resources.PLANT_SPRITE_LEFT.resizeTo(40, 30);
+			}
+		}
+		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
+	}
+
+	/**
+	 * Advance the state of the given game object by the given time period.
+	 */
+	void advanceTime(Object gameObject, double dt) throws ModelException;
+	
+
 }
