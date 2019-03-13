@@ -813,7 +813,6 @@ public class Mazub {
 			else newPosY = (((double) this.getMaxYPosition()))/100;
 			}
 		setYPositionActual(newPosY);
-		setSprite(spriteArray[index]);
 		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
 
 		this.setVerticalSpeedMeters(newSpeedY);
@@ -825,6 +824,8 @@ public class Mazub {
 			}
 		if(newPosY == 0)
 			this.isFalling=false;
+		setSprite(spriteArray[index]);
+
 		}
 	
 	
