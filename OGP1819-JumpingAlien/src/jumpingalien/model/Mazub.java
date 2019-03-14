@@ -28,7 +28,7 @@ import jumpingalien.util.Sprite;
  * @invar The sprites in an array are all valid
  * 			| isValidSprite() == true
  */
-public class Mazub {
+public class Mazub{
 	
 	/**
 	 * Initialize a new player with a given position (X_pos, Y_pos), a given size (X_size, Y_size), speed and sprites.
@@ -54,6 +54,7 @@ public class Mazub {
 	 */
 	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, 
 			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite ... sprites) {
+//		super (X_pos, Y_pos, X_size, Y_size);
 		setYSize(Y_size);
 		setXSize(X_size);
 		setXPositionActual(X_pos);
