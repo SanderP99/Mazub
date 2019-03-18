@@ -2,6 +2,7 @@ package jumpingalien.facade;
 
 import java.util.Set;
 
+import jumpingalien.model.GameObject;
 import jumpingalien.model.Mazub;
 import jumpingalien.model.Plant;
 import jumpingalien.model.World;
@@ -214,14 +215,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public int[] getSizeInPixels(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new int[] {world.getWorldSizeX(), world.getWorldSizeY()};
 	}
 
 	@Override
 	public int getTileLength(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return world.getTileLength();
 	}
 
 	@Override
@@ -238,8 +237,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int[] getVisibleWindowDimension(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new int[] {world.getVisibleWindowWidth(), world.getVisibleWindowHeight()};
 	}
 
 	@Override
@@ -310,26 +308,23 @@ public class Facade implements IFacade {
 
 	@Override
 	public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 10, 10, sprites);
 	}
 
 	@Override
 	public void terminateGameObject(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
+		((GameObject) gameObject).terminate();
 		
 	}
 
 	@Override
 	public boolean isTerminatedGameObject(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return ((GameObject) gameObject).isTerminated();
 	}
 
 	@Override
 	public boolean isDeadGameObject(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return ((GameObject) gameObject).isDead();
 	}
 
 	@Override
@@ -370,14 +365,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getHitPoints(Object object) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return ((GameObject) object).getHitpoints();
 	}
 
 	@Override
 	public Sprite[] getSprites(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return ((GameObject) gameObject).getSprites();
 	}
 
 	@Override

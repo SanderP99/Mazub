@@ -7,12 +7,14 @@ import jumpingalien.util.Sprite;
 
 public abstract class GameObject {
 
-	GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, Sprite... sprites){
+	GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, Sprite... sprites){
 		setYSize(pixelSizeY);
 		setXSize(pixelSizeX);
 		setXPositionPixel(pixelLeftX);
 		setYPositionPixel(pixelBottomY);
 		setSprite(sprites[0]);
+		setSprites(sprites);
+		setHitpoints(hitpoints);
 	}
 	
 
@@ -23,6 +25,16 @@ public abstract class GameObject {
 		
 	}
 	
+	private void setSprites(Sprite... sprites) {
+		this.sprites = sprites;
+	}
+	
+	public Sprite[] getSprites() {
+		return this.sprites;
+	}
+	
+	private Sprite[] sprites;
+ 	
 	/**
 	 * Returns the current sprite.
 	 */
@@ -57,14 +69,26 @@ public abstract class GameObject {
 		return this.isTerminated;
 	}
 	
+	public boolean isDead() {
+		return this.isDead;
+	}
+	
 	public void terminate() {
 		if (!isTerminated()) {
 			this.isTerminated = true;
-			this.hitPoints = 0;
+			this.setHitpoints(0);
+		}
+	}
+	
+	public void kill() {
+		if (!isDead()) {
+			this.isDead = true;
+			this.setHitpoints(0);
 		}
 	}
 	
 	private boolean isTerminated;
+	private boolean isDead;
 	
 	private int hitPoints;
 	

@@ -45,7 +45,7 @@ public class World {
 	 *         This new World cannot have the given visibleWindowWidth as its visibleWindowWidth.
 	 *       | ! canHaveAsVisibleWindowWidth(this.getVisibleWindowWidth())
 	 * @effect The visibleWindowPosition of this new World is set to
-	 *         the given (0,0).
+	 *         (0,0).
 	 *       | this.setVisibleWindowPosition(new int[] {0, 0})
 	 */
 	World(int worldSizeX, int worldSizeY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws RuntimeException{
@@ -222,58 +222,58 @@ public class World {
 	 */
 	private final int visibleWindowWidth;
 
-/**
- * Return the visibleWindowPosition of this World.
- */
-@Basic @Raw
-public int[] getVisibleWindowPosition() {
-	return this.visibleWindowPosition;
-}
-
-/**
- * Check whether the given visibleWindowPosition is a valid visibleWindowPosition for
- * any World.
- *  
- * @param  visibleWindowPosition
- *         The visibleWindowPosition to check.
- * @return 
- *       | result == !(visibleWindowPosition.length != 2) && !(visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0) 
- *       && !(visibleWindowPosition[0] + this.getVisibleWindowWidth() > this.getWorldSizeX() || visibleWindowPosition[1] + this.getVisibleWindowHeight() > this.getWorldSizeY())
- */
-public boolean isValidVisibleWindowPosition(int[] visibleWindowPosition) {
-	if (visibleWindowPosition.length != 2)
-		return false;
-	if (visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0)
-		return false;
-	if (visibleWindowPosition[0] + this.getVisibleWindowWidth() > this.getWorldSizeX() || visibleWindowPosition[1] + this.getVisibleWindowHeight() > this.getWorldSizeY())
-		return false;
-	return true;
-}
-
-/**
- * Set the visibleWindowPosition of this World to the given visibleWindowPosition.
- * 
- * @param  visibleWindowPosition
- *         The new visibleWindowPosition for this World.
- * @post   The visibleWindowPosition of this new World is equal to
- *         the given visibleWindowPosition.
- *       | new.getVisibleWindowPosition() == visibleWindowPosition
- * @throws RuntimeException
- *         The given visibleWindowPosition is not a valid visibleWindowPosition for any
- *         World.
- *       | ! isValidVisibleWindowPosition(getVisibleWindowPosition())
- */
-@Raw
-public void setVisibleWindowPosition(int[] visibleWindowPosition) 
-		throws RuntimeException {
-	if (! isValidVisibleWindowPosition(visibleWindowPosition))
-		throw new RuntimeException();
-	this.visibleWindowPosition = visibleWindowPosition;
-}
-
-/**
- * Variable registering the visibleWindowPosition of this World.
- */
-private int[] visibleWindowPosition;
+	/**
+	 * Return the visibleWindowPosition of this World.
+	 */
+	@Basic @Raw
+	public int[] getVisibleWindowPosition() {
+		return this.visibleWindowPosition;
+	}
 	
+	/**
+	 * Check whether the given visibleWindowPosition is a valid visibleWindowPosition for
+	 * any World.
+	 *  
+	 * @param  visibleWindowPosition
+	 *         The visibleWindowPosition to check.
+	 * @return 
+	 *       | result == !(visibleWindowPosition.length != 2) && !(visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0) 
+	 *       && !(visibleWindowPosition[0] + this.getVisibleWindowWidth() > this.getWorldSizeX() || visibleWindowPosition[1] + this.getVisibleWindowHeight() > this.getWorldSizeY())
+	 */
+	public boolean isValidVisibleWindowPosition(int[] visibleWindowPosition) {
+		if (visibleWindowPosition.length != 2)
+			return false;
+		if (visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0)
+			return false;
+		if (visibleWindowPosition[0] + this.getVisibleWindowWidth() > this.getWorldSizeX() || visibleWindowPosition[1] + this.getVisibleWindowHeight() > this.getWorldSizeY())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Set the visibleWindowPosition of this World to the given visibleWindowPosition.
+	 * 
+	 * @param  visibleWindowPosition
+	 *         The new visibleWindowPosition for this World.
+	 * @post   The visibleWindowPosition of this new World is equal to
+	 *         the given visibleWindowPosition.
+	 *       | new.getVisibleWindowPosition() == visibleWindowPosition
+	 * @throws RuntimeException
+	 *         The given visibleWindowPosition is not a valid visibleWindowPosition for any
+	 *         World.
+	 *       | ! isValidVisibleWindowPosition(getVisibleWindowPosition())
+	 */
+	@Raw
+	public void setVisibleWindowPosition(int[] visibleWindowPosition) 
+			throws RuntimeException {
+		if (! isValidVisibleWindowPosition(visibleWindowPosition))
+			throw new RuntimeException();
+		this.visibleWindowPosition = visibleWindowPosition;
+	}
+	
+	/**
+	 * Variable registering the visibleWindowPosition of this World.
+	 */
+	private int[] visibleWindowPosition;
+		
 }
