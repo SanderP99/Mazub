@@ -2,16 +2,46 @@ package jumpingalien.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
+import jdk.nashorn.internal.ir.SetSplitState;
+import jumpingalien.util.Sprite;
 
 public abstract class GameObject {
 
-	GameObject(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY){
+	GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, Sprite... sprites){
 		setYSize(pixelSizeY);
 		setXSize(pixelSizeX);
-		setXPositionPixel(positionLeftX);
-		setYPositionPixel(positionBottomY);
+		setXPositionPixel(pixelLeftX);
+		setYPositionPixel(pixelBottomY);
+		setSprite(sprites[0]);
 	}
 	
+
+	private void setSprite(Sprite sprite) {
+		if (! isValidSprite(sprite))
+			throw new RuntimeException();	
+		this.sprite = sprite;
+		
+	}
+	
+	/**
+	 * Returns the current sprite.
+	 */
+	public Sprite getCurrentSprite() {
+		return this.sprite;	
+	}
+	
+	/**
+	 * Returns whether the given sprite is valid
+	 * @param sprite The sprite to check
+	 */
+	public boolean isValidSprite(Sprite sprite) {
+		return (sprite.canHaveAsHeight(sprite.getHeight()) &&
+				sprite.canHaveAsWidth(sprite.getWidth()) &&
+				sprite.canHaveAsName(sprite.getName()));
+	}
+
+	private Sprite sprite;
+
 	/**
 	 * Initiate the size of the canvas in pixels
 	 */
@@ -165,4 +195,24 @@ public abstract class GameObject {
 	
 	private int yPosPixel;
 	private double yPosMeter;
+	
+	private void setHitpoints(int hitpoints) {
+		if (hitpoints < 0)
+			this.hitpoints = 0;
+		if (hitpoints > 500)
+			this.hitpoints = 500;
+		else
+			this.hitpoints = hitpoints;
+		
+	}
+	
+	public int getHitpoints() {
+		return this.hitpoints;
+	}
+	
+	private int hitpoints;
+	
+	private void changeHitPoints(int change) {
+		setHitpoints(getHitpoints() + change);
+	}
 }

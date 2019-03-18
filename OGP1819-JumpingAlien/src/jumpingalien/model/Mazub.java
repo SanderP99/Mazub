@@ -66,6 +66,7 @@ public class Mazub{
 		this.setSpriteArray(sprites);
 		setSprite(sprites[0]);
 		this.isDucking = false;
+		setHitpoints(100);
 	}
 	
 	/**
@@ -102,8 +103,10 @@ public class Mazub{
 		setSprite(sprites[0]);
 		setOrientation(0);
 		setSpriteArray(sprites);
+		setHitpoints(100);
 	}
 	
+
 	/**
 	 * Initiate the size of the canvas in pixels
 	 */
@@ -1023,5 +1026,24 @@ public class Mazub{
 	
 	private double timeSinceLastMove;
 	
+	private void setHitpoints(int hitpoints) {
+		if (hitpoints < 0)
+			this.hitpoints = 0;
+		if (hitpoints > 500)
+			this.hitpoints = 500;
+		else
+			this.hitpoints = hitpoints;
+		
+	}
+	
+	public int getHitpoints() {
+		return this.hitpoints;
+	}
+	
+	private int hitpoints;
+	
+	private void changeHitPoints(int change) {
+		setHitpoints(getHitpoints() + change);
+	}
 }
  
