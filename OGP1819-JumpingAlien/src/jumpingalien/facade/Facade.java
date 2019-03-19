@@ -272,13 +272,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public int[] getTargetTileCoordinate(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new int[] {world.getTargetTileX(), world.getTargetTileY()};
 	}
 
 	@Override
 	public void setTargetTileCoordinate(World world, int[] tileCoordinate) throws ModelException {
-		// TODO Auto-generated method stub
+		world.setTargetTileX(tileCoordinate[0]);
+		world.setTargetTileY(tileCoordinate[1]);
 		
 	}
 
@@ -308,7 +308,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 10, 10, sprites);
+		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 10, 10, 0.5, 0.5, 0.5, 0, 0,sprites);
 	}
 
 	@Override
@@ -329,33 +329,30 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getActualPosition(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new double[] {((GameObject) gameObject).getXPositionActual(), ((GameObject) gameObject).getYPositionActual()};
 	}
 
 	@Override
 	public void changeActualPosition(Object gameObject, double[] newPosition) throws ModelException {
-		// TODO Auto-generated method stub
+		((GameObject) gameObject).setXPositionActual(newPosition[0]);
+		((GameObject) gameObject).setYPositionActual(newPosition[1]);
 		
 	}
 
 	@Override
 	public int[] getPixelPosition(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		return new int[] {((GameObject) gameObject).getXPositionPixel(), ((GameObject) gameObject).getYPositionPixel()};
+ 	}
 
 	@Override
 	public int getOrientation(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return ((GameObject) gameObject).getOrientation();
 	}
 
 	@Override
 	public double[] getVelocity(Object gameObject) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		return new double[] {((GameObject) gameObject).getHorizontalSpeedMeters(), ((GameObject) gameObject).getVerticalSpeedMeters()};
+ 	}
 
 	@Override
 	public World getWorld(Object object) throws ModelException {

@@ -329,7 +329,7 @@ public class Mazub{
 	 * @param orientation
 	 * 			The orientation to check
 	 */
-	public Boolean isValidOrientation() {
+	public boolean isValidOrientation() {
 		return getOrientation() == -1 || getOrientation() == 0 || getOrientation() == 1;
 		
 	}

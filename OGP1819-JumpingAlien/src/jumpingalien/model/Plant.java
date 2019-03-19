@@ -5,22 +5,23 @@ import jumpingalien.util.Sprite;
 
 public class Plant extends GameObject{
 	
-	public Plant(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, double horizontalSpeed, int hitpoints, int secondsToLive,  Sprite... sprites){
-		super (positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, hitpoints,  sprites);
-		setVelocity(-1* Math.abs(horizontalSpeed));
+	public Plant(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, double horizontalSpeed, int hitpoints, 
+			int secondsToLive,  double maxHorizontalSpeedRunning, 
+			double maxHorizontalSpeedDucking, double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, 
+			Sprite... sprites){
+		
+		super (positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, hitpoints,  maxHorizontalSpeedRunning, 
+				maxHorizontalSpeedDucking, minHorizontalSpeed, horizontalAcceleration, verticalAcceleration, sprites);
+		
+		setHorizontalSpeedMeters(-1*Math.abs(horizontalSpeed));
 		setSecondsToLive(secondsToLive);
 	} 
 
-	private void setVelocity(double horizontalSpeed) {
-		this.velocity = horizontalSpeed;
-	}
 	
 	@Basic
 	public double getVelocity() {
-		return this.velocity;
+		return this.getHorizontalSpeedMeters();
 	}
-	
-	private double velocity;
 	
 	private void setSecondsToLive(int secondsToLive) {
 		this.secondsToLive = secondsToLive;
