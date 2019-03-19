@@ -203,8 +203,9 @@ public class Facade implements IFacade {
 	@Override
 	public World createWorld(int tileSize, int nbTilesX, int nbTilesY, int[] targetTileCoordinate,
 			int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new World(nbTilesX*tileSize,nbTilesY*tileSize,tileSize,targetTileCoordinate[0],
+				targetTileCoordinate[1],visibleWindowWidth,
+				visibleWindowHeight,geologicalFeatures);
 	}
 
 	@Override
@@ -225,19 +226,23 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getGeologicalFeature(World world, int pixelX, int pixelY) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return world.getGeologicalFeature(pixelX, pixelY);
 	}
 
 	@Override
 	public void setGeologicalFeature(World world, int pixelX, int pixelY, int geologicalFeature) throws ModelException {
-		// TODO Auto-generated method stub
+		world.setGeologicalFeature(pixelX, pixelY, geologicalFeature);
 		
 	}
 
 	@Override
 	public int[] getVisibleWindowDimension(World world) throws ModelException {
 		return new int[] {world.getVisibleWindowWidth(), world.getVisibleWindowHeight()};
+	}
+	@Override
+	public int[] getVisibleWindowPosition(World world) throws ModelException {
+		//TODO 
+		return new int[] {0};
 	}
 
 	@Override
@@ -368,6 +373,10 @@ public class Facade implements IFacade {
 	@Override
 	public Sprite[] getSprites(Object gameObject) throws ModelException {
 		return ((GameObject) gameObject).getSprites();
+	}
+	@Override
+	public Sprite getCurrentSprite(Object gameObject) throws ModelException{
+		return ((GameObject) gameObject).getCurrentSprite();
 	}
 
 	@Override

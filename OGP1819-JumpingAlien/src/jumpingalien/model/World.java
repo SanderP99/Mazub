@@ -1,5 +1,7 @@
 package jumpingalien.model;
 
+import java.util.HashSet;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -27,7 +29,7 @@ public class World {
 	 * @param targetTileY
 	 * @param visibleWindowWidth
 	 * @param visibleWindowHeight
-	 * @param geologicalFeature
+	 * @param geologicalFeatures
 	 * 
 	 * @pre 0 < visibleWindowWidth < worldSizeX
 	 * @pre 0 < visibleWindowHeight < worldSizeY
@@ -48,7 +50,7 @@ public class World {
 	 *         (0,0).
 	 *       | this.setVisibleWindowPosition(new int[] {0, 0})
 	 */
-	World(int worldSizeX, int worldSizeY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws RuntimeException{
+	public World(int worldSizeX, int worldSizeY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws RuntimeException{
 		setTileLength(tileLength);
 		setWorldSizeX(worldSizeX);
 		setWorldSizeY(worldSizeY);
@@ -61,6 +63,8 @@ public class World {
 			throw new RuntimeException();
 		this.visibleWindowWidth = visibleWindowWidth;
 		this.setVisibleWindowPosition(new int[] {0, 0});
+		this.initializeGeologicalFeatures(worldSizeX/tileLength, worldSizeY/tileLength,geologicalFeatures);
+
 	}
 	
 	@Basic
@@ -143,6 +147,7 @@ public class World {
 	}
 	
 	private int targetTileY;
+	
 	
 	/**
 	 * Check whether this world is terminated.
@@ -275,5 +280,74 @@ public class World {
 	 * Variable registering the visibleWindowPosition of this World.
 	 */
 	private int[] visibleWindowPosition;
+	
+	public void setGeologicalFeature(int pixelX, int pixelY,int geologicalFeature) {
+		if( ! isValidGeologicalFeature(geologicalFeature))
+			geologicalFeature = AIR;
+		if (isValidPixelYPosition(pixelY) && isValidPixelXPosition(pixelX)) {
+			this.tiles.remove(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),
+					getGeologicalFeature(pixelX,pixelY)});
+			this.tiles.add(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),geologicalFeature});
+		}	
+	}
+	/**
+	 * Returns whether the given coordinate is on the canvas.
+	 * @param X_pos
+	 * 			The given coordinate to check in pixels.
+	 */
+	public boolean isValidPixelXPosition(int X_pos) {
+		return (X_pos >= 0 && X_pos <= getWorldSizeX());
+	}
+	
+	/**
+	 * Returns whether the given coordinate is on the canvas.
+	 * @param Y_pos
+	 * 			The given coordinate to check in pixels.
+	 */
+	public boolean isValidPixelYPosition(int Y_pos) {
+		return (Y_pos >= 0 && Y_pos <= getWorldSizeY());
+	} 
+	
+	public int getGeologicalFeature(int pixelX, int pixelY) {
+		if (!isValidPixelYPosition(pixelY))
+			pixelY = 0;
+		if (!isValidPixelXPosition(pixelX))
+			pixelX = 0;
+		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,AIR}))
+			return AIR;
+		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,SOLID_GROUND}))
+			return SOLID_GROUND;
+		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,WATER}))
+			return WATER;
+		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,MAGMA}))
+			return MAGMA;
+		return 0;		
+	}
+	public final static int AIR = 0;
+	public final static int SOLID_GROUND = 1;
+	public final static int WATER = 2;
+	public final static int MAGMA = 3;
+	
+	private boolean isValidGeologicalFeature(int geologicalFeature) {
+		return (geologicalFeature == AIR || geologicalFeature == SOLID_GROUND||
+				geologicalFeature == WATER || geologicalFeature == MAGMA);
 		
+	}
+
+	private void initializeGeologicalFeatures(int xLength, int yLength,int... geologicalFeatures) {
+	        this.tiles =  new HashSet<int[]>();
+//	        for (int i = 0; i < xLength; i++)
+//	            for (int j = 0; j < yLength; j++)
+//	                tiles[i][j] = 0;
+	        for(int i =0; i< geologicalFeatures.length; i++) {
+	        	tiles.add(new int[] {i%xLength,i/xLength,geologicalFeatures[i]});
+	        }
+	        for(int i =geologicalFeatures.length; i< xLength*yLength; i++) {
+	        	tiles.add(new int[] {i%xLength,i/xLength,AIR});
+	        }
+	        	
+		
+	}
+	private HashSet<int[]> tiles;
+
 }

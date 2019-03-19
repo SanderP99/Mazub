@@ -274,7 +274,7 @@ public class Mazub{
 	
 	/**
 	 * Returns whether the given coordinate is on the canvas.
-	 * @param X_pos
+	 * @param Y_pos
 	 * 			The given coordinate to check in meters.
 	 */
 	public boolean isValidActualYPosition(double Y_pos) {
