@@ -11,7 +11,7 @@ public class Plant extends GameObject{
 			Sprite... sprites){
 		
 		super (positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, hitpoints,  maxHorizontalSpeedRunning, 
-				maxHorizontalSpeedDucking, minHorizontalSpeed, 0,horizontalAcceleration, verticalAcceleration, sprites);
+				maxHorizontalSpeedDucking, minHorizontalSpeed, 0, horizontalAcceleration, verticalAcceleration, sprites);
 		
 		setHorizontalSpeedMeters(-1*Math.abs(horizontalSpeed));
 		setOrientation(-1);

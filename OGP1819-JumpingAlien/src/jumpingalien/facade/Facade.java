@@ -203,7 +203,9 @@ public class Facade implements IFacade {
 	@Override
 	public World createWorld(int tileSize, int nbTilesX, int nbTilesY, int[] targetTileCoordinate,
 			int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws ModelException {
-		return new World(nbTilesX*tileSize,nbTilesY*tileSize,tileSize,targetTileCoordinate[0],
+//		if (tileSize < 0 || nbTilesX < 0 || nbTilesY < 0)
+//			throw new ModelException("The dimensions of this world are not valid");
+		return new World(nbTilesX,nbTilesY,tileSize,targetTileCoordinate[0],
 				targetTileCoordinate[1],visibleWindowWidth,
 				visibleWindowHeight,geologicalFeatures);
 	}
@@ -241,8 +243,7 @@ public class Facade implements IFacade {
 	}
 	@Override
 	public int[] getVisibleWindowPosition(World world) throws ModelException {
-		//TODO 
-		return new int[] {0};
+		return world.getVisibleWindowPosition();
 	}
 
 	@Override
@@ -314,7 +315,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 10, 10, 0.5, 0.5, 0.5, 0, 0,sprites);
+		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10, 0.5, 0.5, 0.5, 0, 0,sprites);
 	}
 
 	@Override
@@ -340,6 +341,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public void changeActualPosition(Object gameObject, double[] newPosition) throws ModelException {
+		if (getGeologicalFeature(getWorld(gameObject), (int)(newPosition[0]*100), (int)(newPosition[1]*100)) == World.SOLID_GROUND)
+			throw new ModelException("The new position is in impassable terrain");
 		((GameObject) gameObject).setXPositionActual(newPosition[0]);
 		((GameObject) gameObject).setYPositionActual(newPosition[1]);
 		

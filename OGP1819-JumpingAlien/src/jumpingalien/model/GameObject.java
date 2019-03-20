@@ -203,7 +203,7 @@ public abstract class GameObject {
 	 * Returns whether the given coordinate is on the canvas.
 	 */
 	public boolean isValidPixelXPosition(int X_pos) {
-		return (X_pos >= 0 && X_pos <= getMaxXPosition());
+		return (X_pos >= 0 && X_pos <= Double.POSITIVE_INFINITY);
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public abstract class GameObject {
 	 * 			The coordinate to check in meters.
 	 */
 	public boolean isValidActualXPosition(double X_pos) {
-		return (X_pos*100 <= (getMaxXPosition() ) &&  X_pos >= 0);		
+		return (X_pos <= Double.POSITIVE_INFINITY &&  X_pos >= 0);		
 	}
 	
 	/**
@@ -272,7 +272,7 @@ public abstract class GameObject {
 	 * 			The given coordinate to check in meters.
 	 */
 	public boolean isValidActualYPosition(double Y_pos) {
-		return (Y_pos*100 <= (getMaxYPosition()) &&  Y_pos >= 0);
+		return (Y_pos <= Double.POSITIVE_INFINITY &&  Y_pos >= 0);
 	}
 	
 	/**
@@ -281,7 +281,7 @@ public abstract class GameObject {
 	 * 			The given coordinate to check in pixels.
 	 */
 	public boolean isValidPixelYPosition(int Y_pos) {
-		return (Y_pos >= 0 && Y_pos <= getMaxYPosition());
+		return (Y_pos >= 0 && Y_pos <= Double.POSITIVE_INFINITY);
 	}
 	
 	/**
@@ -630,7 +630,30 @@ public abstract class GameObject {
 			return false;
 		if (this.spriteArray == null)
 			return false;
+		if (this.isDead())
+			return false;
+		if (this.isTerminated())
+			return false;
 		
+		return true;
+	}
+	/**
+	 * Returns whether a given GameObeject collides with this GameObject
+	 * @param other The other GameObject
+	 * @return ((this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()) 
+	 * 			&& (this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
+	 * 			&& (other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
+	 * 			&& (other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
+	 */
+	protected boolean collidesWith(GameObject other) {
+		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()))
+			return false;
+		if (!(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel()))
+			return false;
+		if (!(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()))
+			return false;
+		if (!(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
+			return false;
 		return true;
 	}
 }

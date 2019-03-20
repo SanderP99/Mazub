@@ -395,8 +395,8 @@ public class Mazub extends GameObject {
 		if (timeSinceLastMove >= 1) {
 			updatePositionAndSprite(0, 0);
 			timeSinceLastMove = 0.0;
-			setVerticalSpeedMeters(0.0);
-			setVerticalAcceleration(0.0);
+//			setVerticalSpeedMeters(0.0);
+//			setVerticalAcceleration(0.0);
 		}
 	}
 	

@@ -50,10 +50,10 @@ public class World {
 	 *         (0,0).
 	 *       | this.setVisibleWindowPosition(new int[] {0, 0})
 	 */
-	public World(int worldSizeX, int worldSizeY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws RuntimeException{
+	public World(int nbTilesX, int nbTilesY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws RuntimeException{
 		setTileLength(tileLength);
-		setWorldSizeX(worldSizeX);
-		setWorldSizeY(worldSizeY);
+		setWorldSizeX(nbTilesX * getTileLength());
+		setWorldSizeY(nbTilesY * getTileLength());
 		setTargetTileX(targetTileX);
 		setTargetTileY(targetTileY);
 		if (! canHaveAsVisibleWindowHeight(visibleWindowHeight))
@@ -73,10 +73,10 @@ public class World {
 	}
 	
 	private void setWorldSizeX(int worldSizeX) {
-		if (worldSizeX % this.getTileLength() == 0)
-			this.worldSizeX = worldSizeX;
+		if (worldSizeX < 0)
+			this.worldSizeX = -1*worldSizeX;
 		else
-			this.worldSizeX = worldSizeX + (this.getTileLength() - (worldSizeX % this.getTileLength()));
+			this.worldSizeX = worldSizeX;
 	}
 	
 	private int worldSizeX;
@@ -87,10 +87,10 @@ public class World {
 	}
 	
 	private void setWorldSizeY(int worldSizeY) {
-		if (worldSizeY % this.getTileLength() == 0)
-			this.worldSizeY = worldSizeY;
+		if (worldSizeY < 0)
+			this.worldSizeY = -1*worldSizeY;
 		else
-			this.worldSizeY = worldSizeY + (this.getTileLength() - (worldSizeY % this.getTileLength()));
+			this.worldSizeY = worldSizeY;
 	}
 
 	private int worldSizeY;
@@ -104,7 +104,7 @@ public class World {
 		if (length > 0)
 			this.tileLength = length;
 		else
-			this.tileLength = 1;
+			this.tileLength = 10;
 	}
 	
 	private int tileLength;
@@ -116,16 +116,15 @@ public class World {
 	}
 	
 	public void setTargetTileX(int targetTileX) {
-//		assert isValidTargetTileX(targetTileX);
 		assert !isTerminated();
 		this.targetTileX = targetTileX;
 	}
 	
-	private boolean isValidTargetTileX(int targetTileX) {
-		if (targetTileX > (getWorldSizeX()/getTileLength() - 1) || targetTileX < 0)
-			return false;
-		return true;
-	}
+//	private boolean isValidTargetTileX(int targetTileX) {
+//		if (targetTileX > (getWorldSizeX()/getTileLength() - 1) || targetTileX < 0)
+//			return false;
+//		return true;
+//	}
 	
 	private int targetTileX;
 	
@@ -135,16 +134,15 @@ public class World {
 	}
 	
 	public void setTargetTileY(int targetTileY) {
-//		assert isValidTargetTileY(targetTileY);
 		assert !isTerminated();
 		this.targetTileY = targetTileY;
 	}
 	
-	private boolean isValidTargetTileY(int targetTileY) {
-		if (targetTileY > (getWorldSizeY()/getTileLength() - 1) || targetTileY < 0)
-			return false;
-		return true;
-	}
+//	private boolean isValidTargetTileY(int targetTileY) {
+//		if (targetTileY > (getWorldSizeY()/getTileLength() - 1) || targetTileY < 0)
+//			return false;
+//		return true;
+//	}
 	
 	private int targetTileY;
 	
@@ -329,21 +327,19 @@ public class World {
 	public final static int MAGMA = 3;
 	
 	private boolean isValidGeologicalFeature(int geologicalFeature) {
-		return (geologicalFeature == AIR || geologicalFeature == SOLID_GROUND||
+		return (geologicalFeature == AIR || geologicalFeature == SOLID_GROUND ||
 				geologicalFeature == WATER || geologicalFeature == MAGMA);
 		
 	}
 
 	private void initializeGeologicalFeatures(int xLength, int yLength,int... geologicalFeatures) {
 	        this.tiles =  new HashSet<int[]>();
-//	        for (int i = 0; i < xLength; i++)
-//	            for (int j = 0; j < yLength; j++)
-//	                tiles[i][j] = 0;
-	        for(int i =0; i< geologicalFeatures.length; i++) {
-	        	tiles.add(new int[] {i%xLength,i/xLength,geologicalFeatures[i]});
+
+	        for(int i = 0; i < geologicalFeatures.length; i++) {
+	        	tiles.add(new int[] {i % xLength, i / xLength, geologicalFeatures[i]});
 	        }
-	        for(int i =geologicalFeatures.length; i< xLength*yLength; i++) {
-	        	tiles.add(new int[] {i%xLength,i/xLength,AIR});
+	        for(int i = geologicalFeatures.length; i < xLength * yLength; i++) {
+	        	tiles.add(new int[] {i % xLength, i / xLength, AIR});
 	        }
 	        	
 		
