@@ -32,7 +32,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getActualPosition(Mazub alien) throws ModelException {
-	if (!alien.isValidAlien())
+	if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		double actualX = alien.getXPositionActual();
 		double actualY = alien.getYPositionActual();
@@ -44,7 +44,7 @@ public class Facade implements IFacade {
 	public void changeActualPosition(Mazub alien, double[] newPosition) throws ModelException {
 		if (newPosition == null)
 			throw new ModelException("Position can not be null");
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (newPosition.length != 2)
 			throw new ModelException("Only 2  coordinates allowed");
@@ -58,7 +58,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int[] getPixelPosition(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		int[] position = new int[] {alien.getXPositionPixel(), alien.getYPositionPixel()};
 		return position;
@@ -66,14 +66,14 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getOrientation(Mazub alien) throws ModelException {
-	if (!alien.isValidAlien())
+	if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		return alien.getOrientation();
 	}
 
 	@Override
 	public double[] getVelocity(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		double[] velocity = new double[] {alien.getHorizontalSpeedMeters(), alien.getVerticalSpeedMeters()};
 		return velocity;
@@ -81,7 +81,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getAcceleration(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		
 		double[] acceleration = new double[] {alien.getHorizontalAcceleration(), alien.getVerticalAcceleration()};
@@ -89,20 +89,20 @@ public class Facade implements IFacade {
 	}
 	
 	public Sprite[] getSprites(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		return alien.getSpriteArray();
 	}
 
 	public Sprite getCurrentSprite(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		return alien.getCurrentSprite();
 	}
 	
 	@Override
 	public boolean isMoving(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		
 		if (alien.getVerticalSpeedMeters() != 0 || alien.getHorizontalSpeedMeters() != 0)
@@ -112,7 +112,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startMoveLeft(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (alien.isMoving)
 			throw new ModelException("The alien is already moving");
@@ -122,7 +122,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startMoveRight(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (alien.isMoving)
 			throw new ModelException("The alien is already moving");
@@ -132,7 +132,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void endMove(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (!alien.isMoving)
 			throw new ModelException("The alien is not moving");
@@ -142,7 +142,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isJumping(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (alien.isJumping)
 			return true;
@@ -151,7 +151,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startJump(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (isJumping(alien))
 			throw new ModelException("The alien is already jumping");
@@ -161,7 +161,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void endJump(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (!isJumping(alien) && !alien.isFalling)
 			throw new ModelException("The alien is not jumping");
@@ -171,14 +171,14 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isDucking(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		return alien.isDucking;
 	}
 
 	@Override
 	public void startDuck(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		alien.startDuck();
 
@@ -186,7 +186,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void endDuck(Mazub alien) throws ModelException {
-		if (!alien.isValidAlien())
+		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		alien.endDuck();
 
@@ -284,6 +284,7 @@ public class Facade implements IFacade {
 	public void setTargetTileCoordinate(World world, int[] tileCoordinate) throws ModelException {
 		world.setTargetTileX(tileCoordinate[0]);
 		world.setTargetTileY(tileCoordinate[1]);
+		
 		
 	}
 

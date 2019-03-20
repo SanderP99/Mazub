@@ -1,7 +1,5 @@
 package jumpingalien.model;
 
-import be.kuleuven.cs.som.annotate.Basic;
-import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import jumpingalien.util.Sprite; 
 
@@ -28,7 +26,7 @@ import jumpingalien.util.Sprite;
  * @invar The sprites in an array are all valid
  * 			| isValidSprite() == true
  */
-public class Mazub{
+public class Mazub extends GameObject {
 	
 	/**
 	 * Initialize a new player with a given position (X_pos, Y_pos), a given size (X_size, Y_size), speed and sprites.
@@ -54,19 +52,8 @@ public class Mazub{
 	 */
 	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, 
 			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite ... sprites) {
-//		super (X_pos, Y_pos, X_size, Y_size);
-		setYSize(Y_size);
-		setXSize(X_size);
-		setXPositionActual(X_pos);
-		setYPositionActual(Y_pos);
-		setHorizontalSpeedMeters(horizontalSpeedMeters);
-		this.minSpeed = minSpeedMeters;
-		this.maxSpeedDucking = maxSpeedDuckingMeters;
-		this.maxSpeedRunning = maxSpeedRunningMeters;
-		this.setSpriteArray(sprites);
-		setSprite(sprites[0]);
+		super((int)(X_pos * 100), (int)(Y_pos * 100), X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0, sprites);
 		this.isDucking = false;
-		setHitpoints(100);
 	}
 	
 	/**
@@ -92,459 +79,9 @@ public class Mazub{
 	 * 			The sprites needed to represent Mazub
 	 */
 	public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite...sprites) {
-		setYSize(Y_size);
-		setXSize(X_size);
-		setXPositionPixel(X_pos);
-		setYPositionPixel(Y_pos);
-		setHorizontalSpeedMeters(horizontalSpeedMeters);
-		this.minSpeed = minSpeedMeters;
-		this.maxSpeedDucking = maxSpeedDuckingMeters;
-		this.maxSpeedRunning = maxSpeedRunningMeters;
-		setSprite(sprites[0]);
-		setOrientation(0);
-		setSpriteArray(sprites);
-		setHitpoints(100);
+		super(X_pos, Y_pos, X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0, sprites);
+		this.isDucking = false;
 	}
-	
-
-	/**
-	 * Initiate the size of the canvas in pixels
-	 */
-	private int maxXPosition = 1024;
-	private int maxYPosition = 768;
-	
-	/**
-	 * Sets the y size of Mazub to the given amount of pixels.
-	 * @param Y_size
-	 * 			The wanted amount of pixels for the y size of Mazub.
-	 * @post the new y size is equal to the specified amount of pixels
-	 * 		| (this.ySize == Y_size)
-	 */
-	private void setYSize(int Y_size) {
-		this.ySize = Y_size;
-	}
-	
-	/**
-	 * Returns the y size of a given Mazub.
-	 */
-	@Basic
-	public int getYsize() {
-		return this.ySize;
-	}
-	
-	private int ySize;
-	
-	/**
-	 * Sets the x size of Mazub to the given amount of pixels.
-	 * @param X_size
-	 * 			The wanted amount of pixels for the x size of Mazub.
-	 * @post the new x size is equal to the specified amount of pixels
-	 * 		| (this.xSize == X_size)
-	 */
-	private void setXSize(int X_size) {
-		this.xSize = X_size;
-	}
-	
-	/**
-	 * Sets the x position of the bottom left pixel of a given Mazub to the specified x pixel.
-	 * @param X_pos
-	 * 			The wanted x position in pixels.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidXPosition(X_pos/100)
-	 */
-	public void setXPositionPixel(int X_pos) throws RuntimeException{
-		if (!isValidPixelXPosition())
-			throw new RuntimeException();
-		this.xPosPixel = X_pos;
-		this.xPosMeter = ((double) X_pos)/100;
-	}
-	
-	/**
-	 * Returns the x size of a given Mazub.
-	 */
-	@Basic
-	public int getXsize() {
-		return this.xSize;
-	}
-	
-	private int xSize;
-	
-	/**
-	 * Sets the x position of the bottom left pixel of a given Mazub to the specified x position.
-	 * @param X_pos
-	 * 			The wanted x position.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidXPosition(X_pos)
-	 */
-	public void setXPositionActual(double X_pos) throws RuntimeException{
-		if (!isValidActualXPosition(X_pos))
-			throw new RuntimeException();
-		this.xPosPixel = (int) (X_pos * 100);
-		this.xPosMeter = X_pos;
-	}
-	
-	/**
-	 * Returns the maximal x position on the canvas in pixels.
-	 */
-	@Basic 
-	public int getMaxXPosition() {
-		return maxXPosition;
-	}
-	
-	/**
-	 * Returns the x position on the canvas in pixels.
-	 */
-	@Basic 
-	public int getXPositionPixel() {
-		return this.xPosPixel;
-	}
-	
-	/**
-	 * Returns the x position on the canvas in meters.
-	 */
-	public double getXPositionActual() {
-		return this.xPosMeter;
-	}
-	
-	/**
-	 * Returns whether the given coordinate is on the canvas.
-	 * @param X_pos
-	 * 			The coordinate to check in meters.
-	 */
-	public boolean isValidActualXPosition(double X_pos) {
-		return (X_pos*100 <= (getMaxXPosition() ) &&  X_pos >= 0);		
-	}
-	
-	/**
-	 * Returns whether the given coordinate is on the canvas.
-	 */
-	public boolean isValidPixelXPosition() {
-		return (getXPositionPixel() >= 0 && getXPositionPixel() <= getMaxXPosition());
-	}
-	
-	private int xPosPixel;
-	private double xPosMeter;
-	
-	/**
-	 * Sets the y position of the bottom left pixel of a given Mazub to the specified y position.
-	 * @param Y_pos
-	 * 			The wanted y position.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidYPosition(Y_pos)
-	 */
-	public void setYPositionActual(double Y_pos) throws RuntimeException{
-		if (!isValidActualYPosition(Y_pos)) 
-			throw new RuntimeException();
-		this.yPosPixel = (int) (Y_pos * 100);
-		this.yPosMeter = Y_pos;
-	}
-	
-	/**
-	 * Sets the y position of the bottom left pixel of a given Mazub to the specified y pixel.
-	 * @param Y_pos
-	 * 			The wanted y position in pixels.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidXPosition(Y_pos/100)
-	 */
-	public void setYPositionPixel(int Y_pos) throws RuntimeException{
-		if (!isValidPixelYPosition(Y_pos))
-			throw new RuntimeException();
-		this.yPosPixel = Y_pos;
-		this.yPosMeter = ((double) Y_pos)/100;
-	}	
-		
-	/**
-	 * Returns the y position on the canvas in pixels.
-	 */
-	@Basic
-	public int getYPositionPixel() {
-		return this.yPosPixel;
-	}
-	
-	/**
-	 * Returns the y position on the canvas in meters.
-	 */
-	public double getYPositionActual() {
-		return this.yPosMeter;
-	}
-	
-	/**
-	 * Returns whether the given coordinate is on the canvas.
-	 * @param Y_pos
-	 * 			The given coordinate to check in meters.
-	 */
-	public boolean isValidActualYPosition(double Y_pos) {
-		return (Y_pos*100 <= (getMaxYPosition()) &&  Y_pos >= 0);
-	}
-	
-	/**
-	 * Returns whether the given coordinate is on the canvas.
-	 * @param X_pos
-	 * 			The given coordinate to check in pixels.
-	 */
-	public boolean isValidPixelYPosition(int Y_pos) {
-		return (Y_pos >= 0 && Y_pos <= getMaxYPosition());
-	}
-	
-	/**
-	 * Returns the maximal y position on the canvas in pixels.
-	 */
-	@Basic
-	public int getMaxYPosition() {
-		return maxYPosition;
-	}
-	
-	private int yPosPixel;
-	private double yPosMeter;
-	
-	/**
-	 * Returns the orientation of a Mazub.
-	 */
-	@Basic
-	public int getOrientation() {
-		return this.orientation;
-	}
-	
-	/**
-	 * Sets the orientation of a given Mazub.
-	 * @param orientation
-	 * 			The orientation that needs to be set
-	 * @pre The entered orientation is valid
-	 * 		| isValidOrientation(orientation)
-	 * @post The orientation of this Mazub is equal to the given
-	 *       orientation.
- 	 *       | new.getOrientation() == orientation
-	 */
-	private void setOrientation(int orientation) {
-		assert isValidOrientation();
-		this.orientation = orientation;
-	}
-	
-	/**
-	 * Returns true when the given orientation is a valid orientation
-	 * @param orientation
-	 * 			The orientation to check
-	 */
-	public boolean isValidOrientation() {
-		return getOrientation() == -1 || getOrientation() == 0 || getOrientation() == 1;
-		
-	}
-	
-	private int orientation;
-	
-	
-	private double horizontalSpeed;
-	
-	/**
-	 * Returns the horizontal speed of a Mazub given in meters per second.
-	 */
-	@Basic
-	public double getHorizontalSpeedMeters() {
-		return this.horizontalSpeed;
-	}
-	/**
-	 * Returns the horizontal speed of Mazub given in pixels per second
-	 */
-	public double getHorizontalSpeedPixels() {
-		return (this.horizontalSpeed * 100);
-	}
-	
-	/**
-	 *  Sets the the horizontal speed of Mazub to the given speed.
-	 *  
-	 * @param speed
-	 * 			The horizontal speed to give to Mazub
-	 * @post The new speed of Mazub is equal to the given speed if the given speed is 0.
-	 * 			| if (speed == 0) then new.horizontalSpeed == 0
-	 * @post The new speed of Mazub is equal to the given speed if the speed an allowed speed.
-	 * 			| if (Math.abs(speed) > getMinSpeedMeters() && Math.abs(speed) < getMaxSpeedMeters()) then new.horizontalSpeed == speed 
-	 * @post The new speed of Mazub is equal to the minimal speed if the speed is positive and less than the allowed minimum speed.
-	 * 			| if (speed < getMinSpeedMeters() && speed > 0) then new.horizontalSpeed == this.getMinSpeedMeters() 
-	 * @post The new speed of Mazub is equal to the minimal speed times -1 if the speed is negative and less than the allowed minimum speed in absolute value.
-	 * 			| if (speed < getMinSpeedMeters() && speed < 0) then new.horizontalSpeed == (this.getMinSpeedMeters())*-1
-	 * @post The new speed of Mazub is equal to the maximal speed if the speed is positive and greater than the allowed maximum speed.
-	 * 			| if (speed > getMaxSpeedMeters() && speed > 0) then new.horizontalSpeed == this.getMaxSpeedMeters() 
-	 * @post The new speed of Mazub is equal to the maximal speed times -1 if the speed is negative and greater than the allowed maximum speed in absolute value.
-	 * 			| if (speed > getMaxSpeedMeters() && speed < 0) then new.horizontalSpeed == (this.getMaxSpeedMeters())*-1
-	 */
-	private void setHorizontalSpeedMeters(double speed) {
-		if(Math.abs(speed)>= getMinSpeedMeters() && Math.abs(speed)<= getMaxSpeed())
-			this.horizontalSpeed = speed;
-		else if (Math.abs(speed) <= getMinSpeedMeters() && speed < 0)
-			this.horizontalSpeed = -1*getMinSpeedMeters();
-		else if (Math.abs(speed) <= getMinSpeedMeters() && speed > 0)
-			this.horizontalSpeed = getMinSpeedMeters();
-		else if (speed == 0)
-			this.horizontalSpeed = 0;
-		else if (Math.abs(speed) > getMaxSpeedRunningMeters() && speed > 0)
-			this.horizontalSpeed = getMaxSpeedRunningMeters();
-		else
-			this.horizontalSpeed = -1*getMaxSpeedRunningMeters();
-	}
-	
-	/**
-	 * Initiate the maximum  and minimum velocities
-	 */
-	private final double minSpeed;
-	private final double maxSpeedRunning;
-	private final double maxSpeedDucking;
-	
-	
-	/**
-	 * Returns the minimum horizontal speed in meters per second.
-	 */
-	@Basic @Immutable
-	public double getMinSpeedMeters() {
-		return minSpeed;
-	}
-	
-	/**
-	 * Returns the minimal horizontal speed in pixels per second0.
-	 */
-	@Immutable
-	public double getMinSpeedPixels() {
-		return (this.minSpeed * 100);
-	}
-	
-	/**
-	 * Returns the maximal horizontal speed in meters per second while running.
-	 */
-	@Basic @Immutable	
-	public double getMaxSpeedRunningMeters() {
-		return maxSpeedRunning;
-	}
-	
-	/**
-	 * Returns the maximal horizontal speed in pixels per second while running.
-	 */
-	@Immutable	
-	public double getMaxSpeedRunningPixels() {
-		return maxSpeedRunning * 100;
-	}
-	
-	/**
-	 * Returns the maximal horizontal speed in meters per second while ducking.
-	 */
-	@Basic @Immutable
-	public double getMaxSpeedDuckingMeters() {
-		return maxSpeedDucking;
-	}
-	
-	/**
-	 * Returns the maximal horizontal speed in pixels per second while ducking.
-	 */
-	@Immutable
-	public double getMaxSpeedDuckingPixels() {
-		return maxSpeedDucking * 100;
-	}
-	
-	/**
-	 * Returns whether the given speed is a valid speed
-	 */
-	private boolean isValidHorizontalSpeed() {
-		if (this.getHorizontalSpeedMeters() != 0) 
-				if ( Math.abs(this.getHorizontalSpeedMeters()) < this.getMinSpeedMeters()
-				 || Math.abs(this.getHorizontalSpeedMeters()) > this.getMaxSpeed()) {
-			return false;}
-		return true;
-	}
-	
-	private double verticalSpeed;
-	
-	/**
-	 * Returns the vertical speed of a given Mazub in meters per second.
-	 */
-	@Basic @Immutable
-	public double getVerticalSpeedMeters() {
-		return this.verticalSpeed;
-	}
-	
-	/**
-	 * Returns the vertical speed of a given Mazub in pixels per second.
-	 */
-	@Immutable
-	public double getVerticalSpeedPixels() {
-		return this.verticalSpeed * 100;
-	}
-	
-	/**
-	 * Sets the vertical speed to the given speed
-	 * @param verticalSpeedMeters
-	 * 			The vertical speed that needs to be set
-	 * @post If the absolute value of the given speed is less than the maximum speed then the new speed is equal to the given speed
-	 * 		| if Math.abs(verticalSpeedMeters) <= getMaxVerticalSpeedMeters() then new.verticalSpeed = verticalSpeedMeters
-	 * @post If the given speed is equal to the maximum speed in magnitude  and the given speed is positive then the new speed is the maximum speed
-	 * 		| if Math.abs(verticalSpeedMeters) = getMaxVerticalSpeedMeters() && verticalSpeedMeters < 0 then new.verticalSpeed = getMaxVerticalSpeedMeters()
-	 * @post If the given speed is equal to the maximum speed in magnitude  and the given speed is negative then the new speed is the negative maximum speed 
-	 * 		| if Math.abs(verticalSpeedMeters) = getMaxVerticalSpeedMeters() && verticalSpeedMeters > 0 then new.verticalSpeed = -1* getMaxVerticalSpeedMeters()
-	 */
-	private void setVerticalSpeedMeters(double verticalSpeedMeters) {
-		if( verticalSpeedMeters <= getMaxVerticalSpeedMeters())
-			this.verticalSpeed = verticalSpeedMeters;
-		else this.verticalSpeed = getMaxVerticalSpeedMeters();
-	}
-	private final double maxVerticalSpeed = 8.0;
-	
-	@Basic @Immutable
-	public double getMaxVerticalSpeedMeters() {
-		return maxVerticalSpeed;
-	}
-	
-	/**
-	 * Returns whether the given speed is a valid vertical speed
-	 */
-	private boolean isValidVerticalSpeed() {
-		if (this.getVerticalSpeedMeters() > this.getMaxVerticalSpeedMeters())
-			return false;
-		return true;
-	}
-	
-	/**
-	 * Returns the horizontal acceleration in meters per second squared.
-	 */
-	public double getHorizontalAcceleration() {
-		return horizontalAcceleration;
-	}
-	
-	/**
-	 * Sets the horizontal acceleration to the given acceleration in meters per second squared.
-	 * 
-	 * @param horizontalAcceleration The acceleration to set in meters per second
-	 * @post The new horizontal acceleration is equal to the given horizontal acceleration
-	 * 		| new.getHorizontalAcceleration() == horizontalAcceleration
-	 */
-	private void setHorizontalAcceleration(double horizontalAcceleration) {
-		if (Math.abs(horizontalAcceleration)== 0 || Math.abs(horizontalAcceleration) == maxHorizontalAcceleration)
-			this.horizontalAcceleration =  horizontalAcceleration;	
-	}
-	
-	private double horizontalAcceleration;
-	private final double maxHorizontalAcceleration = 0.9;
-	
-	/**
-	 * Returns the vertical acceleration in meters per second squared.
-	 */
-	public double getVerticalAcceleration() {
-		return verticalAcceleration;
-	}
-	
-	/**
-	 * Sets the vertical acceleration to the given acceleration in meters per second squared.
-	 * 
-	 * @param verticalAcceleration The acceleration to set in meters per second
-	 * @post The new vertical acceleration is equal to the given vertical acceleration
-	 * 		| new.getVerticalAcceleration() == verticalAcceleration
-	 */
-	private void setVerticalAcceleration(double verticalAcceleration) {
-		this.verticalAcceleration =  verticalAcceleration;
-	}
-	
-	private double verticalAcceleration;
-	private final double maxVerticalAcceleration = -10.0;
 	
 	/**
 	 * Starts the movement in a given direction
@@ -558,7 +95,7 @@ public class Mazub{
 	 * 		| !isMoving()
 	 */
 	public void startMove(int  direction) {
-		assert this.isValidAlien();
+		assert this.isValidGameObject();
 		assert (direction == -1 || direction == 1);
 		setOrientation(direction);
 		assert !this.isMoving;
@@ -578,31 +115,6 @@ public class Mazub{
 			setSprite(spriteArray[7]);
 		
 		}
-
-	/**
-	 * Sets the maximum horizontal speed for the given state of Mazub
-	 * 
-	 * @post if Mazub is ducking the new maximum speed is equal to the maximum speed while ducking
-	 * 		| if (isDucking()) then new.maxSpeed = this.maxSpeedDuckingMeters
-	 * @post if Mazub is not ducking the new maximum speed is equal to the maximum speed while running
-	 * 		| if (!isDucking()) then new.maxSpeed = this.maxSpeedRunningMeters
-	 */
-	private void setMaxSpeed() {
-		if (this.isDucking)
-			maxSpeed = maxSpeedDucking;
-		else
-			maxSpeed = maxSpeedRunning;
-	}
-	
-	private double maxSpeed;
-	
-	/**
-	 * Returns the maximum horizontal speed for the given state of the Mazub
-	 */
-	public double getMaxSpeed() {
-		this.setMaxSpeed();
-		return maxSpeed;
-	}
 	
 	/**
 	 * Ends the movement of Mazub
@@ -617,7 +129,7 @@ public class Mazub{
 	 */
 	@Raw
 	public void endMove() {
-		assert this.isValidAlien();
+		assert this.isValidGameObject();
 		assert this.isMoving;
 		
 		int orientation = getOrientation();
@@ -636,21 +148,6 @@ public class Mazub{
 	}
 	
 	public boolean isMoving; 
-	
-	/**
-	 * Returns whether the given alien is valid
-	 */
-	public boolean isValidAlien() {
-		if (!isValidActualXPosition(this.xPosMeter) || !isValidActualYPosition(this.yPosMeter)
-				|| !isValidPixelXPosition() || !isValidPixelYPosition(this.yPosPixel))
-			return false;
-		if (!isValidHorizontalSpeed() || !isValidVerticalSpeed())
-			return false;
-		if (this.spriteArray == null)
-			return false;
-		
-		return true;
-	}
 	
 	/**
 	 * Starts a jump for a given Mazub
@@ -907,62 +404,12 @@ public class Mazub{
 	private double frameRate = 0.075;
 	
 	/**
-	 * Returns the current sprite.
-	 */
-	public Sprite getCurrentSprite() {
-		return this.sprite;	
-	}
-	
-	/**
-	 * Sets the sprite of Mazub to the given sprite
-	 * @param sprite The sprite to set
-	 * @throws RuntimeException If the sprite is not valid
-	 * 			| !isValidSprite(sprite)
-	 * @post The new sprite is equal to the given sprite
-	 * 		| new.sprite == sprite
-	 */
-	private void setSprite(Sprite sprite) throws RuntimeException {
-		if (! isValidSprite(sprite))
-			throw new RuntimeException();	
-		this.sprite = sprite;	
-	}
-	
-	/**
-	 * Returns whether the given sprite is valid
-	 * @param sprite The sprite to check
-	 */
-	public boolean isValidSprite(Sprite sprite) {
-		return (sprite.canHaveAsHeight(sprite.getHeight()) &&
-				sprite.canHaveAsWidth(sprite.getWidth()) &&
-				sprite.canHaveAsName(sprite.getName()));
-	}
-	
-	/**
 	 * Returns whether an array of sprites has valid dimensions
 	 * @param sprites The array to check
 	 */
 	public boolean isValidSpriteArray(Sprite ... sprites) {
 		return (sprites.length >= 10 && sprites.length % 2 == 0);		
 	}
-	
-	/**
-	 * Sets the sprite array to a given array
-	 * @param sprites The array to which to set
-	 * @post The new spriteArray is equal to the given one
-	 * 		| new.getSpriteArray == sprites
-	 */
-	private void setSpriteArray (Sprite ... sprites) {
-		this.spriteArray = sprites.clone();
-	}
-	
-	/**
-	 * Returns the sprite array of a Mazub
-	 */
-	public Sprite[] getSpriteArray() {
-		return this.spriteArray.clone();
-	}
-	
-	private Sprite[] spriteArray;
 	
 	/**
 	 * Returns the loop length of a given sprite array (The amount of sprites to go either right or left)
@@ -976,7 +423,7 @@ public class Mazub{
 		return ((sprites.length - 10)/2);
 	}
 	
-	private Sprite sprite;
+//	private Sprite sprite;
 	
 	
 	/**
@@ -1026,24 +473,5 @@ public class Mazub{
 	
 	private double timeSinceLastMove;
 	
-	private void setHitpoints(int hitpoints) {
-		if (hitpoints < 0)
-			this.hitpoints = 0;
-		if (hitpoints > 500)
-			this.hitpoints = 500;
-		else
-			this.hitpoints = hitpoints;
-		
-	}
-	
-	public int getHitpoints() {
-		return this.hitpoints;
-	}
-	
-	private int hitpoints;
-	
-	private void changeHitPoints(int change) {
-		setHitpoints(getHitpoints() + change);
-	}
 }
  

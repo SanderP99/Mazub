@@ -8,7 +8,7 @@ import jumpingalien.util.Sprite;
 public abstract class GameObject {
 
 	GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, double maxHorizontalSpeedRunning, 
-			double maxHorizontalSpeedDucking, double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, 
+			double maxHorizontalSpeedDucking, double minHorizontalSpeed, double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, 
 			Sprite... sprites){
 		setYSize(pixelSizeY);
 		setXSize(pixelSizeX);
@@ -16,18 +16,24 @@ public abstract class GameObject {
 		setYPositionPixel(pixelBottomY);
 		setSprite(sprites[0]);
 		setSprites(sprites);
+		setSpriteArray(sprites);
 		setHitpoints(hitpoints);
 		setMaxSpeed();
+		setOrientation(0);
 		setHorizontalSpeedMeters(0);
+		this.maxHorizontalAcceleration = horizontalAcceleration;
+		this.maxVerticalAcceleration = verticalAcceleration;
 		this.minSpeed = minHorizontalSpeed;
 		this.maxSpeedDucking = maxHorizontalSpeedDucking;
 		this.maxSpeedRunning = maxHorizontalSpeedRunning;
-		setHorizontalAcceleration(horizontalAcceleration);
-		setVerticalAcceleration(verticalAcceleration);
+		this.maxVerticalSpeed = maxVerticalSpeed;
+		setHorizontalAcceleration(0);
+		setVerticalAcceleration(0);
+		
 	}
 	
 
-	private void setSprite(Sprite sprite) {
+	protected void setSprite(Sprite sprite) {
 		if (! isValidSprite(sprite))
 			throw new RuntimeException();	
 		this.sprite = sprite;
@@ -37,6 +43,26 @@ public abstract class GameObject {
 	private void setSprites(Sprite... sprites) {
 		this.sprites = sprites;
 	}
+	
+	/**
+	 * Sets the sprite array to a given array
+	 * @param sprites The array to which to set
+	 * @post The new spriteArray is equal to the given one
+	 * 		| new.getSpriteArray == sprites
+	 */
+	private void setSpriteArray (Sprite ... sprites) {
+		this.spriteArray = sprites.clone();
+	}
+	
+	/**
+	 * Returns the sprite array of a GameObject
+	 */
+	public Sprite[] getSpriteArray() {
+		return this.spriteArray.clone();
+	}
+	
+	
+	protected Sprite[] spriteArray;
 	
 	public Sprite[] getSprites() {
 		return this.sprites;
@@ -61,7 +87,7 @@ public abstract class GameObject {
 				sprite.canHaveAsName(sprite.getName()));
 	}
 
-	private Sprite sprite;
+	protected Sprite sprite;
 
 	/**
 	 * Initiate the size of the canvas in pixels
@@ -99,12 +125,11 @@ public abstract class GameObject {
 	private boolean isTerminated;
 	private boolean isDead;
 	
-	private int hitPoints;
 	
 	/**
-	 * Sets the y size of Mazub to the given amount of pixels.
+	 * Sets the y size of GameObject to the given amount of pixels.
 	 * @param Y_size
-	 * 			The wanted amount of pixels for the y size of Mazub.
+	 * 			The wanted amount of pixels for the y size of GameObject.
 	 * @post the new y size is equal to the specified amount of pixels
 	 * 		| (this.ySize == Y_size)
 	 */
@@ -113,7 +138,7 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the y size of a given Mazub.
+	 * Returns the y size of a given GameObject.
 	 */
 	@Basic
 	public int getYsize() {
@@ -123,9 +148,9 @@ public abstract class GameObject {
 	private int ySize;
 	
 	/**
-	 * Sets the x size of Mazub to the given amount of pixels.
+	 * Sets the x size of GameObject to the given amount of pixels.
 	 * @param X_size
-	 * 			The wanted amount of pixels for the x size of Mazub.
+	 * 			The wanted amount of pixels for the x size of GameObject.
 	 * @post the new x size is equal to the specified amount of pixels
 	 * 		| (this.xSize == X_size)
 	 */
@@ -134,7 +159,7 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the x size of a given Mazub.
+	 * Returns the x size of a given GameObject.
 	 */
 	@Basic
 	public int getXsize() {
@@ -144,7 +169,7 @@ public abstract class GameObject {
 	private int xSize;
 	
 	/**
-	 * Sets the x position of the bottom left pixel of a given Mazub to the specified x pixel.
+	 * Sets the x position of the bottom left pixel of a given GameObject to the specified x pixel.
 	 * @param X_pos
 	 * 			The wanted x position in pixels.
 	 * @throws RuntimeException
@@ -159,7 +184,7 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Sets the x position of the bottom left pixel of a given Mazub to the specified x position.
+	 * Sets the x position of the bottom left pixel of a given GameObject to the specified x position.
 	 * @param X_pos
 	 * 			The wanted x position.
 	 * @throws RuntimeException
@@ -172,8 +197,7 @@ public abstract class GameObject {
 		this.xPosPixel = (int) (X_pos * 100);
 		this.xPosMeter = X_pos;
 	}
-	
-	
+	public int[][] tiles;
 	
 	/**
 	 * Returns whether the given coordinate is on the canvas.
@@ -209,11 +233,11 @@ public abstract class GameObject {
 	
 	
 	
-	private int xPosPixel;
-	private double xPosMeter;
+	protected int xPosPixel;
+	protected double xPosMeter;
 	
 	/**
-	 * Sets the y position of the bottom left pixel of a given Mazub to the specified y pixel.
+	 * Sets the y position of the bottom left pixel of a given GameObject to the specified y pixel.
 	 * @param Y_pos
 	 * 			The wanted y position in pixels.
 	 * @throws RuntimeException
@@ -228,7 +252,7 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Sets the y position of the bottom left pixel of a given Mazub to the specified y position.
+	 * Sets the y position of the bottom left pixel of a given GameObject to the specified y position.
 	 * @param Y_pos
 	 * 			The wanted y position.
 	 * @throws RuntimeException
@@ -276,10 +300,10 @@ public abstract class GameObject {
 		return this.yPosPixel;
 	}
 	
-	private int yPosPixel;
-	private double yPosMeter;
+	protected int yPosPixel;
+	protected double yPosMeter;
 	
-	private void setHitpoints(int hitpoints) {
+	protected void setHitpoints(int hitpoints) {
 		if (hitpoints < 0)
 			this.hitpoints = 0;
 		if (hitpoints > 500)
@@ -314,16 +338,16 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Sets the orientation of a given Mazub.
+	 * Sets the orientation of a given GameObject.
 	 * @param orientation
 	 * 			The orientation that needs to be set
 	 * @pre The entered orientation is valid
 	 * 		| isValidOrientation(orientation)
-	 * @post The orientation of this Mazub is equal to the given
+	 * @post The orientation of this GameObject is equal to the given
 	 *       orientation.
  	 *       | new.getOrientation() == orientation
 	 */
-	private void setOrientation(int orientation) {
+	public void setOrientation(int orientation) {
 		assert isValidOrientation();
 		this.orientation = orientation;
 	}
@@ -339,24 +363,24 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the orientation of a Mazub.
+	 * Returns the orientation of a GameObject.
 	 */
 	@Basic
 	public int getOrientation() {
 		return this.orientation;
 	}
 	
-	private int orientation;
+	protected int orientation;
 	
 	/**
-	 * Returns the horizontal speed of a Mazub given in meters per second.
+	 * Returns the horizontal speed of a GameObject given in meters per second.
 	 */
 	@Basic
 	public double getHorizontalSpeedMeters() {
 		return this.horizontalSpeed;
 	}
 	/**
-	 * Returns the horizontal speed of Mazub given in pixels per second
+	 * Returns the horizontal speed of GameObject given in pixels per second
 	 */
 	public int getHorizontalSpeedPixels() {
 		return (int) (this.horizontalSpeed * 100);
@@ -365,21 +389,21 @@ public abstract class GameObject {
 	private double horizontalSpeed;
 	
 	/**
-	 *  Sets the the horizontal speed of Mazub to the given speed.
+	 *  Sets the the horizontal speed of GameObject to the given speed.
 	 *  
 	 * @param speed
-	 * 			The horizontal speed to give to Mazub
-	 * @post The new speed of Mazub is equal to the given speed if the given speed is 0.
+	 * 			The horizontal speed to give to GameObject
+	 * @post The new speed of GameObject is equal to the given speed if the given speed is 0.
 	 * 			| if (speed == 0) then new.horizontalSpeed == 0
-	 * @post The new speed of Mazub is equal to the given speed if the speed an allowed speed.
+	 * @post The new speed of GameObject is equal to the given speed if the speed an allowed speed.
 	 * 			| if (Math.abs(speed) > getMinSpeedMeters() && Math.abs(speed) < getMaxSpeedMeters()) then new.horizontalSpeed == speed 
-	 * @post The new speed of Mazub is equal to the minimal speed if the speed is positive and less than the allowed minimum speed.
+	 * @post The new speed of GameObject is equal to the minimal speed if the speed is positive and less than the allowed minimum speed.
 	 * 			| if (speed < getMinSpeedMeters() && speed > 0) then new.horizontalSpeed == this.getMinSpeedMeters() 
-	 * @post The new speed of Mazub is equal to the minimal speed times -1 if the speed is negative and less than the allowed minimum speed in absolute value.
+	 * @post The new speed of GameObject is equal to the minimal speed times -1 if the speed is negative and less than the allowed minimum speed in absolute value.
 	 * 			| if (speed < getMinSpeedMeters() && speed < 0) then new.horizontalSpeed == (this.getMinSpeedMeters())*-1
-	 * @post The new speed of Mazub is equal to the maximal speed if the speed is positive and greater than the allowed maximum speed.
+	 * @post The new speed of GameObject is equal to the maximal speed if the speed is positive and greater than the allowed maximum speed.
 	 * 			| if (speed > getMaxSpeedMeters() && speed > 0) then new.horizontalSpeed == this.getMaxSpeedMeters() 
-	 * @post The new speed of Mazub is equal to the maximal speed times -1 if the speed is negative and greater than the allowed maximum speed in absolute value.
+	 * @post The new speed of GameObject is equal to the maximal speed times -1 if the speed is negative and greater than the allowed maximum speed in absolute value.
 	 * 			| if (speed > getMaxSpeedMeters() && speed < 0) then new.horizontalSpeed == (this.getMaxSpeedMeters())*-1
 	 */
 	protected void setHorizontalSpeedMeters(double speed) {
@@ -400,9 +424,9 @@ public abstract class GameObject {
 	/**
 	 * Initiate the maximum  and minimum velocities
 	 */
-	private final double minSpeed;
-	private final double maxSpeedRunning;
-	private final double maxSpeedDucking;
+	protected final double minSpeed;
+	protected final double maxSpeedRunning;
+	protected final double maxSpeedDucking;
 	
 	
 	/**
@@ -456,7 +480,7 @@ public abstract class GameObject {
 	/**
 	 * Returns whether the given speed is a valid speed
 	 */
-	private boolean isValidHorizontalSpeed() {
+	protected boolean isValidHorizontalSpeed() {
 		if (this.getHorizontalSpeedMeters() != 0) 
 				if ( Math.abs(this.getHorizontalSpeedMeters()) < this.getMinSpeedMeters()
 				 || Math.abs(this.getHorizontalSpeedMeters()) > this.getMaxSpeed()) {
@@ -464,23 +488,23 @@ public abstract class GameObject {
 		return true;
 	}
 	
-	private double verticalSpeed;
+	protected double verticalSpeed;
 	
-	/**
-	 * Returns the vertical speed of a given Mazub in meters per second.
-	 */
-	@Basic @Immutable
-	public double getVerticalSpeedMeters() {
-		return this.verticalSpeed;
-	}
+//	/**
+//	 * Returns the vertical speed of a given GameObject in meters per second.
+//	 */
+//	@Basic @Immutable
+//	public double getVerticalSpeedMeters() {
+//		return this.verticalSpeed;
+//	}
 	
-	/**
-	 * Returns the vertical speed of a given Mazub in pixels per second.
-	 */
-	@Immutable
-	public double getVerticalSpeedPixels() {
-		return this.verticalSpeed * 100;
-	}
+//	/**
+//	 * Returns the vertical speed of a given GameObject in pixels per second.
+//	 */
+//	@Immutable
+//	public double getVerticalSpeedPixels() {
+//		return this.verticalSpeed * 100;
+//	}
 	
 	/**
 	 * Sets the vertical speed to the given speed
@@ -493,12 +517,12 @@ public abstract class GameObject {
 	 * @post If the given speed is equal to the maximum speed in magnitude  and the given speed is negative then the new speed is the negative maximum speed 
 	 * 		| if Math.abs(verticalSpeedMeters) = getMaxVerticalSpeedMeters() && verticalSpeedMeters > 0 then new.verticalSpeed = -1* getMaxVerticalSpeedMeters()
 	 */
-	private void setVerticalSpeedMeters(double verticalSpeedMeters) {
+	protected void setVerticalSpeedMeters(double verticalSpeedMeters) {
 		if( verticalSpeedMeters <= getMaxVerticalSpeedMeters())
 			this.verticalSpeed = verticalSpeedMeters;
 		else this.verticalSpeed = getMaxVerticalSpeedMeters();
 	}
-	private final double maxVerticalSpeed = 8.0;
+	protected final double maxVerticalSpeed;
 	
 	@Basic @Immutable
 	public double getMaxVerticalSpeedMeters() {
@@ -506,9 +530,17 @@ public abstract class GameObject {
 	}
 	
 	/**
+	 * Returns the vertical speed of a given GameObject in meters per second.
+	 */
+	@Basic @Immutable
+	public double getVerticalSpeedMeters() {
+		return this.verticalSpeed;
+	}
+	
+	/**
 	 * Returns whether the given speed is a valid vertical speed
 	 */
-	private boolean isValidVerticalSpeed() {
+	protected boolean isValidVerticalSpeed() {
 		if (this.getVerticalSpeedMeters() > this.getMaxVerticalSpeedMeters())
 			return false;
 		return true;
@@ -517,14 +549,14 @@ public abstract class GameObject {
 	public boolean isDucking;
 	
 	/**
-	 * Sets the maximum horizontal speed for the given state of Mazub
+	 * Sets the maximum horizontal speed for the given state of GameObject
 	 * 
-	 * @post if Mazub is ducking the new maximum speed is equal to the maximum speed while ducking
+	 * @post if GameObject is ducking the new maximum speed is equal to the maximum speed while ducking
 	 * 		| if (isDucking()) then new.maxSpeed = this.maxSpeedDuckingMeters
-	 * @post if Mazub is not ducking the new maximum speed is equal to the maximum speed while running
+	 * @post if GameObject is not ducking the new maximum speed is equal to the maximum speed while running
 	 * 		| if (!isDucking()) then new.maxSpeed = this.maxSpeedRunningMeters
 	 */
-	private void setMaxSpeed() {
+	protected void setMaxSpeed() {
 		if (this.isDucking)
 			maxSpeed = maxSpeedDucking;
 		else
@@ -534,7 +566,7 @@ public abstract class GameObject {
 	private double maxSpeed;
 	
 	/**
-	 * Returns the maximum horizontal speed for the given state of the Mazub
+	 * Returns the maximum horizontal speed for the given state of the GameObject
 	 */
 	public double getMaxSpeed() {
 		this.setMaxSpeed();
@@ -548,6 +580,8 @@ public abstract class GameObject {
 		return horizontalAcceleration;
 	}
 	
+	
+	
 	/**
 	 * Sets the horizontal acceleration to the given acceleration in meters per second squared.
 	 * 
@@ -555,13 +589,13 @@ public abstract class GameObject {
 	 * @post The new horizontal acceleration is equal to the given horizontal acceleration
 	 * 		| new.getHorizontalAcceleration() == horizontalAcceleration
 	 */
-	private void setHorizontalAcceleration(double horizontalAcceleration) {
+	protected void setHorizontalAcceleration(double horizontalAcceleration) {
 		if (Math.abs(horizontalAcceleration) == 0 || Math.abs(horizontalAcceleration) == maxHorizontalAcceleration)
 			this.horizontalAcceleration =  horizontalAcceleration;	
 	}
 	
 	private double horizontalAcceleration;
-	private double maxHorizontalAcceleration;
+	protected final double maxHorizontalAcceleration;
 	
 	/**
 	 * Returns the vertical acceleration in meters per second squared.
@@ -577,11 +611,26 @@ public abstract class GameObject {
 	 * @post The new vertical acceleration is equal to the given vertical acceleration
 	 * 		| new.getVerticalAcceleration() == verticalAcceleration
 	 */
-	private void setVerticalAcceleration(double verticalAcceleration) {
+	protected void setVerticalAcceleration(double verticalAcceleration) {
 		if (verticalAcceleration == 0 || verticalAcceleration == maxVerticalAcceleration)
 			this.verticalAcceleration =  verticalAcceleration;
 	}
 	
 	private double verticalAcceleration;
-	private double maxVerticalAcceleration;
+	protected final double maxVerticalAcceleration;
+	
+	/**
+	 * Returns whether the given alien is valid
+	 */
+	public boolean isValidGameObject() {
+		if (!isValidActualXPosition(this.xPosMeter) || !isValidActualYPosition(this.yPosMeter)
+				|| !isValidPixelXPosition(this.xPosPixel) || !isValidPixelYPosition(this.yPosPixel))
+			return false;
+		if (!isValidHorizontalSpeed() || !isValidVerticalSpeed())
+			return false;
+		if (this.spriteArray == null)
+			return false;
+		
+		return true;
+	}
 }

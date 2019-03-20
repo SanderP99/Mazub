@@ -11,9 +11,10 @@ public class Plant extends GameObject{
 			Sprite... sprites){
 		
 		super (positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, hitpoints,  maxHorizontalSpeedRunning, 
-				maxHorizontalSpeedDucking, minHorizontalSpeed, horizontalAcceleration, verticalAcceleration, sprites);
+				maxHorizontalSpeedDucking, minHorizontalSpeed, 0,horizontalAcceleration, verticalAcceleration, sprites);
 		
 		setHorizontalSpeedMeters(-1*Math.abs(horizontalSpeed));
+		setOrientation(-1);
 		setSecondsToLive(secondsToLive);
 	} 
 
@@ -33,6 +34,14 @@ public class Plant extends GameObject{
 	}
 	
 	private int secondsToLive;
+	
+	/**
+	 * Returns whether an array of sprites has valid dimensions
+	 * @param sprites The array to check
+	 */
+	public boolean isValidSpriteArray(Sprite ... sprites) {
+		return (sprites.length == 2);		
+	}
 	
 	
 }

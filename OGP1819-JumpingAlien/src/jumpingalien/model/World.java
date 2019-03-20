@@ -116,7 +116,7 @@ public class World {
 	}
 	
 	public void setTargetTileX(int targetTileX) {
-		assert isValidTargetTileX(targetTileX);
+//		assert isValidTargetTileX(targetTileX);
 		assert !isTerminated();
 		this.targetTileX = targetTileX;
 	}
@@ -135,7 +135,7 @@ public class World {
 	}
 	
 	public void setTargetTileY(int targetTileY) {
-		assert isValidTargetTileY(targetTileY);
+//		assert isValidTargetTileY(targetTileY);
 		assert !isTerminated();
 		this.targetTileY = targetTileY;
 	}
