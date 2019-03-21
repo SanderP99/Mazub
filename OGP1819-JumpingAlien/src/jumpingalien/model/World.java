@@ -2,6 +2,7 @@ package jumpingalien.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
@@ -68,6 +69,9 @@ public class World {
 
 	}
 	
+	/**
+	 * Returns the horizontal worldsize in pixels
+	 */
 	@Basic
 	public int getWorldSizeX() {
 		return this.worldSizeX;
@@ -332,7 +336,7 @@ public class World {
 			return WATER;
 		if (this.tiles.contains(pixelX/getTileLength() + " " + pixelY / getTileLength() + " " + MAGMA))
 			return MAGMA;
-		return 0;		
+		return AIR;		
 	}
 	public final static int AIR = 0;
 	public final static int SOLID_GROUND = 1;
@@ -364,5 +368,27 @@ public class World {
 		
 	}
 	public HashSet<String> tiles;
+	
+	private HashSet<GameObject> objects = new HashSet<GameObject>();
+	
+	public void addGameObject(GameObject gameObject) {
+		objects.add(gameObject);
+		gameObject.world = this;
+	}
+	
+	public Set<Object> getAllObjects() {
+		HashSet<Object> allObjects = new HashSet<Object>(objects.size());
+		for (GameObject object : objects) {
+			Object gameObjectAsObject = ((Object) object);
+			allObjects.add(gameObjectAsObject);
+			}
+	return allObjects;	
+	}
+
+	public void removeObject(GameObject gameObject) {
+		objects.remove(gameObject);
+		gameObject.world = null;
+		
+	}
 
 }

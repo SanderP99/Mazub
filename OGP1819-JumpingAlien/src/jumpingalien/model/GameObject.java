@@ -80,8 +80,8 @@ public abstract class GameObject {
 			Sprite... sprites){
 		setYSize(pixelSizeY);
 		setXSize(pixelSizeX);
-		setXPositionPixel(pixelLeftX);
-		setYPositionPixel(pixelBottomY);
+		setXPositionActual((double)pixelLeftX/100);
+		setYPositionActual((double)pixelBottomY/100);
 		setSprite(sprites[0]);
 		setSpriteArray(sprites);
 		setHitpoints(hitpoints);
@@ -164,12 +164,6 @@ public abstract class GameObject {
 	 * A variable to store the current sprite.
 	 */
 	protected Sprite sprite;
-
-	/**
-	 * Initiate the size of the canvas in pixels
-	 */
-	private int maxXPosition = 1024;
-	private int maxYPosition = 768;
 	
 	/**
 	 * Check whether this object is terminated.
@@ -193,9 +187,17 @@ public abstract class GameObject {
 		if (!isTerminated()) {
 			this.isTerminated = true;
 			this.setHitpoints(0);
+			this.removeWorld();
 		}
 	}
 	
+	private void removeWorld() {
+		this.world.removeObject(this);
+		this.world = null;
+		
+		
+	}
+
 	public void kill() {
 		if (!isDead()) {
 			this.isDead = true;
@@ -250,21 +252,6 @@ public abstract class GameObject {
 	private int xSize;
 	
 	/**
-	 * Sets the x position of the bottom left pixel of a given GameObject to the specified x pixel.
-	 * @param X_pos
-	 * 			The wanted x position in pixels.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidXPosition(X_pos/100)
-	 */
-	public void setXPositionPixel(int X_pos) throws RuntimeException{
-		if (!isValidPixelXPosition(X_pos))
-			throw new RuntimeException();
-		this.xPosPixel = X_pos;
-		this.xPosMeter = ((double) X_pos)/100;
-	}
-	
-	/**
 	 * Sets the x position of the bottom left pixel of a given GameObject to the specified x position.
 	 * @param X_pos
 	 * 			The wanted x position.
@@ -277,6 +264,7 @@ public abstract class GameObject {
 		this.xPosMeter = X_pos;
 		if (!isValidActualXPosition(this.xPosMeter))
 			terminate();
+
 	}
 	public int[][] tiles;
 	
@@ -309,28 +297,13 @@ public abstract class GameObject {
 	 */
 	@Basic 
 	public int getMaxXPosition() {
-		return maxXPosition;
+		return this.world.getWorldSizeX();
 	}
 	
 	
 	
 	protected int xPosPixel;
 	protected double xPosMeter;
-	
-	/**
-	 * Sets the y position of the bottom left pixel of a given GameObject to the specified y pixel.
-	 * @param Y_pos
-	 * 			The wanted y position in pixels.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidXPosition(Y_pos/100)
-	 */
-	public void setYPositionPixel(int Y_pos) throws RuntimeException{
-		if (!isValidPixelYPosition(Y_pos))
-			throw new RuntimeException();
-		this.yPosPixel = Y_pos;
-		this.yPosMeter = ((double) Y_pos)/100;
-	}
 	
 	/**
 	 * Sets the y position of the bottom left pixel of a given GameObject to the specified y position.
@@ -345,6 +318,7 @@ public abstract class GameObject {
 		this.yPosMeter = Y_pos;
 		if (!isValidActualYPosition(this.xPosMeter)) 
 			terminate();
+
 	}
 	
 	/**
@@ -370,7 +344,7 @@ public abstract class GameObject {
 	 */
 	@Basic
 	public int getMaxYPosition() {
-		return maxYPosition;
+		return this.world.getWorldSizeY();
 	}
 	
 	/**
@@ -721,4 +695,17 @@ public abstract class GameObject {
 			return false;
 		return true;
 	}
+	
+	World world;
+	
+	public void setWorld(World world) {
+		this.world = world;
+		world.addGameObject(this);
+	}
+
+	public World getWorld() {
+		return world;
+	}
+
+
 }

@@ -48,9 +48,10 @@ public class Facade implements IFacade {
 			throw new ModelException("The alien is not valid");
 		if (newPosition.length != 2)
 			throw new ModelException("Only 2  coordinates allowed");
-		if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1]))
-			throw new ModelException("The position is not valid");
-		
+		if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1])) {
+			alien.terminate();
+
+		}
 		alien.setXPositionActual(newPosition[0]);
 		alien.setYPositionActual(newPosition[1]);
 
@@ -112,6 +113,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startMoveLeft(Mazub alien) throws ModelException {
+		if (alien.isDead())
+			throw new ModelException("The alien is dead");
 		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (alien.isMoving)
@@ -122,6 +125,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startMoveRight(Mazub alien) throws ModelException {
+		if (alien.isDead())
+			throw new ModelException("The alien is dead");
 		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (alien.isMoving)
@@ -151,6 +156,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startJump(Mazub alien) throws ModelException {
+		if (alien.isDead())
+			throw new ModelException("The alien is dead");
 		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		if (isJumping(alien))
@@ -188,6 +195,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startDuck(Mazub alien) throws ModelException {
+		if (alien.isDead())
+			throw new ModelException("The alien is dead");
 		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		alien.startDuck();
@@ -264,8 +273,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Set<Object> getAllGameObjects(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getAllObjects();
 	}
 
 	@Override
@@ -276,13 +284,15 @@ public class Facade implements IFacade {
 
 	@Override
 	public void addGameObject(Object object, World world) throws ModelException {
-		// TODO Auto-generated method stub
+		if (!((GameObject) object).isValidGameObject())
+			throw new ModelException("The object is not valid");
+		world.addGameObject((GameObject) object); 
 		
 	}
 
 	@Override
 	public void removeGameObject(Object object, World world) throws ModelException {
-		// TODO Auto-generated method stub
+		world.removeObject((GameObject) object);
 		
 	}
 
@@ -325,6 +335,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+		if (sprites == null)
+			throw new ModelException("The sprites are not valid");
+		if (sprites.length != 2)
+			throw new ModelException("The sprites are not valid");
+		for (int i = 0; i < sprites.length; i++)
+			if (sprites[i] == null)
+				throw new ModelException("The sprites are not valid");
 		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10, 0.5, 0.5, 0.5, 0, 0,sprites);
 	}
 
@@ -375,8 +392,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public World getWorld(Object object) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return ((GameObject) object).getWorld();
 	}
 
 	@Override
@@ -396,7 +412,8 @@ public class Facade implements IFacade {
 	@Override
 	public void advanceTime(Object gameObject, double dt) throws ModelException {
 		// TODO Auto-generated method stub
-		
+		if (dt != dt)
+			throw new ModelException("The time is not valid");
 	}
 
 }
