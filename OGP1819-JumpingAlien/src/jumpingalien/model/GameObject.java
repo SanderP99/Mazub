@@ -5,8 +5,76 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import jumpingalien.util.Sprite;
 
+/**
+ * A class that implements a player character with the ability to jump, to run to the left and to the right.
+ * 
+ * @author Warre Dreesen
+ * @author Sander Prenen
+ * 
+ * @invar The left most x coordinate of GameObject is a valid coordinate
+ * 			| isValidXPosition() == true
+ * @invar The bottom most y coordinate of GameObject is a valid coordinate
+ * 			| isValidYPosition() == true
+ * @invar The horizontal speed of a GameObject is a valid speed
+ * 			| isValidHorizontalSpeed() == true
+ * @invar The vertical speed of a GameObject is a valid speed
+ * 			| isValidVerticalSpeed() == true
+ * @invar The GameObject is valid
+ * 			| isValidGameObject() == true
+ * @invar The GameObject has a valid orientation
+ * 			| isValidOrientation() == true
+ * @invar The sprites are valid sprites
+ * 			| isValidSpriteArray() == true
+ * @invar The sprites in an array are all valid
+ * 			| isValidSprite() == true
+ */
 public abstract class GameObject {
-
+	
+	/**
+	 * Creates a new GameObject
+	 * 
+	 * @param pixelLeftX
+	 * 			The leftmost pixel of the GameObject
+	 * @param pixelBottomY
+	 * 			The bottom-most pixel of the GameObject
+	 * @param pixelSizeX
+	 * 			The width of the GameObject in pixels
+	 * @param pixelSizeY
+	 * 			The height of the GameObject in pixels.
+	 * @param hitpoints
+	 * 			The hitpoints of the GameObject
+	 * @param maxHorizontalSpeedRunning
+	 * 			The maximal horizontal speed of GameObject while running given in meters/second
+	 * @param maxHorizontalSpeedDucking
+	 * 			The maximal horizontal speed of GameObejct while ducking given in meters/second
+	 * @param minHorizontalSpeed
+	 * 			The minimal horizontal speed of GameObject given in meters/second
+	 * @param maxVerticalSpeed
+	 * 			The maximum vertical speed of a GameObject
+	 * @param horizontalAcceleration
+	 * 			The horizontal acceleration of a GameObject
+	 * @param verticalAcceleration
+	 * 			The vertical acceleration of a GameObject
+	 * @param sprites
+	 * 			The sprites needed to represent the GameObject
+	 * 
+	 * @effect setYSize(pixelSizeY) && setXSize(pixelSizeX) && setXPositionPixel(pixelLeftX) && setYPositionPixel(pixelBottomY)
+	 * 			&& setSprite(sprites[0]) && setSpriteArray(sprites) && setHitpoints(hitpoints) && setOrientation(0)
+	 * 			&& setHorizontalSpeedMeters(0) && setVerticalAcceleration(0) && setHorizontalAcceleration(0)
+	 * 
+	 * @post ...
+	 * 		| this.maxHorizontalAcceleration == horizontalAcceleration
+	 * @post ...
+	 * 		| this.maxVerticalAcceleration == verticalAcceleration
+	 * @post ...
+	 * 		| this.minSpeed == minHorizontalSpeed
+	 * @post ...
+	 * 		| this.maxSpeedDucking == maxHorizontalSpeedDucking
+	 * @post ...
+	 * 		| this.maxSpeedRunning == maxHorizontalSpeedRunning
+	 * @post ...
+	 * 		| this.maxVerticalSpeed == maxVerticalSpeed
+	 */
 	GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, double maxHorizontalSpeedRunning, 
 			double maxHorizontalSpeedDucking, double minHorizontalSpeed, double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, 
 			Sprite... sprites){
@@ -15,7 +83,6 @@ public abstract class GameObject {
 		setXPositionPixel(pixelLeftX);
 		setYPositionPixel(pixelBottomY);
 		setSprite(sprites[0]);
-		setSprites(sprites);
 		setSpriteArray(sprites);
 		setHitpoints(hitpoints);
 		setMaxSpeed();
@@ -32,21 +99,24 @@ public abstract class GameObject {
 		
 	}
 	
-
+	/**
+	 * Sets the current sprite to the given sprite
+	 * @param sprite The sprite to set
+	 * 
+	 * @post ...
+	 * 		| this.sprite == sprite
+	 */
 	protected void setSprite(Sprite sprite) {
-		if (! isValidSprite(sprite))
+		if (!isValidSprite(sprite))
 			throw new RuntimeException();	
 		this.sprite = sprite;
 		
 	}
 	
-	private void setSprites(Sprite... sprites) {
-		this.sprites = sprites;
-	}
-	
 	/**
 	 * Sets the sprite array to a given array
 	 * @param sprites The array to which to set
+	 * 
 	 * @post The new spriteArray is equal to the given one
 	 * 		| new.getSpriteArray == sprites
 	 */
@@ -57,6 +127,7 @@ public abstract class GameObject {
 	/**
 	 * Returns the sprite array of a GameObject
 	 */
+	@Basic
 	public Sprite[] getSpriteArray() {
 		return this.spriteArray.clone();
 	}
@@ -73,12 +144,14 @@ public abstract class GameObject {
 	/**
 	 * Returns the current sprite.
 	 */
+	@Basic
 	public Sprite getCurrentSprite() {
 		return this.sprite;	
 	}
 	
 	/**
 	 * Returns whether the given sprite is valid
+	 * 
 	 * @param sprite The sprite to check
 	 */
 	public boolean isValidSprite(Sprite sprite) {
@@ -87,6 +160,9 @@ public abstract class GameObject {
 				sprite.canHaveAsName(sprite.getName()));
 	}
 
+	/**
+	 * A variable to store the current sprite.
+	 */
 	protected Sprite sprite;
 
 	/**
@@ -104,6 +180,11 @@ public abstract class GameObject {
 		return this.isTerminated;
 	}
 	
+	/**
+	 * Check whether this object is dead.
+	 */
+	@Basic
+	@Raw
 	public boolean isDead() {
 		return this.isDead;
 	}
@@ -118,7 +199,7 @@ public abstract class GameObject {
 	public void kill() {
 		if (!isDead()) {
 			this.isDead = true;
-			this.setHitpoints(0);
+			terminate();
 		}
 	}
 	
@@ -192,10 +273,10 @@ public abstract class GameObject {
 	 * 			| !isValidXPosition(X_pos)
 	 */
 	public void setXPositionActual(double X_pos) throws RuntimeException{
-		if (!isValidActualXPosition(X_pos))
-			throw new RuntimeException();
 		this.xPosPixel = (int) (X_pos * 100);
 		this.xPosMeter = X_pos;
+		if (!isValidActualXPosition(this.xPosMeter))
+			terminate();
 	}
 	public int[][] tiles;
 	
@@ -260,10 +341,10 @@ public abstract class GameObject {
 	 * 			| !isValidYPosition(Y_pos)
 	 */
 	public void setYPositionActual(double Y_pos) throws RuntimeException{
-		if (!isValidActualYPosition(Y_pos)) 
-			throw new RuntimeException();
 		this.yPosPixel = (int) (Y_pos * 100);
 		this.yPosMeter = Y_pos;
+		if (!isValidActualYPosition(this.xPosMeter)) 
+			terminate();
 	}
 	
 	/**
@@ -489,22 +570,6 @@ public abstract class GameObject {
 	}
 	
 	protected double verticalSpeed;
-	
-//	/**
-//	 * Returns the vertical speed of a given GameObject in meters per second.
-//	 */
-//	@Basic @Immutable
-//	public double getVerticalSpeedMeters() {
-//		return this.verticalSpeed;
-//	}
-	
-//	/**
-//	 * Returns the vertical speed of a given GameObject in pixels per second.
-//	 */
-//	@Immutable
-//	public double getVerticalSpeedPixels() {
-//		return this.verticalSpeed * 100;
-//	}
 	
 	/**
 	 * Sets the vertical speed to the given speed

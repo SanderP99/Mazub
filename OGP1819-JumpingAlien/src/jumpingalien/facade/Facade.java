@@ -155,7 +155,12 @@ public class Facade implements IFacade {
 			throw new ModelException("The alien is not valid");
 		if (isJumping(alien))
 			throw new ModelException("The alien is already jumping");
-		alien.startJump();
+		
+		try {
+			alien.startJump();
+		} catch (RuntimeException e) {
+			throw new ModelException("Runtime exception");
+		}
 
 	}
 
@@ -165,7 +170,12 @@ public class Facade implements IFacade {
 			throw new ModelException("The alien is not valid");
 		if (!isJumping(alien) && !alien.isFalling)
 			throw new ModelException("The alien is not jumping");
-		alien.endJump();
+		
+		try {
+			alien.endJump();
+		} catch (RuntimeException e) {
+			throw new ModelException("Runtime exception");
+		}
 
 	}
 
@@ -376,7 +386,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Sprite[] getSprites(Object gameObject) throws ModelException {
-		return ((GameObject) gameObject).getSprites();
+		return ((GameObject) gameObject).getSpriteArray();
 	}
 	@Override
 	public Sprite getCurrentSprite(Object gameObject) throws ModelException{

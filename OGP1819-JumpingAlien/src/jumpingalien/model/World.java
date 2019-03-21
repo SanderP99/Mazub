@@ -1,5 +1,6 @@
 package jumpingalien.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import be.kuleuven.cs.som.annotate.Basic;
@@ -63,7 +64,7 @@ public class World {
 			throw new RuntimeException();
 		this.visibleWindowWidth = visibleWindowWidth;
 		this.setVisibleWindowPosition(new int[] {0, 0});
-		this.initializeGeologicalFeatures(worldSizeX/tileLength, worldSizeY/tileLength,geologicalFeatures);
+		this.initializeGeologicalFeatures(nbTilesX, nbTilesY,geologicalFeatures);
 
 	}
 	
@@ -283,9 +284,12 @@ public class World {
 		if( ! isValidGeologicalFeature(geologicalFeature))
 			geologicalFeature = AIR;
 		if (isValidPixelYPosition(pixelY) && isValidPixelXPosition(pixelX)) {
-			this.tiles.remove(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),
-					getGeologicalFeature(pixelX,pixelY)});
-			this.tiles.add(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),geologicalFeature});
+			this.tiles.remove(pixelX / getTileLength() + " " + pixelY/ getTileLength() + " " + getGeologicalFeature(pixelX, pixelY));
+//			this.tiles.remove(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),
+//					getGeologicalFeature(pixelX,pixelY)});
+			this.tiles.add(pixelX / getTileLength() + " " + pixelY/ getTileLength() + " " + geologicalFeature);
+
+//			this.tiles.add(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),geologicalFeature});
 		}	
 	}
 	/**
@@ -311,13 +315,22 @@ public class World {
 			pixelY = 0;
 		if (!isValidPixelXPosition(pixelX))
 			pixelX = 0;
-		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,AIR}))
+//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,AIR}))
+//			return AIR;
+//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,SOLID_GROUND}))
+//			return SOLID_GROUND;
+//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,WATER}))
+//			return WATER;
+//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,MAGMA}))
+//			return MAGMA;
+		
+		if (this.tiles.contains(pixelX/getTileLength() + " " + pixelY / getTileLength() + " " + AIR))
 			return AIR;
-		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,SOLID_GROUND}))
+		if (this.tiles.contains(pixelX/getTileLength() + " " + pixelY / getTileLength() + " " + SOLID_GROUND))
 			return SOLID_GROUND;
-		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,WATER}))
+		if (this.tiles.contains(pixelX/getTileLength() + " " + pixelY / getTileLength() + " " + WATER))
 			return WATER;
-		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,MAGMA}))
+		if (this.tiles.contains(pixelX/getTileLength() + " " + pixelY / getTileLength() + " " + MAGMA))
 			return MAGMA;
 		return 0;		
 	}
@@ -332,18 +345,24 @@ public class World {
 		
 	}
 
-	private void initializeGeologicalFeatures(int xLength, int yLength,int... geologicalFeatures) {
-	        this.tiles =  new HashSet<int[]>();
+	private void initializeGeologicalFeatures(int xLength, int yLength, int... geologicalFeatures) {
+	        this.tiles =  new HashSet<String>();
 
 	        for(int i = 0; i < geologicalFeatures.length; i++) {
-	        	tiles.add(new int[] {i % xLength, i / xLength, geologicalFeatures[i]});
+	        	tiles.add(i % xLength + " " + i / xLength + " " + geologicalFeatures[i]);
+//	        	tiles.add(new int[] {i % xLength, i / xLength, geologicalFeatures[i]});
 	        }
-	        for(int i = geologicalFeatures.length; i < xLength * yLength; i++) {
-	        	tiles.add(new int[] {i % xLength, i / xLength, AIR});
-	        }
+//	        for(int i = geologicalFeatures.length; i < xLength * yLength; i++) {
+//	        	tiles.add(new int[] {i % xLength, i / xLength, AIR});
+//	        }
+//	        for (int i = 0; i < geologicalFeatures.length / (getWorldSizeX()/getTileLength()); i++) {
+//	        	for (int j = 0; j < getWorldSizeX(); j++) {
+//	        		setGeologicalFeature(j*getTileLength(), i*getTileLength(), geologicalFeatures[i*2+j]);
+//	        	}
+//	        }
 	        	
 		
 	}
-	private HashSet<int[]> tiles;
+	public HashSet<String> tiles;
 
 }
