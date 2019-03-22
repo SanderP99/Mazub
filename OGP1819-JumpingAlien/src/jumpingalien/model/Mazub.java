@@ -473,5 +473,16 @@ public class Mazub extends GameObject {
 	
 	private double timeSinceLastMove;
 	
+	boolean isPlayer;
+
+	public void setPlayer() {
+		this.isPlayer = true;
+		this.getWorld().player = this;
+	}
+	
+	public boolean isPlayer() {
+		return this.isPlayer;
+	}
+	
 }
  

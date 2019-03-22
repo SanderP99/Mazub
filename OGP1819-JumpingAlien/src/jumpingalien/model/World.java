@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hamcrest.core.IsInstanceOf;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -22,6 +24,8 @@ import be.kuleuven.cs.som.annotate.Raw;
  *    
  */
 public class World {
+	
+
 	/**
 	 * 
 	 * @param worldSizeX
@@ -52,7 +56,7 @@ public class World {
 	 *         (0,0).
 	 *       | this.setVisibleWindowPosition(new int[] {0, 0})
 	 */
-	public World(int nbTilesX, int nbTilesY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws RuntimeException{
+	public World(int nbTilesX, int nbTilesY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth, int visibleWindowHeight, int maxNbOfObjects, int... geologicalFeatures) throws RuntimeException{
 		setTileLength(tileLength);
 		setWorldSizeX(nbTilesX * getTileLength());
 		setWorldSizeY(nbTilesY * getTileLength());
@@ -66,9 +70,21 @@ public class World {
 		this.visibleWindowWidth = visibleWindowWidth;
 		this.setVisibleWindowPosition(new int[] {0, 0});
 		this.initializeGeologicalFeatures(nbTilesX, nbTilesY,geologicalFeatures);
+		this.setMaxNbOfObjects(maxNbOfObjects);
 
 	}
 	
+	private void setMaxNbOfObjects(int maxNbOfObjects) {
+		this.maxNbOfObjects = maxNbOfObjects;	
+	}
+	
+	private int getMaxNbOfObjects() {
+		return maxNbOfObjects;
+	}
+	
+	private int maxNbOfObjects;
+	
+
 	/**
 	 * Returns the horizontal worldsize in pixels
 	 */
@@ -371,11 +387,39 @@ public class World {
 	
 	private HashSet<GameObject> objects = new HashSet<GameObject>();
 	
-	public void addGameObject(GameObject gameObject) {
+	GameObject player;
+	
+	public void addGameObject(GameObject gameObject) throws RuntimeException {
+		if (getAllObjects().size() - 1 == getMaxNbOfObjects())
+			throw new RuntimeException();
+		if (!gameObject.isValidGameObject())
+			throw new RuntimeException();
+		if (gameObject.getXPositionPixel() >= getWorldSizeX() || gameObject.getXPositionActual() < 0)
+			throw new RuntimeException();
+		if (gameObject.getYPositionPixel() >= getWorldSizeY() || gameObject.getYPositionActual() < 0)
+			throw new RuntimeException();
+		if (gameObject.getWorld() != null)
+			throw new RuntimeException();
+//		for (Object object : getAllObjects())
+//			if (gameObject.collidesWith((GameObject) object))
+//				throw new RuntimeException();
+			
+		if (getAllObjects().size() == 0 && gameObject instanceof Mazub)
+			this.setPlayer(gameObject);
 		objects.add(gameObject);
 		gameObject.world = this;
 	}
 	
+
+	void setPlayer(GameObject gameObject) {
+		this.player = gameObject;	
+		((Mazub) gameObject).isPlayer = true;
+	}
+	
+	public GameObject getPlayer() {
+		return this.player;
+	}
+
 	public Set<Object> getAllObjects() {
 		HashSet<Object> allObjects = new HashSet<Object>(objects.size());
 		for (GameObject object : objects) {
@@ -388,7 +432,21 @@ public class World {
 	public void removeObject(GameObject gameObject) {
 		objects.remove(gameObject);
 		gameObject.world = null;
+		if (!getAllObjects().contains(getPlayer()))
+			this.player = null;
 		
+	}
+	
+	public boolean hasAsGameObject(GameObject gameObject) {
+		if (getAllObjects().contains(gameObject))
+			return true;
+		return false;
+	}
+	
+	private double getTimeStep(GameObject gameObject, double deltaT) {
+		double velocityRoot = Math.sqrt(Math.pow(gameObject.getHorizontalSpeedMeters(), 2) + Math.pow(gameObject.getVerticalSpeedMeters(), 2));
+		double accelerationRoot = Math.sqrt(Math.pow(gameObject.getHorizontalAcceleration(), 2) + Math.pow(gameObject.getVerticalAcceleration(), 2));
+		return 0.01 /(velocityRoot + accelerationRoot * deltaT);
 	}
 
 }

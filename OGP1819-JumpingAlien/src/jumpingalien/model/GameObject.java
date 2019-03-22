@@ -188,13 +188,15 @@ public abstract class GameObject {
 			this.isTerminated = true;
 			this.setHitpoints(0);
 			this.removeWorld();
+			
 		}
 	}
 	
 	private void removeWorld() {
-		this.world.removeObject(this);
-		this.world = null;
-		
+		if (this.world != null) {
+			this.world.removeObject(this);
+			this.world = null;
+		}
 		
 	}
 

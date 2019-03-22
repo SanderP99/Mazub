@@ -48,9 +48,12 @@ public class Facade implements IFacade {
 			throw new ModelException("The alien is not valid");
 		if (newPosition.length != 2)
 			throw new ModelException("Only 2  coordinates allowed");
+		if (newPosition[0] != newPosition[0] || newPosition[1] != newPosition[1])
+			throw new ModelException("NaN as position argument");
+		if (alien.getWorld() != null && alien.getWorld().getGeologicalFeature((int)(newPosition[0] * 100), (int)(newPosition[1] * 100)) == World.SOLID_GROUND)
+			throw new ModelException("New position on impassable terrain");
 		if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1])) {
 			alien.terminate();
-
 		}
 		alien.setXPositionActual(newPosition[0]);
 		alien.setYPositionActual(newPosition[1]);
@@ -222,16 +225,25 @@ public class Facade implements IFacade {
 	@Override
 	public World createWorld(int tileSize, int nbTilesX, int nbTilesY, int[] targetTileCoordinate,
 			int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws ModelException {
-//		if (tileSize < 0 || nbTilesX < 0 || nbTilesY < 0)
-//			throw new ModelException("The dimensions of this world are not valid");
-		return new World(nbTilesX,nbTilesY,tileSize,targetTileCoordinate[0],
-				targetTileCoordinate[1],visibleWindowWidth,
-				visibleWindowHeight,geologicalFeatures);
+//			if (visibleWindowHeight > tileSize * nbTilesY || visibleWindowWidth > tileSize * nbTilesX)
+//				throw new ModelException("The visible window is invalid");
+		try {
+			World world =  new World(nbTilesX,nbTilesY,tileSize,targetTileCoordinate[0],
+					targetTileCoordinate[1],visibleWindowWidth,
+					visibleWindowHeight, 100, geologicalFeatures);
+			return world;
+		} catch (RuntimeException e) {
+			throw new ModelException("The window is not valid");
+		}
+//		World world =  new World(nbTilesX,nbTilesY,tileSize,targetTileCoordinate[0],
+//				targetTileCoordinate[1],visibleWindowWidth,
+//				visibleWindowHeight,geologicalFeatures);
+//		return world;
 	}
 
 	@Override
 	public void terminateWorld(World world) throws ModelException {
-		// TODO Auto-generated method stub
+		world.terminate();
 		
 	}
 
@@ -267,8 +279,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean hasAsGameObject(Object object, World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return world.hasAsGameObject((GameObject) object);
 	}
 
 	@Override
@@ -278,21 +289,30 @@ public class Facade implements IFacade {
 
 	@Override
 	public Mazub getMazub(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		if (world.getPlayer() == null)
+			return null;
+		return (Mazub) world.getPlayer();
 	}
 
 	@Override
 	public void addGameObject(Object object, World world) throws ModelException {
-		if (!((GameObject) object).isValidGameObject())
-			throw new ModelException("The object is not valid");
-		world.addGameObject((GameObject) object); 
-		
+		try {
+			if (!((GameObject) object).isValidGameObject())
+				throw new ModelException("The object is not valid");
+			if (world.isTerminated())
+				throw new ModelException("The world is terminated");
+			world.addGameObject((GameObject) object);
+		} catch (Exception e) {
+			throw new ModelException("Too many objects");
+		}
 	}
 
 	@Override
 	public void removeGameObject(Object object, World world) throws ModelException {
-		world.removeObject((GameObject) object);
+		if (world.hasAsGameObject((GameObject) object))
+			world.removeObject((GameObject) object);
+		else
+			throw new ModelException("The object to remove does not exist");
 		
 	}
 
@@ -311,19 +331,27 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startGame(World world) throws ModelException {
+		if (world.getPlayer() == null)
+			throw new ModelException("No Mazub");
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean isGameOver(World world) throws ModelException {
-		// TODO Auto-generated method stub
+		if (world.getPlayer().getHitpoints() <= 0)
+			return true;
 		return false;
 	}
 
 	@Override
 	public boolean didPlayerWin(World world) throws ModelException {
-		// TODO Auto-generated method stub
+		if (world.getPlayer().getXPositionPixel() >= world.getTargetTileX()
+				&& world.getPlayer().getXPositionPixel() <= world.getTargetTileX() + world.getTileLength()
+				&& world.getPlayer().getYPositionPixel() >= world.getTargetTileY()
+				&& world.getPlayer().getYPositionPixel() <= world.getTargetTileY() + world.getTileLength()
+				&& !world.getPlayer().isDead())
+			return true;
 		return false;
 	}
 
