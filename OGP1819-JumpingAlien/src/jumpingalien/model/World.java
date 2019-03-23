@@ -370,16 +370,7 @@ public class World {
 
 	        for(int i = 0; i < geologicalFeatures.length; i++) {
 	        	tiles.add(i % xLength + " " + i / xLength + " " + geologicalFeatures[i]);
-//	        	tiles.add(new int[] {i % xLength, i / xLength, geologicalFeatures[i]});
 	        }
-//	        for(int i = geologicalFeatures.length; i < xLength * yLength; i++) {
-//	        	tiles.add(new int[] {i % xLength, i / xLength, AIR});
-//	        }
-//	        for (int i = 0; i < geologicalFeatures.length / (getWorldSizeX()/getTileLength()); i++) {
-//	        	for (int j = 0; j < getWorldSizeX(); j++) {
-//	        		setGeologicalFeature(j*getTileLength(), i*getTileLength(), geologicalFeatures[i*2+j]);
-//	        	}
-//	        }
 	        	
 		
 	}
@@ -400,9 +391,15 @@ public class World {
 			throw new RuntimeException();
 		if (gameObject.getWorld() != null)
 			throw new RuntimeException();
-//		for (Object object : getAllObjects())
-//			if (gameObject.collidesWith((GameObject) object))
-//				throw new RuntimeException();
+		if (gameObject.getClass().toString() != "Plant")
+			for (Object object : getAllObjects())
+				if (gameObject.collidesWith((GameObject) object) && object.getClass().toString() == "Plant")
+					throw new RuntimeException();
+		if (this.getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND && this.getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
+			throw new RuntimeException();
+		if (getGeologicalFeature(gameObject.getXPositionPixel() + gameObject.getXsize() - 1, gameObject.getYPositionPixel() - 1 ) == SOLID_GROUND
+				|| getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel() + gameObject.getYsize() - 1) == SOLID_GROUND)
+			throw new RuntimeException();
 			
 		if (getAllObjects().size() == 0 && gameObject instanceof Mazub)
 			this.setPlayer(gameObject);

@@ -103,7 +103,7 @@ public abstract class GameObject {
 	 * Sets the current sprite to the given sprite
 	 * @param sprite The sprite to set
 	 * 
-	 * @post ...
+	 * @post The current sprite of this GameObject is the given sprite
 	 * 		| this.sprite == sprite
 	 */
 	protected void setSprite(Sprite sprite) {
@@ -127,19 +127,14 @@ public abstract class GameObject {
 	/**
 	 * Returns the sprite array of a GameObject
 	 */
-	@Basic
 	public Sprite[] getSpriteArray() {
 		return this.spriteArray.clone();
 	}
 	
-	
+	/**
+	 * A variable to store all the sprites of a GameObject
+	 */
 	protected Sprite[] spriteArray;
-	
-	public Sprite[] getSprites() {
-		return this.sprites;
-	}
-	
-	private Sprite[] sprites;
  	
 	/**
 	 * Returns the current sprite.
@@ -183,6 +178,12 @@ public abstract class GameObject {
 		return this.isDead;
 	}
 	
+	/**
+	 * Terminates the GameObject
+	 * 
+	 * @post isTerminated()
+	 * @effect setHitpoints(0) && removeWorld()
+	 */
 	public void terminate() {
 		if (!isTerminated()) {
 			this.isTerminated = true;
@@ -192,6 +193,11 @@ public abstract class GameObject {
 		}
 	}
 	
+	/**
+	 * Removes the world of the GameObject
+	 * 
+	 * @post this.world == null
+	 */
 	private void removeWorld() {
 		if (this.world != null) {
 			this.world.removeObject(this);
@@ -199,15 +205,15 @@ public abstract class GameObject {
 		}
 		
 	}
-
-	public void kill() {
-		if (!isDead()) {
-			this.isDead = true;
-			terminate();
-		}
-	}
 	
+	/**
+	 * A boolean to store if the GameObject is terminated
+	 */
 	private boolean isTerminated;
+	
+	/**
+	 * A boolean to store if the GameObject is dead
+	 */
 	private boolean isDead;
 	
 	
@@ -223,13 +229,16 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the y size of a given GameObject.
+	 * Returns the y size of a given GameObject in pixels.
 	 */
 	@Basic
 	public int getYsize() {
 		return this.ySize;
 	}
 	
+	/**
+	 * A variable to store the y size of a GameObject in pixels.
+	 */
 	private int ySize;
 	
 	/**
@@ -244,34 +253,39 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the x size of a given GameObject.
+	 * Returns the x size of a given GameObject in pixels.
 	 */
 	@Basic
 	public int getXsize() {
 		return this.xSize;
 	}
 	
+	/**
+	 * A variable to store the x size of a GameObject in pixels.
+	 */
 	private int xSize;
 	
 	/**
 	 * Sets the x position of the bottom left pixel of a given GameObject to the specified x position.
 	 * @param X_pos
 	 * 			The wanted x position.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidXPosition(X_pos)
+	 * 
+	 * @post this.xPosMeter == X_pos
+	 * @post this.xPosPixel == (int) (X_pos * 100)
 	 */
-	public void setXPositionActual(double X_pos) throws RuntimeException{
+	public void setXPositionActual(double X_pos) {
 		this.xPosPixel = (int) (X_pos * 100);
 		this.xPosMeter = X_pos;
 		if (!isValidActualXPosition(this.xPosMeter))
 			terminate();
-
+		if (this.getWorld() != null && this.getWorld().getWorldSizeX() < this.getXPositionPixel())
+			terminate();
 	}
-	public int[][] tiles;
 	
 	/**
 	 * Returns whether the given coordinate is on the canvas.
+	 * @param X_pos
+	 * 		The coordinate to check in pixels.
 	 */
 	public boolean isValidPixelXPosition(int X_pos) {
 		return (X_pos >= 0 && X_pos <= Double.POSITIVE_INFINITY);
@@ -295,37 +309,45 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the maximal x position on the canvas in pixels.
+	 * Returns the maximal x position of the world in pixels.
 	 */
 	@Basic 
 	public int getMaxXPosition() {
-		return this.world.getWorldSizeX();
+		return this.getWorld().getWorldSizeX();
 	}
 	
 	
-	
+	/**
+	 * A variable to store the x position of the GameObject in pixels
+	 */
 	protected int xPosPixel;
+	
+	/**
+	 * A variable to store the x position of the GameObject in meters
+	 */
 	protected double xPosMeter;
 	
 	/**
 	 * Sets the y position of the bottom left pixel of a given GameObject to the specified y position.
 	 * @param Y_pos
 	 * 			The wanted y position.
-	 * @throws RuntimeException
-	 * 			Throws an exception when the wanted position isn't on the canvas.
-	 * 			| !isValidYPosition(Y_pos)
+	 * 
+	 * @post this.yPosMeter == Y_pos
+	 * @post this.yPosPixel == (int) (Y_pos * 100)
 	 */
-	public void setYPositionActual(double Y_pos) throws RuntimeException{
+	public void setYPositionActual(double Y_pos){
 		this.yPosPixel = (int) (Y_pos * 100);
 		this.yPosMeter = Y_pos;
 		if (!isValidActualYPosition(this.xPosMeter)) 
+			terminate();
+		if (this.getWorld() != null && this.getWorld().getWorldSizeY() < this.getYPositionPixel())
 			terminate();
 
 	}
 	
 	/**
 	 * Returns whether the given coordinate is on the canvas.
-	 * @param X_pos
+	 * @param Y_pos
 	 * 			The given coordinate to check in meters.
 	 */
 	public boolean isValidActualYPosition(double Y_pos) {
@@ -334,7 +356,7 @@ public abstract class GameObject {
 	
 	/**
 	 * Returns whether the given coordinate is on the canvas.
-	 * @param X_pos
+	 * @param Y_pos
 	 * 			The given coordinate to check in pixels.
 	 */
 	public boolean isValidPixelYPosition(int Y_pos) {
@@ -342,7 +364,7 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the maximal y position on the canvas in pixels.
+	 * Returns the maximal y position of the world in pixels.
 	 */
 	@Basic
 	public int getMaxYPosition() {
@@ -357,17 +379,32 @@ public abstract class GameObject {
 		return this.yPosPixel;
 	}
 	
+	/**
+	 * A variable to store the y position of the GameObject in pixels
+	 */
 	protected int yPosPixel;
+	
+	/**
+	 * A variable to store the y position of the GameObject in meters
+	 */
 	protected double yPosMeter;
 	
+	/**
+	 * Sets the hitpoints of the GameObject
+	 * 
+	 * @param hitpoints The hitpoints to set
+	 * 
+	 * @post if hitpoints < 0 then this.hitpoints == 0
+	 * @post if hitpoints > 500 then this.hitpoints == 500
+	 * @post if 0 < hitpoints < 500 then this.hitpoints == hitpoints
+	 */
 	protected void setHitpoints(int hitpoints) {
 		if (hitpoints < 0)
 			this.hitpoints = 0;
 		if (hitpoints > 500)
 			this.hitpoints = 500;
 		else
-			this.hitpoints = hitpoints;
-		
+			this.hitpoints = hitpoints;	
 	}
 	
 	/**
@@ -384,10 +421,17 @@ public abstract class GameObject {
 		return this.yPosMeter;
 	}
 	
+	/**
+	 * Returns the hitpoints
+	 */
+	@Basic
 	public int getHitpoints() {
 		return this.hitpoints;
 	}
 	
+	/**
+	 * A variable to store the hitpoints
+	 */
 	private int hitpoints;
 	
 	private void changeHitPoints(int change) {
@@ -396,10 +440,13 @@ public abstract class GameObject {
 	
 	/**
 	 * Sets the orientation of a given GameObject.
+	 * 
 	 * @param orientation
 	 * 			The orientation that needs to be set
+	 * 
 	 * @pre The entered orientation is valid
 	 * 		| isValidOrientation(orientation)
+	 * 
 	 * @post The orientation of this GameObject is equal to the given
 	 *       orientation.
  	 *       | new.getOrientation() == orientation
@@ -411,6 +458,7 @@ public abstract class GameObject {
 	
 	/**
 	 * Returns true when the given orientation is a valid orientation
+	 * 
 	 * @param orientation
 	 * 			The orientation to check
 	 */
@@ -426,23 +474,29 @@ public abstract class GameObject {
 	public int getOrientation() {
 		return this.orientation;
 	}
-	
+	 /**
+	  * Returns the orientation of the GameObject. -1 if the GameObject is oriented to the left, 0 if the GameObject is oriented to the front, 1 if the GameObject is oriented to the right
+	  */
 	protected int orientation;
 	
 	/**
-	 * Returns the horizontal speed of a GameObject given in meters per second.
+	 * Returns the horizontal speed of the GameObject given in meters per second.
 	 */
 	@Basic
 	public double getHorizontalSpeedMeters() {
 		return this.horizontalSpeed;
 	}
 	/**
-	 * Returns the horizontal speed of GameObject given in pixels per second
+	 * Returns the horizontal speed of the GameObject given in pixels per second
 	 */
 	public int getHorizontalSpeedPixels() {
 		return (int) (this.horizontalSpeed * 100);
 	}
 	
+	
+	/**
+	 * A variable to store the horizontal speed of the GameObject
+	 */
 	private double horizontalSpeed;
 	
 	/**
@@ -495,11 +549,11 @@ public abstract class GameObject {
 	}
 	
 	/**
-	 * Returns the minimal horizontal speed in pixels per second0.
+	 * Returns the minimal horizontal speed in pixels per second.
 	 */
 	@Immutable
-	public double getMinSpeedPixels() {
-		return (this.minSpeed * 100);
+	public int getMinSpeedPixels() {
+		return (int) (this.minSpeed * 100);
 	}
 	
 	/**
@@ -514,8 +568,8 @@ public abstract class GameObject {
 	 * Returns the maximal horizontal speed in pixels per second while running.
 	 */
 	@Immutable	
-	public double getMaxSpeedRunningPixels() {
-		return maxSpeedRunning * 100;
+	public int getMaxSpeedRunningPixels() {
+		return (int) (maxSpeedRunning * 100);
 	}
 	
 	/**
@@ -530,8 +584,8 @@ public abstract class GameObject {
 	 * Returns the maximal horizontal speed in pixels per second while ducking.
 	 */
 	@Immutable
-	public double getMaxSpeedDuckingPixels() {
-		return maxSpeedDucking * 100;
+	public int getMaxSpeedDuckingPixels() {
+		return (int) (maxSpeedDucking * 100);
 	}
 	
 	/**
@@ -545,6 +599,9 @@ public abstract class GameObject {
 		return true;
 	}
 	
+	/**
+	 * A variable to store the vertical speed of the GameObject
+	 */
 	protected double verticalSpeed;
 	
 	/**
@@ -563,8 +620,15 @@ public abstract class GameObject {
 			this.verticalSpeed = verticalSpeedMeters;
 		else this.verticalSpeed = getMaxVerticalSpeedMeters();
 	}
+	
+	/**
+	 * A variable to store the maximum vertical speed of the GameObject
+	 */
 	protected final double maxVerticalSpeed;
 	
+	/**
+	 * A function that returns the maximum vertical speed of the GameObject in meters per second
+	 */
 	@Basic @Immutable
 	public double getMaxVerticalSpeedMeters() {
 		return maxVerticalSpeed;
@@ -587,6 +651,9 @@ public abstract class GameObject {
 		return true;
 	}
 	
+	/**
+	 * A boolean to store if the GameObject is ducking
+	 */
 	public boolean isDucking;
 	
 	/**
@@ -604,10 +671,13 @@ public abstract class GameObject {
 			maxSpeed = maxSpeedRunning;
 	}
 	
+	/**
+	 * A variable to store the maximum speed of the GameObject depending on the state (ducking or running)
+	 */
 	private double maxSpeed;
 	
 	/**
-	 * Returns the maximum horizontal speed for the given state of the GameObject
+	 * Returns the maximum horizontal speed for the given state of the GameObject depending on the state
 	 */
 	public double getMaxSpeed() {
 		this.setMaxSpeed();
@@ -627,6 +697,7 @@ public abstract class GameObject {
 	 * Sets the horizontal acceleration to the given acceleration in meters per second squared.
 	 * 
 	 * @param horizontalAcceleration The acceleration to set in meters per second
+	 * 
 	 * @post The new horizontal acceleration is equal to the given horizontal acceleration
 	 * 		| new.getHorizontalAcceleration() == horizontalAcceleration
 	 */
@@ -635,7 +706,14 @@ public abstract class GameObject {
 			this.horizontalAcceleration =  horizontalAcceleration;	
 	}
 	
+	/**
+	 * A variable to store the horizontal acceleration of the GameObject
+	 */
 	private double horizontalAcceleration;
+	
+	/**
+	 * A variable to store the maximum horizontal acceleration of the GameObject
+	 */
 	protected final double maxHorizontalAcceleration;
 	
 	/**
@@ -649,6 +727,7 @@ public abstract class GameObject {
 	 * Sets the vertical acceleration to the given acceleration in meters per second squared.
 	 * 
 	 * @param verticalAcceleration The acceleration to set in meters per second
+	 * 
 	 * @post The new vertical acceleration is equal to the given vertical acceleration
 	 * 		| new.getVerticalAcceleration() == verticalAcceleration
 	 */
@@ -657,7 +736,14 @@ public abstract class GameObject {
 			this.verticalAcceleration =  verticalAcceleration;
 	}
 	
+	/**
+	 * A variable to store the vertical acceleration of the GameObject
+	 */
 	private double verticalAcceleration;
+	
+	/**
+	 * A variable to store the maximum vertical accelration of the GameObject
+	 */
 	protected final double maxVerticalAcceleration;
 	
 	/**
@@ -678,33 +764,56 @@ public abstract class GameObject {
 		
 		return true;
 	}
+	
 	/**
 	 * Returns whether a given GameObeject collides with this GameObject
 	 * @param other The other GameObject
+	 * 
 	 * @return ((this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()) 
 	 * 			&& (this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
 	 * 			&& (other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
 	 * 			&& (other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
 	 */
 	protected boolean collidesWith(GameObject other) {
-		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()))
-			return false;
-		if (!(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel()))
-			return false;
-		if (!(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()))
-			return false;
-		if (!(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
-			return false;
-		return true;
+//		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()))
+//			return false;
+//		if (!(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel()))
+//			return false;
+//		if (!(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()))
+//			return false;
+//		if (!(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
+//			return false;
+//		return true;
+		
+		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel())
+				&& !(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
+						&& !(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
+							&& !(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
+			return true;
+		return false;
 	}
 	
+	/**
+	 * A variable to store the world of the GameObject
+	 */
 	World world;
 	
+	/**
+	 * Sets the world of the GameObject to the given world
+	 * 
+	 * @param world The world to set
+	 * 
+	 * @post this.world == world
+	 */
 	public void setWorld(World world) {
 		this.world = world;
 		world.addGameObject(this);
 	}
 
+	/**
+	 * Returns the world of the GameObject
+	 */
+	@Basic
 	public World getWorld() {
 		return world;
 	}
