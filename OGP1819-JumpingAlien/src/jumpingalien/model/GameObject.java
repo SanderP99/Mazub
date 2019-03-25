@@ -1,8 +1,12 @@
 package jumpingalien.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import jumpingalien.util.Sprite;
 
 /**
@@ -96,6 +100,7 @@ public abstract class GameObject {
 		this.maxVerticalSpeed = maxVerticalSpeed;
 		setHorizontalAcceleration(0);
 		setVerticalAcceleration(0);
+		updateOverlappingTiles();
 		
 	}
 	
@@ -797,6 +802,8 @@ public abstract class GameObject {
 	 * A variable to store the world of the GameObject
 	 */
 	World world;
+
+	
 	
 	/**
 	 * Sets the world of the GameObject to the given world
@@ -819,6 +826,32 @@ public abstract class GameObject {
 	}
 
 	public abstract void advanceTime(double dt, double timeStep);
+	
+	private List<int[]> getAllOverlappingTiles(){
+		int xPosition = getXPositionPixel();
+		int yPosition = getYPositionPixel();
+		int xSize = getXsize();
+		int ySize = getYsize();
+		if (getWorld() == null)
+			return null;
+		int tileLength = getWorld().getTileLength();
+		
+		List<int[]> overlappingTiles = new ArrayList<>();
+		
+		for (int i = 0; i < 1 + xSize / tileLength; i++)
+			for (int j = 0; j < 1 + ySize / tileLength; j++) {
+				overlappingTiles.add(new int[] {xPosition + i * tileLength, yPosition + j * tileLength });
+			}
+		
+		return overlappingTiles;	
+	}
+	
+	protected void updateOverlappingTiles() {
+		this.overlappingTiles = null;
+		this.overlappingTiles = getAllOverlappingTiles();
+	}
+	
+	private List<int[]> overlappingTiles;
 
 
 }

@@ -400,6 +400,7 @@ public class World {
 		
 		objects.add(gameObject);
 		gameObject.world = this;
+		gameObject.updateOverlappingTiles();
 	}
 	
 

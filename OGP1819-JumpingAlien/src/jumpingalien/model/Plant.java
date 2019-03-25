@@ -54,7 +54,7 @@ public class Plant extends GameObject{
 	@Override
 	public void advanceTime(double dt, double timeStep) {
 		if (!isDead()) {
-			while (dt >= timeStep) {
+			while (dt >= timeStep && !isDead()) {
 				if (getSecondsToLive() >= timeStep) {
 					if (getOrientation() == -1) {
 						if (getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep < (double) (getBoundaries()[0]) / 100) {
@@ -109,10 +109,11 @@ public class Plant extends GameObject{
 				setXPositionActual(getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * dt);
 			else
 				setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * dt);
+			setSecondsToLive(getSecondsToLive() - dt);
 			
 		}
 		else if (timeSinceDeath < 0.6){
-			if (dt < 0.6 - timeSinceDeath) {
+			if (dt < 0.599 - timeSinceDeath) {
 				timeSinceDeath += dt;
 			}
 			else {
