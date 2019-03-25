@@ -455,8 +455,44 @@ public class World {
 	}
 
 	private void advanceVisibleWindow() {
-		// TODO Auto-generated method stub
+		int newWindowXPos = 0;
+		int newWindowYPos = 0;
 		
-	}
+		if (getPlayer().getXPositionPixel() <= 200) {
+			 newWindowXPos = 0;
+		}
+		else if(this.getWorldSizeX() - getPlayer().getXPositionPixel()
+				- getPlayer().getXsize() <= 200) {
+			newWindowXPos = this.getWorldSizeX() - this.getVisibleWindowWidth();			
+		}
+		else {
+			newWindowXPos = this.getVisibleWindowPosition()[0];
+			while ( getPlayer().getXPositionPixel() - newWindowXPos < 200) {
+				newWindowXPos -=1;	
+			}
+			while ( newWindowXPos + this.getVisibleWindowWidth() -getPlayer().getXPositionPixel() - getPlayer().getXsize()  < 200) {
+				newWindowXPos +=1;	
+			}
+			
+		}
+		
+		if (getPlayer().getYPositionActual() <= 200) {
+			 newWindowYPos = 0;			
+		}
+		else if(this.getWorldSizeY() - getPlayer().getYPositionPixel()
+				- getPlayer().getYsize() <= 200) {
+			 newWindowYPos = this.getWorldSizeY() - this.getVisibleWindowHeight();
+		}
+		else {
+			 newWindowYPos = this.getVisibleWindowPosition()[1];
+			while ( getPlayer().getYPositionPixel() - newWindowYPos < 200) {
+				newWindowYPos -=1;	
+			}
+			while ( newWindowYPos + this.getVisibleWindowHeight() -getPlayer().getYPositionPixel() - getPlayer().getYsize()  < 200) {
+				newWindowYPos +=1;	
+			}
+		}
+		this.setVisibleWindowPosition(new int[] {newWindowXPos,newWindowYPos});
 	
+	}
 }
