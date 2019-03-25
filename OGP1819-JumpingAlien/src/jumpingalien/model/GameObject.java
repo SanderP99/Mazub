@@ -214,7 +214,7 @@ public abstract class GameObject {
 	/**
 	 * A boolean to store if the GameObject is dead
 	 */
-	private boolean isDead;
+	protected boolean isDead;
 	
 	
 	/**
@@ -818,7 +818,7 @@ public abstract class GameObject {
 		return world;
 	}
 
-	protected abstract void advanceTime(double dt, double timeStep);
+	public abstract void advanceTime(double dt, double timeStep);
 
 
 }

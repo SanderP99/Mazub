@@ -331,8 +331,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startGame(World world) throws ModelException {
-//		if (world.getPlayer() == null)
-//			throw new ModelException("No Mazub");
+		if (world.getPlayer() == null)
+			throw new ModelException("No Mazub");
 		// TODO Auto-generated method stub
 		
 	}
@@ -357,7 +357,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void advanceWorldTime(World world, double dt) {
-		// TODO Auto-generated method stub
+		world.advanceWorldTime(dt);
 		
 	}
 
@@ -442,6 +442,7 @@ public class Facade implements IFacade {
 		// TODO Auto-generated method stub
 		if (dt != dt)
 			throw new ModelException("The time is not valid");
+		((GameObject) gameObject).advanceTime(dt, ((GameObject) gameObject).getWorld().getTimeStep((GameObject) gameObject, dt));
 	}
 
 }
