@@ -331,16 +331,16 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startGame(World world) throws ModelException {
-		if (world.getPlayer() == null)
-			throw new ModelException("No Mazub");
+//		if (world.getPlayer() == null)
+//			throw new ModelException("No Mazub");
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean isGameOver(World world) throws ModelException {
-		if (world.getPlayer().getHitpoints() <= 0)
-			return true;
+//		if (world.getPlayer().getHitpoints() <= 0)
+//			return true;
 		return false;
 	}
 

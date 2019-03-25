@@ -818,5 +818,7 @@ public abstract class GameObject {
 		return world;
 	}
 
+	protected abstract void advanceTime(double dt, double timeStep);
+
 
 }

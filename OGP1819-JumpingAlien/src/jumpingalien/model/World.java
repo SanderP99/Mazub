@@ -335,14 +335,6 @@ public class World {
 			pixelY = 0;
 		if (!isValidPixelXPosition(pixelX))
 			pixelX = 0;
-//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,AIR}))
-//			return AIR;
-//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,SOLID_GROUND}))
-//			return SOLID_GROUND;
-//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,WATER}))
-//			return WATER;
-//		if (this.tiles.contains(new int[] {pixelX/tileLength,pixelY/tileLength,MAGMA}))
-//			return MAGMA;
 		
 		if (this.tiles.contains(pixelX/getTileLength() + " " + pixelY / getTileLength() + " " + AIR))
 			return AIR;
@@ -379,6 +371,7 @@ public class World {
 	private HashSet<GameObject> objects = new HashSet<GameObject>();
 	
 	GameObject player;
+	private boolean hasPlayer;
 	
 	public void addGameObject(GameObject gameObject) throws RuntimeException {
 		if (getAllObjects().size() - 1 == getMaxNbOfObjects())
@@ -397,20 +390,27 @@ public class World {
 					throw new RuntimeException();
 		if (this.getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND && this.getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
 			throw new RuntimeException();
-		if (getGeologicalFeature(gameObject.getXPositionPixel() + gameObject.getXsize() - 1, gameObject.getYPositionPixel() - 1 ) == SOLID_GROUND
-				|| getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel() + gameObject.getYsize() - 1) == SOLID_GROUND)
-			throw new RuntimeException();
+//		if (getGeologicalFeature(gameObject.getXPositionPixel() + gameObject.getXsize() - 1, gameObject.getYPositionPixel() - 1 ) == SOLID_GROUND
+//				|| getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel() + gameObject.getYsize() - 1) == SOLID_GROUND)
+//			throw new RuntimeException();
+		//TODO fout zoeken want doet 2 testen runnen maar zorgt dat spel niet meer werkt
 			
-		if (getAllObjects().size() == 0 && gameObject instanceof Mazub)
+		if (!this.hasPlayer() && gameObject instanceof Mazub)
 			this.setPlayer(gameObject);
+		
 		objects.add(gameObject);
 		gameObject.world = this;
 	}
 	
 
+	private boolean hasPlayer() {
+		return this.hasPlayer;
+	}
+
 	void setPlayer(GameObject gameObject) {
 		this.player = gameObject;	
 		((Mazub) gameObject).isPlayer = true;
+		this.hasPlayer = true;
 	}
 	
 	public GameObject getPlayer() {
@@ -446,4 +446,17 @@ public class World {
 		return 0.01 /(velocityRoot + accelerationRoot * deltaT);
 	}
 
+	private void advanceWorldTime(double dt) {
+		for (Object object : getAllObjects()) {
+			double timeStep = getTimeStep((GameObject) object, dt);
+			((GameObject) object).advanceTime(dt, timeStep);
+		}
+		advanceVisibleWindow();
+	}
+
+	private void advanceVisibleWindow() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

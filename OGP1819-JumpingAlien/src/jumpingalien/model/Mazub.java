@@ -358,7 +358,8 @@ public class Mazub extends GameObject {
 	 * @param dt The time to advance in seconds
 	 * @effect updatePositionAndSprite(dt, index)
 	 */
-	public void advanceTime(double dt) {
+	@Override
+	public void advanceTime(double dt, double timeStep) {
 		if (dt != dt)
 			dt = 0.0;
 		if (dt > maxTimeFrame)
