@@ -493,6 +493,6 @@ public class World {
 			}
 		}
 		this.setVisibleWindowPosition(new int[] {newWindowXPos,newWindowYPos});
-	
+	// iets randoms
 	}
 }
