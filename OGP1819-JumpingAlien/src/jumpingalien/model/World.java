@@ -440,13 +440,13 @@ public class World {
 		return false;
 	}
 	
-	private double getTimeStep(GameObject gameObject, double deltaT) {
+	public double getTimeStep(GameObject gameObject, double deltaT) {
 		double velocityRoot = Math.sqrt(Math.pow(gameObject.getHorizontalSpeedMeters(), 2) + Math.pow(gameObject.getVerticalSpeedMeters(), 2));
 		double accelerationRoot = Math.sqrt(Math.pow(gameObject.getHorizontalAcceleration(), 2) + Math.pow(gameObject.getVerticalAcceleration(), 2));
 		return 0.01 /(velocityRoot + accelerationRoot * deltaT);
 	}
 
-	private void advanceWorldTime(double dt) {
+	public void advanceWorldTime(double dt) {
 		for (Object object : getAllObjects()) {
 			double timeStep = getTimeStep((GameObject) object, dt);
 			((GameObject) object).advanceTime(dt, timeStep);
