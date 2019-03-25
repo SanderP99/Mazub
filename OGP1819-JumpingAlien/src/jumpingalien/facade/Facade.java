@@ -370,7 +370,7 @@ public class Facade implements IFacade {
 		for (int i = 0; i < sprites.length; i++)
 			if (sprites[i] == null)
 				throw new ModelException("The sprites are not valid");
-		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10, 0.5, 0.5, 0.5, 0, 0,sprites);
+		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0, 0.5, 0.5, 0.5, 0, 0,sprites);
 	}
 
 	@Override
