@@ -159,10 +159,10 @@ public class Mazub extends GameObject {
 	 * 		| new.VerticalAcceleration == maxVerticalAcceleration
 	 */
 	public void startJump() throws RuntimeException {
-		if (this.isJumping)
-			throw new RuntimeException();
-		else if (this.isFalling);
-		else {
+//		if (this.isJumping)
+//			throw new RuntimeException();
+//		else if (this.isFalling);
+//		else {
 			this.isFalling = false;
 			this.setVerticalSpeedMeters(maxVerticalSpeed);
 			this.setVerticalAcceleration(maxVerticalAcceleration);
@@ -174,7 +174,7 @@ public class Mazub extends GameObject {
 			else if (getOrientation() > 0)
 				setSprite(this.spriteArray[4]);
 			
-		}
+//		}
 	}
 	
 	/**

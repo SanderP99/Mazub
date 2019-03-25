@@ -100,7 +100,7 @@ public abstract class GameObject {
 		this.maxVerticalSpeed = maxVerticalSpeed;
 		setHorizontalAcceleration(0);
 		setVerticalAcceleration(0);
-		updateOverlappingTiles();
+		setOverlappingTiles();
 		
 	}
 	
@@ -281,10 +281,11 @@ public abstract class GameObject {
 	public void setXPositionActual(double X_pos) {
 		this.xPosPixel = (int) (X_pos * 100);
 		this.xPosMeter = X_pos;
-		if (!isValidActualXPosition(this.xPosMeter))
-			terminate();
 		if (this.getWorld() != null && this.getWorld().getWorldSizeX() < this.getXPositionPixel())
 			terminate();
+		if (!isValidActualXPosition(this.xPosMeter))
+			terminate();
+		
 	}
 	
 	/**
@@ -341,6 +342,7 @@ public abstract class GameObject {
 	 * @post this.yPosPixel == (int) (Y_pos * 100)
 	 */
 	public void setYPositionActual(double Y_pos){
+
 		this.yPosPixel = (int) (Y_pos * 100);
 		this.yPosMeter = Y_pos;
 		if (!isValidActualYPosition(this.xPosMeter)) 
@@ -838,17 +840,21 @@ public abstract class GameObject {
 		
 		List<int[]> overlappingTiles = new ArrayList<>();
 		
-		for (int i = 0; i < 1 + xSize / tileLength; i++)
-			for (int j = 0; j < 1 + ySize / tileLength; j++) {
+		for (int i = 0; i < 1 + (xSize - 1)  / tileLength; i++)
+			for (int j = 0; j < 1 + (ySize - 1) / tileLength; j++) {
 				overlappingTiles.add(new int[] {xPosition + i * tileLength, yPosition + j * tileLength });
 			}
 		
 		return overlappingTiles;	
 	}
 	
-	protected void updateOverlappingTiles() {
-		this.overlappingTiles = null;
+	public void setOverlappingTiles() {
+		//this.overlappingTiles = null;
 		this.overlappingTiles = getAllOverlappingTiles();
+	}
+	
+	protected List<int[]> getOverlappingTiles(){
+		return this.overlappingTiles;
 	}
 	
 	private List<int[]> overlappingTiles;

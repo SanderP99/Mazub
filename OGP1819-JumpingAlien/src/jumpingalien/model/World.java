@@ -1,10 +1,7 @@
 package jumpingalien.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.hamcrest.core.IsInstanceOf;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
@@ -74,14 +71,27 @@ public class World {
 
 	}
 	
+	/**
+	 * Sets the maximum number of objects the world can have
+	 * 
+	 * @param maxNbOfObjects The maximum number of objects
+	 * 
+	 * @post this.maxNbOfObjects == maxNbOfObjects
+	 */
 	private void setMaxNbOfObjects(int maxNbOfObjects) {
 		this.maxNbOfObjects = maxNbOfObjects;	
 	}
 	
+	/**
+	 * Returns the maximum number of objects in the world
+	 */
 	private int getMaxNbOfObjects() {
 		return maxNbOfObjects;
 	}
 	
+	/**
+	 * A variable to store the maximum number of objects
+	 */
 	private int maxNbOfObjects;
 	
 
@@ -93,6 +103,14 @@ public class World {
 		return this.worldSizeX;
 	}
 	
+	/**
+	 * Sets the width of the world to the given amount of pixels
+	 * 
+	 * @param worldSizeX The width of the world in pixels
+	 * 
+	 * @post if worldSizeX < 0 then this.worldSizeX == -worldSizeX
+	 * @post if worldSizeX >= 0 then this.worldSizeX == worldSizeX
+	 */
 	private void setWorldSizeX(int worldSizeX) {
 		if (worldSizeX < 0)
 			this.worldSizeX = -1*worldSizeX;
@@ -100,13 +118,28 @@ public class World {
 			this.worldSizeX = worldSizeX;
 	}
 	
+	/**
+	 * A variable to store the width of the world
+	 */
 	private int worldSizeX;
 	
+	
+	/**
+	 * Returns the vertical worldsize in pixels
+	 */
 	@Basic
 	public int getWorldSizeY() {
 		return this.worldSizeY;
 	}
 	
+	/**
+	 * Sets the height of the world to the given amount of pixels
+	 * 
+	 * @param worldSizeY The height of the world in pixels
+	 * 
+	 * @post if worldSizeY < 0 then this.worldSizeY == -worldSizeY
+	 * @post if worldSizeY >= 0 then this.worldSizeY == worldSizeY
+	 */
 	private void setWorldSizeY(int worldSizeY) {
 		if (worldSizeY < 0)
 			this.worldSizeY = -1*worldSizeY;
@@ -114,6 +147,9 @@ public class World {
 			this.worldSizeY = worldSizeY;
 	}
 
+	/**
+	 * A variable to store the height of the world
+	 */
 	private int worldSizeY;
 	
 	@Basic
@@ -400,7 +436,7 @@ public class World {
 		
 		objects.add(gameObject);
 		gameObject.world = this;
-		gameObject.updateOverlappingTiles();
+		gameObject.setOverlappingTiles();
 	}
 	
 
@@ -477,7 +513,7 @@ public class World {
 			
 		}
 		
-		if (getPlayer().getYPositionActual() <= 200) {
+		if (getPlayer().getYPositionPixel() <= 200) {
 			 newWindowYPos = 0;			
 		}
 		else if(this.getWorldSizeY() - getPlayer().getYPositionPixel()
@@ -494,6 +530,6 @@ public class World {
 			}
 		}
 		this.setVisibleWindowPosition(new int[] {newWindowXPos,newWindowYPos});
-	// iets randoms
+
 	}
 }

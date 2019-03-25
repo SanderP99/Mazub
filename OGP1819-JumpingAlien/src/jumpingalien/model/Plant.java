@@ -61,6 +61,7 @@ public class Plant extends GameObject{
 							double newPosX = getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep;
 							double actualPosX = (double) getBoundaries()[0] / 100 + Math.abs(newPosX - (double) getBoundaries()[0] / 100);
 							setXPositionActual(actualPosX);
+							setOverlappingTiles();
 							
 							setOrientation(1);
 							setSprite(getSpriteArray()[1]);
@@ -71,6 +72,7 @@ public class Plant extends GameObject{
 							dt -= timeStep;
 							setSecondsToLive(getSecondsToLive() - timeStep);
 							setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep);
+							setOverlappingTiles();
 						}
 					}
 					else {
@@ -78,6 +80,7 @@ public class Plant extends GameObject{
 							double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep;
 							double actualPosX = (double) getBoundaries()[1] / 100 - Math.abs(newPosX - (double) getBoundaries()[1] / 100);
 							setXPositionActual(actualPosX);
+							setOverlappingTiles();
 							
 							setOrientation(-1);
 							setSprite(getSpriteArray()[0]);
@@ -92,6 +95,7 @@ public class Plant extends GameObject{
 								setXPositionActual(getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep);
 							else
 								setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep);
+							setOverlappingTiles();
 						}
 					}
 					
@@ -100,6 +104,7 @@ public class Plant extends GameObject{
 				else {
 					dt = 0;
 					setXPositionActual(getXPositionActual() + getHorizontalSpeedMeters() * getSecondsToLive());
+					setOverlappingTiles();
 					setSecondsToLive(0);
 					this.isDead = true;
 					timeSinceDeath = 0;
@@ -110,6 +115,7 @@ public class Plant extends GameObject{
 			else
 				setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * dt);
 			setSecondsToLive(getSecondsToLive() - dt);
+			setOverlappingTiles();
 			
 		}
 		else if (timeSinceDeath < 0.6){

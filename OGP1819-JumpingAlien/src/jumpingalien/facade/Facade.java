@@ -339,8 +339,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isGameOver(World world) throws ModelException {
-//		if (world.getPlayer().getHitpoints() <= 0)
-//			return true;
+		if (world.getPlayer().getHitpoints() <= 0)
+			return true;
 		return false;
 	}
 
@@ -370,7 +370,7 @@ public class Facade implements IFacade {
 		for (int i = 0; i < sprites.length; i++)
 			if (sprites[i] == null)
 				throw new ModelException("The sprites are not valid");
-		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0, 0.5, 0.5, 0.5, 0, 0,sprites);
+		return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0, 0.5, 0.5, 0.5, 0, 0, sprites);
 	}
 
 	@Override
@@ -432,6 +432,7 @@ public class Facade implements IFacade {
 	public Sprite[] getSprites(Object gameObject) throws ModelException {
 		return ((GameObject) gameObject).getSpriteArray();
 	}
+	
 	@Override
 	public Sprite getCurrentSprite(Object gameObject) throws ModelException{
 		return ((GameObject) gameObject).getCurrentSprite();
@@ -439,10 +440,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public void advanceTime(Object gameObject, double dt) throws ModelException {
-		// TODO Auto-generated method stub
 		if (dt != dt)
 			throw new ModelException("The time is not valid");
-		((GameObject) gameObject).advanceTime(dt, ((GameObject) gameObject).getWorld().getTimeStep((GameObject) gameObject, dt));
+		if (((GameObject) gameObject).getWorld() != null)
+			((GameObject) gameObject).advanceTime(dt, ((GameObject) gameObject).getWorld().getTimeStep((GameObject) gameObject, dt));
+		else
+			((GameObject) gameObject).advanceTime(dt, 0.02);
 	}
 
 }
