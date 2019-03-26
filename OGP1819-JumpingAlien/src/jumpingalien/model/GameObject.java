@@ -6,7 +6,6 @@ import java.util.List;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
-import jdk.nashorn.internal.objects.annotations.Getter;
 import jumpingalien.util.Sprite;
 
 /**
@@ -791,13 +790,17 @@ public abstract class GameObject {
 //		if (!(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
 //			return false;
 //		return true;
-		
+		boolean xCollision = false;
+		boolean yCollision = false;
 		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel())
-				&& !(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
-						&& !(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
-							&& !(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
-			return true;
-		return false;
+				|| !(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()))
+			xCollision = true;
+		
+		if (!(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel()
+				|| !(other.getYPositionPixel() +
+						(other.getYsize() - 1) < this.getYPositionPixel())))
+			yCollision= true;
+		return (xCollision && yCollision);
 	}
 	
 	/**
