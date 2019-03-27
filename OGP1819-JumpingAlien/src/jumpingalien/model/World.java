@@ -3,6 +3,8 @@ package jumpingalien.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hamcrest.core.IsInstanceOf;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -421,9 +423,15 @@ public class World {
 		if (gameObject.getWorld() != null)
 			throw new RuntimeException();
 		if (!(gameObject instanceof Plant))
+
 			for (Object object : getAllObjects()) {
 				if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object)
 					throw new RuntimeException();}
+
+			for (Object object : getAllObjects())
+				if (gameObject.collidesWith((GameObject) object) && !(gameObject instanceof Plant) && gameObject != object)
+					throw new RuntimeException();
+
 		if (this.getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND && this.getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
 			throw new RuntimeException();
 //		if (getGeologicalFeature(gameObject.getXPositionPixel() + gameObject.getXsize() - 1, gameObject.getYPositionPixel() - 1 ) == SOLID_GROUND
