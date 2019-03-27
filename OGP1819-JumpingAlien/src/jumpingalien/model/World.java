@@ -3,8 +3,6 @@ package jumpingalien.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hamcrest.core.IsInstanceOf;
-
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
