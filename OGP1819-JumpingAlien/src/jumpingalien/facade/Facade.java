@@ -55,6 +55,7 @@ public class Facade implements IFacade {
 		if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1])) {
 			alien.terminate();
 		}
+		
 		alien.setXPositionActual(newPosition[0]);
 		alien.setYPositionActual(newPosition[1]);
 

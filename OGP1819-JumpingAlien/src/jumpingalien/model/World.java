@@ -339,7 +339,7 @@ public class World {
 	private int[] visibleWindowPosition;
 	
 	public void setGeologicalFeature(int pixelX, int pixelY,int geologicalFeature) {
-		if( ! isValidGeologicalFeature(geologicalFeature))
+		if( !isValidGeologicalFeature(geologicalFeature))
 			geologicalFeature = AIR;
 		if (isValidPixelYPosition(pixelY) && isValidPixelXPosition(pixelX)) {
 			this.tiles.remove(pixelX / getTileLength() + " " + pixelY/ getTileLength() + " " + getGeologicalFeature(pixelX, pixelY));
@@ -422,21 +422,22 @@ public class World {
 			throw new RuntimeException();
 		if (gameObject.getWorld() != null)
 			throw new RuntimeException();
-		if (!(gameObject instanceof Plant))
-
+		if (!(gameObject instanceof Plant)) {
 			for (Object object : getAllObjects()) {
 				if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object)
-					throw new RuntimeException();}
-
-			for (Object object : getAllObjects())
-				if (gameObject.collidesWith((GameObject) object) && !(gameObject instanceof Plant) && gameObject != object)
 					throw new RuntimeException();
+				}
+
+		for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel() + gameObject.getXsize() ; x++)
+			for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel() + gameObject.getYsize() ; y++) {
+				if (getGeologicalFeature(x, y) == SOLID_GROUND)
+					throw new RuntimeException();
+			}
+		}
 
 		if (this.getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND && this.getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
 			throw new RuntimeException();
-//		if (getGeologicalFeature(gameObject.getXPositionPixel() + gameObject.getXsize() - 1, gameObject.getYPositionPixel() - 1 ) == SOLID_GROUND
-//				|| getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel() + gameObject.getYsize() - 1) == SOLID_GROUND)
-//			throw new RuntimeException();
+
 		//TODO fout zoeken want doet 2 testen runnen maar zorgt dat spel niet meer werkt
 			
 		if (!this.hasPlayer() && gameObject instanceof Mazub)

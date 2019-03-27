@@ -28,6 +28,8 @@ import jumpingalien.util.Sprite;
  */
 public class Mazub extends GameObject {
 	
+	private double timeBeforeSpriteChange;
+
 	/**
 	 * Initialize a new player with a given position (X_pos, Y_pos), a given size (X_size, Y_size), speed and sprites.
 	 * .
@@ -54,6 +56,7 @@ public class Mazub extends GameObject {
 			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite ... sprites) {
 		super((int)(X_pos * 100), (int)(Y_pos * 100), X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0, sprites);
 		this.isDucking = false;
+		this.setTimeBeforeSpriteChange(0.075);
 	}
 	
 	/**
@@ -105,14 +108,26 @@ public class Mazub extends GameObject {
 			this.setHorizontalAcceleration(direction * maxHorizontalAcceleration);
 		this.isMoving = true;
 		
-		if (direction == 1 && (!isJumping && !isFalling && !isDucking)) 
+		if (direction == 1 && (!isJumping && !isFalling && !isDucking)) {
 			setSprite(spriteArray[8]);
-		else if (direction == -1 && (!isJumping && !isFalling && !isDucking))
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());
+			}
+		else if (direction == -1 && (!isJumping && !isFalling && !isDucking)) {
 			setSprite(spriteArray[9 + getSpriteLoopSize(spriteArray)]);
-		else if (direction == 1 && !isJumping && isDucking && !isFalling)
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());
+		}
+		else if (direction == 1 && !isJumping && isDucking && !isFalling) {
 			setSprite(spriteArray[6]);
-		else if (direction == -1 && !isJumping && isDucking && !isFalling)
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());
+		}
+		else if (direction == -1 && !isJumping && isDucking && !isFalling) {
 			setSprite(spriteArray[7]);
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());
+			}
 		
 		}
 	
@@ -139,10 +154,14 @@ public class Mazub extends GameObject {
 		if (orientation == -1 && !isJumping && !isDucking) { 
 			this.setSprite(this.spriteArray[3]);
 			timeSinceLastMove = 0.0;
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());
 		}
 		else if (orientation == 1 && !isJumping && !isDucking ) {
 			setSprite(spriteArray[2]);
 			timeSinceLastMove = 0.0;
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());
 		}
 
 	}
@@ -168,11 +187,19 @@ public class Mazub extends GameObject {
 			this.setVerticalAcceleration(maxVerticalAcceleration);
 			this.isJumping = true;
 			setSprite(this.spriteArray[0]);
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());
 			
-			if (getOrientation() < 0)
+			if (getOrientation() < 0) {
 				setSprite(this.spriteArray[5]);
-			else if (getOrientation() > 0)
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+			}
+			else if (getOrientation() > 0) {
 				setSprite(this.spriteArray[4]);
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+			}
 			
 //		}
 	}
@@ -191,12 +218,21 @@ public class Mazub extends GameObject {
 			this.setVerticalSpeedMeters(0);
 			this.setVerticalAcceleration(maxVerticalAcceleration);
 			this.isJumping = false;
-			if (getOrientation() == 1 && !isFalling)
+			if (getOrientation() == 1 && !isFalling) {
 				setSprite(spriteArray[8 + getSpriteLoopSize(spriteArray)]);
-			if (getOrientation() == -1 && !isFalling)
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+			}
+			if (getOrientation() == -1 && !isFalling) {
 				setSprite(spriteArray[9 + 2*getSpriteLoopSize(spriteArray)]);
-			if (getOrientation() == 0)
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+				}
+			if (getOrientation() == 0) {
 				setSprite(spriteArray[0]);
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+			}
 		}
 		else if( this.isFalling);
 		else {
@@ -326,6 +362,8 @@ public class Mazub extends GameObject {
 		if(newPosY == 0)
 			this.isFalling=false;
 		setSprite(spriteArray[index]);
+		this.setYSize(getCurrentSprite().getHeight());
+		this.setXSize(getCurrentSprite().getWidth());
 
 		}
 	
@@ -401,6 +439,52 @@ public class Mazub extends GameObject {
 		}
 	}
 	
+//	public void advanceTime(double dt, double timeStep) {
+//		if (!isDead()) {
+//			while (dt >= timeStep && !isDead()) {
+//				if (getTimeBeforeSpriteChange() >= timeStep) {
+//					if (getOrientation() == -1) {
+//						double newPosX = getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep - Math.abs(getHorizontalAcceleration()) * timeStep * timeStep;
+//						double newPosY = getYPositionActual()  + getVerticalSpeedMeters() * timeStep - getVerticalAcceleration() * timeStep * timeStep;
+//						if (getWorld().getGeologicalFeature((int)(100 * newPosX), (int) (100 * newPosY)) == World.SOLID_GROUND) {
+//							newPosX = getXPositionActual();
+//							newPosY = getYPositionActual();
+//							setHorizontalSpeedMeters(getHorizontalSpeedMeters() + getHorizontalAcceleration() * timeStep);
+//							setVerticalSpeedMeters(getVerticalSpeedMeters() + getVerticalAcceleration() * timeStep);
+//						}
+//						setXPositionActual(newPosX);
+//						setYPositionActual(newPosY);
+//						dt -= timeStep;
+//						setTimeBeforeSpriteChange(getTimeBeforeSpriteChange() - timeStep);
+//					}
+//					else {
+//						double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep + Math.abs(getHorizontalAcceleration()) * timeStep * timeStep;
+//						double newPosY = getYPositionActual()  + getVerticalSpeedMeters() * timeStep - getVerticalAcceleration() * timeStep * timeStep;
+//						if (getWorld().getGeologicalFeature((int)(100 * newPosX), (int) (100 * newPosY)) == World.SOLID_GROUND) {
+//							newPosX = getXPositionActual();
+//							newPosY = getYPositionActual();
+//							setHorizontalSpeedMeters(getHorizontalSpeedMeters() + getHorizontalAcceleration() * timeStep);
+//							setVerticalSpeedMeters(getVerticalSpeedMeters() + getVerticalAcceleration() * timeStep);
+//						}
+//						setXPositionActual(newPosX);
+//						setYPositionActual(newPosY);
+//						dt -= timeStep;
+//						setTimeBeforeSpriteChange(getTimeBeforeSpriteChange() - timeStep);
+//					}
+//				}
+//			}
+//		}
+//	}
+	
+	private void setTimeBeforeSpriteChange(double d) {
+		this.timeBeforeSpriteChange = d;
+		
+	}
+
+	private double getTimeBeforeSpriteChange() {
+		return this.timeBeforeSpriteChange;
+	}
+
 	private double maxTimeFrame = 0.2;
 	private double frameRate = 0.075;
 	

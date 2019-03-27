@@ -83,8 +83,10 @@ public abstract class GameObject {
 			Sprite... sprites){
 		setYSize(pixelSizeY);
 		setXSize(pixelSizeX);
-		setXPositionActual((double)pixelLeftX/100);
-		setYPositionActual((double)pixelBottomY/100);
+		setXPositionActual((double)(pixelLeftX)/100);
+		this.xPosPixel = pixelLeftX;
+		setYPositionActual((double)(pixelBottomY)/100);
+		this.yPosPixel = pixelBottomY;
 		setSprite(sprites[0]);
 		setSpriteArray(sprites);
 		setHitpoints(hitpoints);
@@ -753,7 +755,7 @@ public abstract class GameObject {
 	private double verticalAcceleration;
 	
 	/**
-	 * A variable to store the maximum vertical accelration of the GameObject
+	 * A variable to store the maximum vertical acceleration of the GameObject
 	 */
 	protected final double maxVerticalAcceleration;
 	
@@ -784,45 +786,9 @@ public abstract class GameObject {
 	 * 			&& (this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
 	 * 			&& (other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
 	 * 			&& (other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
+	 * TODO commentaar upaten
 	 */
 	protected boolean collidesWith(GameObject other) {
-//		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()))
-//			return false;
-//		if (!(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel()))
-//			return false;
-//		if (!(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()))
-//			return false;
-//		if (!(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
-//			return false;
-//		return true;
-
-		
-//		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel())
-//				&& !(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
-//						&& !(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
-//							&& !(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
-//			return true;
-//		return false;
-		
-//		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()) && 
-//				!(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
-//			return true;
-//
-//		if (!(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()) &&
-//				
-//				!(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel()))
-//			return true;
-
-//		if (getXPositionPixel() + (getXsize() - 1) < other.getXPositionPixel() || getXPositionPixel() > other.getXPositionPixel() + (other.getXsize() - 1)
-//				&& getYPositionPixel() + (getYsize() - 1) < other.getYPositionPixel() || getYPositionPixel() > other.getYPositionPixel() + (other.getYsize() - 1))
-//			return false;
-//		return true;
-		
-//		if ((this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel() || other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()) &&
-//				this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel() || other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel())
-//			return false;
-//		return true;
-		
 		if (this.getXPositionPixel() + (this.getXsize() - 2) < other.getXPositionPixel()) 
 			return false;
 		if (other.getXPositionPixel() + (other.getXsize() - 2) < this.getXPositionPixel()) 
@@ -832,9 +798,6 @@ public abstract class GameObject {
 		if (other.getYPositionPixel() + (other.getYsize() - 2) < this.getYPositionPixel())
 			return false;
 		return true;
-
-		
-
 	}
 	
 	/**
@@ -886,7 +849,6 @@ public abstract class GameObject {
 	}
 	
 	public void setOverlappingTiles() {
-		//this.overlappingTiles = null;
 		this.overlappingTiles = getAllOverlappingTiles();
 	}
 	
