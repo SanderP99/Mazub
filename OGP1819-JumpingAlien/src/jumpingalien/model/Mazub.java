@@ -443,7 +443,8 @@ public class Mazub extends GameObject {
 			else if (getOrientation() < 0)
 				this.setSprite(this.spriteArray[7]);}
 
-		
+		this.setYSize(getCurrentSprite().getHeight());
+		this.setXSize(getCurrentSprite().getWidth());
 		this.setHorizontalAcceleration(0.0);
 		this.isDucking = true;
 
@@ -460,10 +461,16 @@ public class Mazub extends GameObject {
 		this.setMaxSpeed();
 		if (this.isMoving) {
 			this.setHorizontalAcceleration(maxHorizontalAcceleration*this.getOrientation());
-			if (getOrientation() == 1)
+			if (getOrientation() == 1) {
 				setSprite(spriteArray[8]);
-			else
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+			}
+			else {
 				setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+			}
 		}
 		
 	}

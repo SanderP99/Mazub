@@ -192,6 +192,7 @@ public abstract class GameObject {
 	public void terminate() {
 		if (!isTerminated()) {
 			this.isTerminated = true;
+			this.isDead = true;
 			this.setHitpoints(0);
 			this.removeWorld();
 			
@@ -229,7 +230,7 @@ public abstract class GameObject {
 	 * @post the new y size is equal to the specified amount of pixels
 	 * 		| (this.ySize == Y_size)
 	 */
-	private void setYSize(int Y_size) {
+	protected void setYSize(int Y_size) {
 		this.ySize = Y_size;
 	}
 	
@@ -253,7 +254,7 @@ public abstract class GameObject {
 	 * @post the new x size is equal to the specified amount of pixels
 	 * 		| (this.xSize == X_size)
 	 */
-	private void setXSize(int X_size) {
+	protected void setXSize(int X_size) {
 		this.xSize = X_size;
 	}
 	
@@ -281,8 +282,10 @@ public abstract class GameObject {
 	public void setXPositionActual(double X_pos) {
 		this.xPosPixel = (int) (X_pos * 100);
 		this.xPosMeter = X_pos;
-		if (this.getWorld() != null && this.getWorld().getWorldSizeX() < this.getXPositionPixel())
+		if (this.getWorld() != null && this.getWorld().getWorldSizeX() < this.getXPositionPixel()) {
+			setHitpoints(0);
 			terminate();
+		}
 		if (!isValidActualXPosition(this.xPosMeter))
 			terminate();
 		
@@ -345,8 +348,10 @@ public abstract class GameObject {
 
 		this.yPosPixel = (int) (Y_pos * 100);
 		this.yPosMeter = Y_pos;
-		if (!isValidActualYPosition(this.xPosMeter)) 
+		if (!isValidActualYPosition(this.xPosMeter)) {
 			terminate();
+			setHitpoints(0);
+		}
 		if (this.getWorld() != null && this.getWorld().getWorldSizeY() < this.getYPositionPixel())
 			terminate();
 
@@ -792,12 +797,41 @@ public abstract class GameObject {
 //			return false;
 //		return true;
 		
-		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel())
-				&& !(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
-						&& !(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
-							&& !(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
-			return true;
-		return false;
+//		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel())
+//				&& !(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
+//						&& !(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
+//							&& !(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
+//			return true;
+//		return false;
+		
+//		if (!(this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()) && 
+//				!(other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
+//			return true;
+//
+//		if (!(other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()) &&
+//				
+//				!(this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel()))
+//			return true;
+
+//		if (getXPositionPixel() + (getXsize() - 1) < other.getXPositionPixel() || getXPositionPixel() > other.getXPositionPixel() + (other.getXsize() - 1)
+//				&& getYPositionPixel() + (getYsize() - 1) < other.getYPositionPixel() || getYPositionPixel() > other.getYPositionPixel() + (other.getYsize() - 1))
+//			return false;
+//		return true;
+		
+//		if ((this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel() || other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()) &&
+//				this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel() || other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel())
+//			return false;
+//		return true;
+		
+		if (this.getXPositionPixel() + (this.getXsize() - 2) < other.getXPositionPixel()) 
+			return false;
+		if (other.getXPositionPixel() + (other.getXsize() - 2) < this.getXPositionPixel()) 
+			return false;
+		if (this.getYPositionPixel() + (this.getYsize() - 2) < other.getYPositionPixel())
+			return false;
+		if (other.getYPositionPixel() + (other.getYsize() - 2) < this.getYPositionPixel())
+			return false;
+		return true;
 	}
 	
 	/**
