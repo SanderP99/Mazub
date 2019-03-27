@@ -476,6 +476,8 @@ public class World {
 		gameObject.world = null;
 		if (!getAllObjects().contains(getPlayer()))
 			this.player = null;
+//			this.hasPlayer = false;
+		//TODO
 		
 	}
 	
@@ -502,39 +504,64 @@ public class World {
 	private void advanceVisibleWindow() {
 		int newWindowXPos = 0;
 		int newWindowYPos = 0;
-		
-		if (getPlayer().getXPositionPixel() <= 200) {
-			 newWindowXPos = 0;
-		}
-		else if(this.getWorldSizeX() - getPlayer().getXPositionPixel()
-				- getPlayer().getXsize() <= 200) {
-			newWindowXPos = this.getWorldSizeX() - this.getVisibleWindowWidth();			
-		}
-		else {
+		if (! hasPlayer) {
 			newWindowXPos = this.getVisibleWindowPosition()[0];
-			while ( getPlayer().getXPositionPixel() - newWindowXPos < 200) {
-				newWindowXPos -=1;	
-			}
-			while ( newWindowXPos + this.getVisibleWindowWidth() -getPlayer().getXPositionPixel() - getPlayer().getXsize()  < 200) {
-				newWindowXPos +=1;	
-			}
-			
-		}
-		
-		if (getPlayer().getYPositionPixel() <= 200) {
-			 newWindowYPos = 0;			
-		}
-		else if(this.getWorldSizeY() - getPlayer().getYPositionPixel()
-				- getPlayer().getYsize() <= 200) {
-			 newWindowYPos = this.getWorldSizeY() - this.getVisibleWindowHeight();
+			newWindowYPos = this.getVisibleWindowPosition()[1];
 		}
 		else {
-			 newWindowYPos = this.getVisibleWindowPosition()[1];
-			while ( getPlayer().getYPositionPixel() - newWindowYPos < 200) {
-				newWindowYPos -=1;	
+			if ((this.getVisibleWindowWidth() - getPlayer().getXsize())/2 > 200 ||
+					(this.getVisibleWindowHeight() - getPlayer().getYsize())/2 > 200) {
+				
+			
+				if (getPlayer().getXPositionPixel() <= 200) {
+					 newWindowXPos = 0;
+				}
+				else if(this.getWorldSizeX() - getPlayer().getXPositionPixel()
+						- getPlayer().getXsize() <= 200) {
+					newWindowXPos = this.getWorldSizeX() - this.getVisibleWindowWidth();			
+				}
+				else {
+					newWindowXPos = this.getVisibleWindowPosition()[0];
+					while ( getPlayer().getXPositionPixel() - newWindowXPos < 200) {
+						newWindowXPos -=1;	
+					}
+					while ( newWindowXPos + this.getVisibleWindowWidth() -getPlayer().getXPositionPixel() - getPlayer().getXsize()  < 200) {
+						newWindowXPos +=1;	
+					}
+					
+				}
+				
+				if (getPlayer().getYPositionPixel() <= 200) {
+					 newWindowYPos = 0;			
+				}
+				else if(this.getWorldSizeY() - getPlayer().getYPositionPixel()
+						- getPlayer().getYsize() <= 200) {
+					 newWindowYPos = this.getWorldSizeY() - this.getVisibleWindowHeight();
+				}
+				else {
+					 newWindowYPos = this.getVisibleWindowPosition()[1];
+					while ( getPlayer().getYPositionPixel() - newWindowYPos < 200) {
+						newWindowYPos -=1;	
+					}
+					while ( newWindowYPos + this.getVisibleWindowHeight() -getPlayer().getYPositionPixel() - getPlayer().getYsize()  < 200) {
+						newWindowYPos +=1;	
+					}
+				}
 			}
-			while ( newWindowYPos + this.getVisibleWindowHeight() -getPlayer().getYPositionPixel() - getPlayer().getYsize()  < 200) {
-				newWindowYPos +=1;	
+			else {
+				newWindowXPos = getPlayer().getXPositionPixel() - this.getVisibleWindowWidth()/2;
+				newWindowYPos = getPlayer().getYPositionPixel() - this.getVisibleWindowHeight()/2;
+				if (newWindowXPos <0)
+					newWindowXPos = 0;
+				if (newWindowYPos <0)
+					newWindowYPos = 0;
+				while (newWindowXPos + this.getVisibleWindowWidth() > this.getWorldSizeX()) {
+					newWindowXPos -=1;
+				}
+				while (newWindowYPos + this.getVisibleWindowHeight() > this.getWorldSizeY()) {
+					newWindowYPos -=1;
+				}
+				
 			}
 		}
 		this.setVisibleWindowPosition(new int[] {newWindowXPos,newWindowYPos});
