@@ -1,5 +1,7 @@
 package jumpingalien.model;
 
+import java.util.List;
+
 import be.kuleuven.cs.som.annotate.Raw;
 import jumpingalien.util.Sprite; 
 
@@ -439,42 +441,32 @@ public class Mazub extends GameObject {
 		}
 	}
 	
-//	public void advanceTime(double dt, double timeStep) {
-//		if (!isDead()) {
-//			while (dt >= timeStep && !isDead()) {
-//				if (getTimeBeforeSpriteChange() >= timeStep) {
-//					if (getOrientation() == -1) {
-//						double newPosX = getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep - Math.abs(getHorizontalAcceleration()) * timeStep * timeStep;
-//						double newPosY = getYPositionActual()  + getVerticalSpeedMeters() * timeStep - getVerticalAcceleration() * timeStep * timeStep;
-//						if (getWorld().getGeologicalFeature((int)(100 * newPosX), (int) (100 * newPosY)) == World.SOLID_GROUND) {
-//							newPosX = getXPositionActual();
-//							newPosY = getYPositionActual();
-//							setHorizontalSpeedMeters(getHorizontalSpeedMeters() + getHorizontalAcceleration() * timeStep);
-//							setVerticalSpeedMeters(getVerticalSpeedMeters() + getVerticalAcceleration() * timeStep);
-//						}
-//						setXPositionActual(newPosX);
-//						setYPositionActual(newPosY);
-//						dt -= timeStep;
-//						setTimeBeforeSpriteChange(getTimeBeforeSpriteChange() - timeStep);
-//					}
-//					else {
-//						double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep + Math.abs(getHorizontalAcceleration()) * timeStep * timeStep;
-//						double newPosY = getYPositionActual()  + getVerticalSpeedMeters() * timeStep - getVerticalAcceleration() * timeStep * timeStep;
-//						if (getWorld().getGeologicalFeature((int)(100 * newPosX), (int) (100 * newPosY)) == World.SOLID_GROUND) {
-//							newPosX = getXPositionActual();
-//							newPosY = getYPositionActual();
-//							setHorizontalSpeedMeters(getHorizontalSpeedMeters() + getHorizontalAcceleration() * timeStep);
-//							setVerticalSpeedMeters(getVerticalSpeedMeters() + getVerticalAcceleration() * timeStep);
-//						}
-//						setXPositionActual(newPosX);
-//						setYPositionActual(newPosY);
-//						dt -= timeStep;
-//						setTimeBeforeSpriteChange(getTimeBeforeSpriteChange() - timeStep);
-//					}
-//				}
-//			}
-//		}
-//	}
+	private boolean overlapsWithMagma() {
+		List<int[]> overlappingTiles = getOverlappingTiles();
+		
+		for (int[] tile : overlappingTiles)
+			if (getWorld().getGeologicalFeature(tile[0] * getWorld().getTileLength(), tile[1] * getWorld().getTileLength()) == World.SOLID_GROUND)
+				return true;
+		return false;
+	}
+	
+	private boolean overlapsWithWater() {
+		List<int[]> overlappingTiles = getOverlappingTiles();
+		
+		for (int[] tile : overlappingTiles)
+			if (getWorld().getGeologicalFeature(tile[0] * getWorld().getTileLength(), tile[1] * getWorld().getTileLength()) == World.WATER)
+				return true;
+		return false;
+	}
+	
+	private boolean overlapsWithSolidGround() {
+		for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize() ; x++)
+			for (int y = getYPositionPixel() + 1; y < getYPositionPixel() + getYsize() ; y++) {
+				if (getWorld().getGeologicalFeature(x, y) == World.SOLID_GROUND)
+					return true;
+			}
+		return false;
+	}
 	
 	private void setTimeBeforeSpriteChange(double d) {
 		this.timeBeforeSpriteChange = d;

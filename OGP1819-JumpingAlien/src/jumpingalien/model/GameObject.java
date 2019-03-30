@@ -840,10 +840,12 @@ public abstract class GameObject {
 		
 		List<int[]> overlappingTiles = new ArrayList<>();
 		
-		for (int i = 0; i < 1 + (xSize - 1)  / tileLength; i++)
-			for (int j = 0; j < 1 + (ySize - 1) / tileLength; j++) {
-				overlappingTiles.add(new int[] {xPosition + i * tileLength, yPosition + j * tileLength });
-			}
+		int[] tileBottomLeft = new int[] {xPosition/tileLength, yPosition/tileLength};
+		int[] tileTopRight = new int[] {(xPosition + xSize - 1)/ tileLength, (yPosition + ySize - 1)/ tileLength};
+		
+		for (int i = tileBottomLeft[0]; i <= tileTopRight[0]; i++)
+			for (int j = tileBottomLeft[1]; j <= tileTopRight[1]; j++)
+				overlappingTiles.add(new int[] {i,j});
 		
 		return overlappingTiles;	
 	}
