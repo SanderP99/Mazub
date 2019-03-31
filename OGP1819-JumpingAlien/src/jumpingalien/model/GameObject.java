@@ -302,6 +302,15 @@ public abstract class GameObject {
 	}
 	
 	/**
+	 * Returns whether a position is a coordinate in the world
+	 * @param pixelX The x position in pixels
+	 * @param pixelY The y position in pixels
+	 */
+	public boolean isPositionInWorld(int pixelX, int pixelY) {
+		return (pixelX >= 0 && pixelX < getWorld().getWorldSizeX() && pixelY >= 0 && pixelY < getWorld().getWorldSizeY());
+	}
+	
+	/**
 	 * Returns whether the given coordinate is on the canvas.
 	 * @param X_pos
 	 * 			The coordinate to check in meters.

@@ -445,7 +445,7 @@ public class Mazub extends GameObject {
 		List<int[]> overlappingTiles = getOverlappingTiles();
 		
 		for (int[] tile : overlappingTiles)
-			if (getWorld().getGeologicalFeature(tile[0] * getWorld().getTileLength(), tile[1] * getWorld().getTileLength()) == World.SOLID_GROUND)
+			if (getWorld().getGeologicalFeature(tile[0] * getWorld().getTileLength(), tile[1] * getWorld().getTileLength()) == World.MAGMA)
 				return true;
 		return false;
 	}
