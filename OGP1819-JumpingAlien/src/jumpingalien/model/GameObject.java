@@ -209,7 +209,7 @@ public abstract class GameObject {
 	 * 
 	 * @post this.world == null
 	 */
-	private void removeWorld() {
+	protected void removeWorld() {
 		if (this.world != null) {
 			this.world.removeObject(this);
 			this.world = null;
@@ -464,7 +464,7 @@ public abstract class GameObject {
 	 */
 	private int hitpoints;
 	
-	private void changeHitPoints(int change) {
+	protected void changeHitPoints(int change) {
 		setHitpoints(getHitpoints() + change);
 	}
 	

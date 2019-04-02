@@ -384,6 +384,19 @@ public class World {
 			return MAGMA;
 		return AIR;		
 	}
+	public int getGeologicalFeatureTile(int[] tile_cord) {
+		if (this.tiles.contains(tile_cord[0] + " " + tile_cord[1]  + " " + AIR))
+			return AIR;
+		if (this.tiles.contains(tile_cord[0] + " " + tile_cord[1]  + " " + SOLID_GROUND))
+			return SOLID_GROUND;
+		
+		if (this.tiles.contains((String) (tile_cord[0] + " " + tile_cord[1]  + " " + WATER))) {
+			return WATER;}
+		if (this.tiles.contains(tile_cord[0] + " " + tile_cord[1]  + " " + MAGMA))
+			return MAGMA;
+		return AIR;		
+		
+	}
 	public final static int AIR = 0;
 	public final static int SOLID_GROUND = 1;
 	public final static int WATER = 2;
