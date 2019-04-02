@@ -431,7 +431,7 @@ public abstract class GameObject {
 	protected void setHitpoints(int hitpoints) {
 		if (hitpoints < 0)
 			this.hitpoints = 0;
-		if (hitpoints > 500)
+		else if (hitpoints > 500)
 			this.hitpoints = 500;
 		else
 			this.hitpoints = hitpoints;	
