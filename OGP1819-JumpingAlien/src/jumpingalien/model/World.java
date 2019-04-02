@@ -436,7 +436,6 @@ public class World {
 		if (this.getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND && this.getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
 			throw new RuntimeException();
 
-		//TODO fout zoeken want doet 2 testen runnen maar zorgt dat spel niet meer werkt
 			
 		if (!this.hasPlayer() && gameObject instanceof Mazub)
 			this.setPlayer(gameObject);

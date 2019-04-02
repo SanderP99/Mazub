@@ -107,7 +107,7 @@ public class Plant extends GameObject{
 					setOverlappingTiles();
 					setSecondsToLive(0);
 					this.isDead = true;
-					timeSinceDeath = 0;
+					timeSinceDeath = 0.0;
 				}
 			}
 			if (getOrientation() == 1)
