@@ -58,6 +58,9 @@ public class Mazub extends GameObject {
 			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, boolean advanceTime ,Sprite ... sprites) {
 		super((int)(X_pos * 100), (int)(Y_pos * 100), X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0,advanceTime, sprites);
 		this.isDucking = false;
+		this.timeInWater = 0;
+		this.timeInMagma = 0;
+		this.timeSinceDeath = 0;
 		this.setTimeBeforeSpriteChange(frameRate);
 	}
 	
@@ -86,6 +89,9 @@ public class Mazub extends GameObject {
 	public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters,boolean advanceTime, Sprite...sprites) {
 		super(X_pos, Y_pos, X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0,advanceTime, sprites);
 		this.isDucking = false;
+		this.timeInWater = 0;
+		this.timeInMagma = 0;
+		this.timeSinceDeath = 0;
 		this.setTimeBeforeSpriteChange(frameRate);
 	}
 	
@@ -342,11 +348,51 @@ public class Mazub extends GameObject {
 			fall();
 		}
 		}
+		collidesWithMagma = false;
+		collidesWithWater = false;
+		List<int[]> tiles = this.getOverlappingTiles();
+		for(int[] tile : tiles ) {
+			if (this.getWorld().getGeologicalFeatureTile( tile) == World.MAGMA)
+				this.collidesWithMagma = true;
+			if (this.getWorld().getGeologicalFeatureTile(tile) == World.WATER)
+				this.collidesWithWater = true;	
+		}
+		if (this.collidesWithWater) {
+			this.timeInWater +=dt;	
+		}
+		else {
+			this.timeInWater = 0;
+		}
+		if(this.timeInWater >= 0.2) {
+			timeInWater -= 0.2;
+			if (!this.collidesWithMagma)
+			this.changeHitPoints(-2);
+		}
+		if (this.collidesWithMagma) {
+			if (this.timeInMagma == 0) {
+				this.changeHitPoints(-50);
+				this.timeInMagma += dt;
+			}
+			else this.timeInMagma+= dt;
+			if (this.timeInMagma >= 0.2) {
+				this.changeHitPoints(-50);
+				this.timeInMagma -= 0.2;	
+			}	
+		}
+		else {
+			this.timeInMagma = 0;
+		}
+//		if (this.getHitpoints()==0) {
+//			this.isDead = true;
+//		}
 	}
 
-		
-//	}
 	
+//	}
+	private boolean collidesWithMagma;
+	private boolean collidesWithWater;
+	private double timeInWater;
+	private double timeInMagma;
 	private int getNextSpriteIndex() {
 		int indexCurrentSprite = 0;
 		int nextIndex = 0;
@@ -597,6 +643,11 @@ public class Mazub extends GameObject {
 	public boolean isPlayer() {
 		return this.isPlayer;
 	}
+	
+	public void resetHitPoints(){
+		this.setHitpoints(100);
+	}
+	
 	
 }
  
