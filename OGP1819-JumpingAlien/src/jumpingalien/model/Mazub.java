@@ -224,8 +224,9 @@ public class Mazub extends GameObject {
 	 */
 	public void endJump() throws RuntimeException {
 		if (this.isJumping) {
-			this.setVerticalSpeedMeters(0);
-			this.setVerticalAcceleration(maxVerticalAcceleration);
+			if (getVerticalSpeedMeters() > 0)
+				this.setVerticalSpeedMeters(0);
+			this.setVerticalAcceleration(0);
 			this.isJumping = false;
 			if (getOrientation() == 1 && !isFalling) {
 				setSprite(spriteArray[8 + getSpriteLoopSize(spriteArray)]);
@@ -347,12 +348,12 @@ public class Mazub extends GameObject {
 		else {
 			fall();
 		}
-		}
+		
 		collidesWithMagma = false;
 		collidesWithWater = false;
 		List<int[]> tiles = this.getOverlappingTiles();
 		for(int[] tile : tiles ) {
-			if (this.getWorld().getGeologicalFeatureTile( tile) == World.MAGMA)
+			if (this.getWorld().getGeologicalFeatureTile(tile) == World.MAGMA)
 				this.collidesWithMagma = true;
 			if (this.getWorld().getGeologicalFeatureTile(tile) == World.WATER)
 				this.collidesWithWater = true;	
@@ -385,6 +386,24 @@ public class Mazub extends GameObject {
 //		if (this.getHitpoints()==0) {
 //			this.isDead = true;
 //		}
+		
+			for (Object object : getWorld().getAllObjects()) {
+				if (collidesWith((GameObject) object) && object instanceof Plant && getHitpoints() != 500 && !((GameObject) object).isDead()) {
+					changeHitPoints(50);
+					((GameObject) object).terminate();
+				}
+				else if (collidesWith((GameObject) object) && object instanceof Plant && ((GameObject) object).isDead()) {
+					changeHitPoints(-20);
+					((GameObject) object).terminate();
+			}
+			}
+		}
+		else {
+		setXPositionActual(newPosX);
+		setYPositionActual(newPosY);
+		setHorizontalSpeedMeters(newSpeedX);
+		setVerticalSpeedMeters(newSpeedY);
+		}
 	}
 
 	
@@ -393,6 +412,7 @@ public class Mazub extends GameObject {
 	private boolean collidesWithWater;
 	private double timeInWater;
 	private double timeInMagma;
+	
 	private int getNextSpriteIndex() {
 		int indexCurrentSprite = 0;
 		int nextIndex = 0;
@@ -495,8 +515,8 @@ public class Mazub extends GameObject {
 		else if (isTerminated()) {
 			dt = 0;
 		}
-		else if (timeSinceDeath <0.6) {
-			if (dt< 0.6 -timeSinceDeath) {
+		else if (timeSinceDeath < 0.6) {
+			if (dt < 0.6 -timeSinceDeath) {
 				timeSinceDeath += dt;
 			}
 			else {
@@ -512,10 +532,11 @@ public class Mazub extends GameObject {
 			}
 		}
 	this.tempObject = false;
-	if(!this.isPositionInWorld(this.getXPositionPixel(), this.getYPositionPixel()))
-		terminate();
+	if (getWorld() != null)
+		if(!this.isPositionInWorld(this.getXPositionPixel(), this.getYPositionPixel()))
+			terminate();
 	}
-	double timeSinceDeath;
+	double timeSinceDeath = 0;
 	
 	private boolean overlapsWithMagma() {
 		List<int[]> overlappingTiles = getOverlappingTiles();
@@ -592,8 +613,10 @@ public class Mazub extends GameObject {
 			this.setHorizontalSpeedMeters(this.getMaxSpeedDuckingMeters()*this.getOrientation());
 			if(this.getOrientation() > 0)
 				this.setSprite(this.spriteArray[6]);
+			
 			else if (getOrientation() < 0)
-				this.setSprite(this.spriteArray[7]);}
+				this.setSprite(this.spriteArray[7]);
+			}
 
 		this.setYSize(getCurrentSprite().getHeight());
 		this.setXSize(getCurrentSprite().getWidth());

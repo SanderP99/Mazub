@@ -424,6 +424,7 @@ public class World {
 	GameObject player;
 	private boolean hasPlayer;
 	
+	
 	public void addGameObject(GameObject gameObject) throws RuntimeException {
 		if (getAllObjects().size() - 1 == getMaxNbOfObjects())
 			throw new RuntimeException();

@@ -114,9 +114,17 @@ public class Plant extends GameObject{
 				setXPositionActual(getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * dt);
 			else
 				setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * dt);
+			
 			setSecondsToLive(getSecondsToLive() - dt);
 			setOverlappingTiles();
 			
+			if (getWorld() != null ) {
+				for (Object object : getWorld().getAllObjects())	
+					if (collidesWith((GameObject) object) && object instanceof Mazub && ((GameObject) object).getHitpoints() != 500) {
+						terminate();
+						((GameObject) object).changeHitPoints(50);
+					}
+			}
 		}
 		else if (timeSinceDeath < 0.6){
 			if (dt < 0.599 - timeSinceDeath) {
@@ -133,6 +141,7 @@ public class Plant extends GameObject{
 			this.getWorld().removeObject(this);
 			terminate();
 		}
+		
 	}
 
 

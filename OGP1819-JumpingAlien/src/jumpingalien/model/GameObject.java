@@ -429,8 +429,10 @@ public abstract class GameObject {
 	 * @post if 0 < hitpoints < 500 then this.hitpoints == hitpoints
 	 */
 	protected void setHitpoints(int hitpoints) {
-		if (hitpoints < 0)
+		if (hitpoints <= 0) {
 			this.hitpoints = 0;
+			this.isDead = true;
+		}
 		if (hitpoints > 500)
 			this.hitpoints = 500;
 		else
@@ -787,8 +789,8 @@ public abstract class GameObject {
 			return false;
 		if (this.spriteArray == null)
 			return false;
-		if (this.isDead())
-			return false;
+//		if (this.isDead())
+//			return false;
 		if (this.isTerminated())
 			return false;
 		
@@ -803,7 +805,7 @@ public abstract class GameObject {
 	 * 			&& (this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
 	 * 			&& (other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel())
 	 * 			&& (other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel()))
-	 * TODO commentaar upaten
+	 * TODO commentaar updaten
 	 */
 	protected boolean collidesWith(GameObject other) {
 		if (this.getXPositionPixel() + (this.getXsize() - 2) < other.getXPositionPixel()) 

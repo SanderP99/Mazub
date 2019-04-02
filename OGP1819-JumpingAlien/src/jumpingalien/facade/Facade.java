@@ -208,7 +208,6 @@ public class Facade implements IFacade {
 		if (!alien.isValidGameObject())
 			throw new ModelException("The alien is not valid");
 		alien.startDuck();
-
 	}
 
 	@Override
@@ -344,6 +343,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isGameOver(World world) throws ModelException {
+		if (world.getPlayer() == null)
+			return true;
 		if (world.getPlayer().isTerminated())
 			return true;
 		return false;
@@ -351,10 +352,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean didPlayerWin(World world) throws ModelException {
+		if (world.getPlayer() == null)
+			return false;
 		if (world.getPlayer().getXPositionPixel() >= world.getTargetTileX()
-				&& world.getPlayer().getXPositionPixel() <= world.getTargetTileX() + world.getTileLength()
+				&& world.getPlayer().getXPositionPixel() < world.getTargetTileX() + world.getTileLength()
 				&& world.getPlayer().getYPositionPixel() >= world.getTargetTileY()
-				&& world.getPlayer().getYPositionPixel() <= world.getTargetTileY() + world.getTileLength()
+				&& world.getPlayer().getYPositionPixel() < world.getTargetTileY() + world.getTileLength()
 				&& !world.getPlayer().isDead())
 			return true;
 		return false;
