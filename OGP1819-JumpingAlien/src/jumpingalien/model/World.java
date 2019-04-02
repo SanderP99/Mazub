@@ -3,6 +3,8 @@ package jumpingalien.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -420,19 +422,10 @@ public class World {
 			throw new RuntimeException();
 		if (gameObject.getWorld() != null)
 			throw new RuntimeException();
-		if (!(gameObject instanceof Plant)) {
-			for (Object object : getAllObjects()) {
-				if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object)
-					throw new RuntimeException();
-				}
 
-		for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel() + gameObject.getXsize() ; x++)
-			for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel() + gameObject.getYsize() ; y++) {
-				if (getGeologicalFeature(x, y) == SOLID_GROUND)
-					throw new RuntimeException();
-			}
-		}
-
+		if (! canPlaceObject(gameObject))
+			throw new RuntimeException();
+		
 		if (this.getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND && this.getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
 			throw new RuntimeException();
 
@@ -445,8 +438,44 @@ public class World {
 		gameObject.world = this;
 		gameObject.setOverlappingTiles();
 	}
-	
+	public boolean canPlaceObject(GameObject gameObject) {
+		if (!(gameObject instanceof Plant)) {
+			for (Object object : getAllObjects()) {
+				if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object)
+					return false;
+				}
 
+		for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel() + gameObject.getXsize() ; x++)
+			for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel() + gameObject.getYsize() ; y++) {
+				if (getGeologicalFeature(x, y) == SOLID_GROUND)
+					return false;
+			}
+		}
+		return true;
+	}
+	public boolean canPlaceMazubAdvanceTime(GameObject gameObject,GameObject other) {
+		if (!(gameObject instanceof Plant)) {
+			for (Object object : getAllObjects()) {
+				if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object && object != other)
+					return false;
+				}
+
+		for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel() + gameObject.getXsize() ; x++)
+			 {
+				if (getGeologicalFeature(x, gameObject.getYPositionPixel()+1) == SOLID_GROUND)
+					return false;
+				if (getGeologicalFeature(x, gameObject.getYPositionPixel()+gameObject.getYsize()-1) == SOLID_GROUND)
+					return false;
+			}
+		for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel() + gameObject.getYsize() ; y++) {
+			if (getGeologicalFeature( gameObject.getXPositionPixel(),y) == SOLID_GROUND)
+				return false;
+			if (getGeologicalFeature(gameObject.getXPositionPixel()+gameObject.getXsize()-1,y) == SOLID_GROUND)
+				return false;
+		}
+		}
+		return true;
+	}
 	private boolean hasPlayer() {
 		return this.hasPlayer;
 	}

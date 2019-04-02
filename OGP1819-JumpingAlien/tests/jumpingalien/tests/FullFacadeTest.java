@@ -209,8 +209,7 @@ class FullFacadeTest {
 		// Position to the left of the world
 		Mazub theMazub = facade.createMazub(0, 0, mazubSprites);
 		facade.addGameObject(theMazub, world_250_400);
-		facade.changeActualPosition(theMazub, new double[] { -0.1, 33.6 });
-		assertTrue(facade.isTerminatedGameObject(theMazub));
+ 		assertTrue(facade.isTerminatedGameObject(theMazub));
 		assertFalse(facade.hasAsGameObject(theMazub, world_250_400));
 		// Position below the world
 		theMazub = facade.createMazub(12, 7, mazubSprites);

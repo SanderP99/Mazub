@@ -79,8 +79,9 @@ public abstract class GameObject {
 	 * 		| this.maxVerticalSpeed == maxVerticalSpeed
 	 */
 	GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, double maxHorizontalSpeedRunning, 
-			double maxHorizontalSpeedDucking, double minHorizontalSpeed, double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, 
-			Sprite... sprites){
+			double maxHorizontalSpeedDucking, double minHorizontalSpeed, double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration,
+			boolean tempObject,Sprite... sprites){
+		this.tempObject = tempObject;
 		setYSize(pixelSizeY);
 		setXSize(pixelSizeX);
 		setXPositionActual((double)(pixelLeftX)/100);
@@ -104,7 +105,7 @@ public abstract class GameObject {
 		setOverlappingTiles();
 		
 	}
-	
+	public boolean tempObject;
 	/**
 	 * Sets the current sprite to the given sprite
 	 * @param sprite The sprite to set
@@ -116,6 +117,9 @@ public abstract class GameObject {
 		if (!isValidSprite(sprite))
 			throw new RuntimeException();	
 		this.sprite = sprite;
+		this.setYSize(getCurrentSprite().getHeight());
+		this.setXSize(getCurrentSprite().getWidth());
+
 		
 	}
 	
@@ -283,12 +287,14 @@ public abstract class GameObject {
 	public void setXPositionActual(double X_pos) {
 		this.xPosPixel = (int) (X_pos * 100);
 		this.xPosMeter = X_pos;
+		if (!this.tempObject) {
 		if (this.getWorld() != null && this.getWorld().getWorldSizeX() < this.getXPositionPixel()) {
 			setHitpoints(0);
 			terminate();
 		}
 		if (!isValidActualXPosition(this.xPosMeter))
 			terminate();
+		}
 		
 	}
 	
@@ -358,12 +364,14 @@ public abstract class GameObject {
 
 		this.yPosPixel = (int) (Y_pos * 100);
 		this.yPosMeter = Y_pos;
-		if (!isValidActualYPosition(this.xPosMeter)) {
+		if (!this.tempObject) {
+		if (!isValidActualYPosition(this.yPosMeter)) {
 			terminate();
 			setHitpoints(0);
 		}
 		if (this.getWorld() != null && this.getWorld().getWorldSizeY() < this.getYPositionPixel())
 			terminate();
+		}
 
 	}
 	
@@ -373,7 +381,7 @@ public abstract class GameObject {
 	 * 			The given coordinate to check in meters.
 	 */
 	public boolean isValidActualYPosition(double Y_pos) {
-		return (Y_pos <= Double.POSITIVE_INFINITY &&  Y_pos >= 0);
+		return (Y_pos <= Double.POSITIVE_INFINITY &&  Y_pos >= -0.01);
 	}
 	
 	/**
@@ -869,5 +877,12 @@ public abstract class GameObject {
 	
 	private List<int[]> overlappingTiles;
 
-
+	public boolean isStandingOnSolidGround() {
+		for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize() ; x++)
+		 {
+			if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == World.SOLID_GROUND)
+				return true;	
+			}
+		return false;
+	}
 }
