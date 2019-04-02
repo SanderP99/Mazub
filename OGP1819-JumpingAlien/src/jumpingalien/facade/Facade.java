@@ -26,7 +26,7 @@ public class Facade implements IFacade {
 			if (sprites[i] == null)
 				throw new ModelException("The sprites are not valid");
 		Sprite sprite = sprites[0];
-		Mazub mazub = new Mazub(pixelLeftX, pixelBottomY, sprite.getWidth(), sprite.getHeight(), 0.0, 1.0, 3.0, 1.0, sprites);
+		Mazub mazub = new Mazub(pixelLeftX, pixelBottomY, sprite.getWidth(), sprite.getHeight(), 0.0, 1.0, 3.0, 1.0,false, sprites);
 		return mazub;
 	}
 
@@ -52,10 +52,14 @@ public class Facade implements IFacade {
 			throw new ModelException("NaN as position argument");
 		if (alien.getWorld() != null && alien.getWorld().getGeologicalFeature((int)(newPosition[0] * 100), (int)(newPosition[1] * 100)) == World.SOLID_GROUND)
 			throw new ModelException("New position on impassable terrain");
+		if(getWorld(alien) != null && !getWorld(alien).canPlaceObject(alien))
+			throw new ModelException("Can't place new alien");
 		if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1])) {
 			alien.terminate();
 		}
-		
+		if (getWorld(alien) != null && !alien.isPositionInWorld((int) (newPosition[0]*100),(int)(newPosition[1]*100)))
+			alien.terminate();
+
 		alien.setXPositionActual(newPosition[0]);
 		alien.setYPositionActual(newPosition[1]);
 
@@ -340,7 +344,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isGameOver(World world) throws ModelException {
-		if (world.getPlayer().getHitpoints() <= 0)
+		if (world.getPlayer().isTerminated())
 			return true;
 		return false;
 	}

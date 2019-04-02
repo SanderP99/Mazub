@@ -55,10 +55,10 @@ public class Mazub extends GameObject {
 	 * 			The sprites needed to represent Mazub
 	 */
 	public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, 
-			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite ... sprites) {
-		super((int)(X_pos * 100), (int)(Y_pos * 100), X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0, sprites);
+			double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, boolean advanceTime ,Sprite ... sprites) {
+		super((int)(X_pos * 100), (int)(Y_pos * 100), X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0,advanceTime, sprites);
 		this.isDucking = false;
-		this.setTimeBeforeSpriteChange(0.075);
+		this.setTimeBeforeSpriteChange(frameRate);
 	}
 	
 	/**
@@ -83,9 +83,10 @@ public class Mazub extends GameObject {
 	 * @param sprites
 	 * 			The sprites needed to represent Mazub
 	 */
-	public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, Sprite...sprites) {
-		super(X_pos, Y_pos, X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0, sprites);
+	public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters,boolean advanceTime, Sprite...sprites) {
+		super(X_pos, Y_pos, X_size, Y_size, 100, maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0, 0.9, -10.0,advanceTime, sprites);
 		this.isDucking = false;
+		this.setTimeBeforeSpriteChange(frameRate);
 	}
 	
 	/**
@@ -276,99 +277,75 @@ public class Mazub extends GameObject {
 	 * @post The new y position is the maximal y position if the actual new position is above the canvas
 	 * 		| if new.yPosMeter == this.getMaxYPosition() then getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt > getMaxYPosition()
 	 */
+//	private void updatePosition(double dt) {
+//		this.setMaxSpeed();
+//		fall();
+//		double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
+//		if(!isValidActualXPosition(newPosX)) {
+//			if( newPosX <0) {
+//				newPosX = 0;
+//			}
+//			else newPosX = ((double) this.getMaxXPosition())/100;
+//		}
+//		setXPositionActual(newPosX);
+//		double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
+//		setHorizontalSpeedMeters(newSpeedX);
+//		double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
+//		if(!isValidActualYPosition(newPosY)) {
+//			if( newPosY <0) {
+//				newPosY = 0;
+//			}
+//			else newPosY = (((double) this.getMaxYPosition()))/100;
+//			}
+//		setYPositionActual(newPosY);
+//		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
+//
+//		this.setVerticalSpeedMeters(newSpeedY);
+//		if(newPosY <= 0)
+//			this.isFalling=false;
+//		if (newSpeedY < 0 && newPosY > 0) {
+//			this.isJumping = false;
+//			this.isFalling = true;
+//			}
+//		if(newPosY == 0)
+//			this.isFalling=false;
+//		}
 	private void updatePosition(double dt) {
-		this.setMaxSpeed();
-		fall();
 		double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
-		if(!isValidActualXPosition(newPosX)) {
-			if( newPosX <0) {
-				newPosX = 0;
-			}
-			else newPosX = ((double) this.getMaxXPosition())/100;
-		}
-		setXPositionActual(newPosX);
-		double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
-		setHorizontalSpeedMeters(newSpeedX);
 		double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
-		if(!isValidActualYPosition(newPosY)) {
-			if( newPosY <0) {
-				newPosY = 0;
-			}
-			else newPosY = (((double) this.getMaxYPosition()))/100;
-			}
-		setYPositionActual(newPosY);
-		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
-
-		this.setVerticalSpeedMeters(newSpeedY);
-		if(newPosY <= 0)
-			this.isFalling=false;
-		if (newSpeedY < 0 && newPosY > 0) {
-			this.isJumping = false;
-			this.isFalling = true;
-			}
-		if(newPosY == 0)
-			this.isFalling=false;
-		}
-	
-	/**
-	 * Updates the position of Mazub over a given time interval
-	 * @param dt The time interval in seconds over which to update the position
-	 * @param index The index to which to set the new sprite
-	 * @post The new position is valid
-	 * 		| isValidActualXPosition(new.xPosMeter) && isValidActualYPosition(new.yPosMeter)
-	 * @post The new x position is equal to the old position + dt*(horizontal speed) + dt*dt*(horizontal acceleration)
-	 * 		| new.xPosMeter == getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt
-	 * @post The new y position is equal to the old position + dt*(vertical speed) + dt*dt*(vertical acceleration)
-	 * 		| new.yPosMeter == getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt
-	 * @post The new x position is 0 if the actual new position is left of the canvas
-	 * 		| if new.xPosMeter == 0 then new.xPosMeter == getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt < 0
-	 * @post The new x position is the maximal x position if the actual new position is right of the canvas
-	 * 		| if new.xPosMeter == this.getMaxXPosition() then new.xPosMeter == getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt > getMaxXPosition()
-	 * @post The new y position is 0 if the actual new position is under the canvas
-	 * 		| if new.yPosMeter == 0 then getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt < 0
-	 * @post The new y position is the maximal y position if the actual new position is above the canvas
-	 * 		| if new.yPosMeter == this.getMaxYPosition() then getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt > getMaxYPosition()
-	 * @post The new sprite is the sprite with the next index
-	 * 		| new.sprite == spriteArray[index]
-	 */
-	private void updatePositionAndSprite(double dt, int index) {
-		this.setMaxSpeed();
-		fall();
-		double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
-		if(!isValidActualXPosition(newPosX)) {
-			if( newPosX <0) {
-				newPosX = 0;
-			}
-			else newPosX = ((double) this.getMaxXPosition())/100;
-		}
-		setXPositionActual(newPosX);
 		double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
-		setHorizontalSpeedMeters(newSpeedX);
-		double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
-		if(!isValidActualYPosition(newPosY)) {
-			if( newPosY <0) {
-				newPosY = 0;
-			}
-			else newPosY = (((double) this.getMaxYPosition()))/100;
-			}
-		setYPositionActual(newPosY);
 		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
-
-		this.setVerticalSpeedMeters(newSpeedY);
-		if(newPosY <= 0)
-			this.isFalling=false;
-		if (newSpeedY < 0) {
-			this.isJumping = false;
-			this.isFalling = true;
-			}
-		if(newPosY == 0)
-			this.isFalling=false;
-		setSprite(spriteArray[index]);
-		this.setYSize(getCurrentSprite().getHeight());
-		this.setXSize(getCurrentSprite().getWidth());
-
+		
+//		if (!isPositionInWorld((int) (newPosX*100), (int) (newPosY*100))) {
+//			terminate();
+//		}
+//		else {
+		if (getWorld() != null) {
+		Mazub newMazub = new Mazub(newPosX, newPosY, this.getXsize(),this.getYsize(), newSpeedX,
+				this.getMinSpeedMeters(), this.getMaxSpeedRunningMeters(),
+				this.getMaxSpeedDuckingMeters(),true, this.getSpriteArray());
+		if (this.getWorld().canPlaceMazubAdvanceTime(newMazub,this)) {
+			setXPositionActual(newPosX);
+			setYPositionActual(newPosY);
+			setHorizontalSpeedMeters(newSpeedX);
+			setVerticalSpeedMeters(newSpeedY);
 		}
-	
+		else {
+			setHorizontalSpeedMeters(0);
+			setVerticalSpeedMeters(0);
+			setHorizontalAcceleration(0);
+		}
+		if (isStandingOnSolidGround()) {
+			setVerticalAcceleration(0);
+		}
+		else {
+			fall();
+		}
+		}
+	}
+
+		
+//	}
 	
 	private int getNextSpriteIndex() {
 		int indexCurrentSprite = 0;
@@ -398,48 +375,101 @@ public class Mazub extends GameObject {
 	 * @param dt The time to advance in seconds
 	 * @effect updatePositionAndSprite(dt, index)
 	 */
+//	@Override
+//	public void advanceTime(double dt, double timeStep) {
+//		if (dt != dt)
+//			dt = 0.0;
+//		if (dt > maxTimeFrame)
+//			dt = maxTimeFrame;
+//		if (dt < 0)
+//			dt = 0.0;	
+//		
+//		int fullUpdates = (int) (dt / frameRate);
+//		for (int i=0; i < fullUpdates; i++) {
+//			updatePositionAndSprite(frameRate, getNextSpriteIndex());
+//			if (!isMoving && !isJumping && !isDucking) {
+//				timeSinceLastMove += frameRate;
+//			}
+//			else {
+//				timeSinceLastMove = 0.0;
+//			}
+//		}
+//		updatePosition(dt % frameRate);
+//		timeToSpare += dt % frameRate;
+//		
+//		if (!isMoving && !isJumping && !isDucking ) {
+//			timeSinceLastMove += dt % frameRate;
+//		}
+//		else {
+//			timeSinceLastMove = 0.0;
+//		}
+//		
+//		
+//		if (timeToSpare > frameRate) {
+//			updatePositionAndSprite(0, getNextSpriteIndex());
+//			timeToSpare -= frameRate;
+//		}
+//		
+//		if (timeSinceLastMove >= 1) {
+//			updatePositionAndSprite(0, 0);
+//			timeSinceLastMove = 0.0;
+////			setVerticalSpeedMeters(0.0);
+////			setVerticalAcceleration(0.0);
+//		}
+//	}
 	@Override
-	public void advanceTime(double dt, double timeStep) {
-		if (dt != dt)
-			dt = 0.0;
-		if (dt > maxTimeFrame)
-			dt = maxTimeFrame;
-		if (dt < 0)
-			dt = 0.0;	
-		
-		int fullUpdates = (int) (dt / frameRate);
-		for (int i=0; i < fullUpdates; i++) {
-			updatePositionAndSprite(frameRate, getNextSpriteIndex());
-			if (!isMoving && !isJumping && !isDucking) {
-				timeSinceLastMove += frameRate;
+	public void advanceTime( double dt, double timeStep) {
+		this.tempObject = true;
+		if (! isDead()) {
+			if (getTimeBeforeSpriteChange() == 0)
+				setTimeBeforeSpriteChange(frameRate);
+			while (dt >= timeStep && !isDead() && !isTerminated()) {
+				if (getTimeBeforeSpriteChange() > timeStep) {
+					updatePosition(timeStep);
+					dt -= timeStep;
+					setTimeBeforeSpriteChange(getTimeBeforeSpriteChange()-timeStep);
+				}
+				else {
+					updatePosition(getTimeBeforeSpriteChange());
+					dt -= getTimeBeforeSpriteChange();
+					setTimeBeforeSpriteChange(frameRate);
+					setSprite(getSpriteArray()[getNextSpriteIndex()]);
+				}
+			}
+			if ( dt > getTimeBeforeSpriteChange()) {
+				updatePosition(getTimeBeforeSpriteChange());
+				setSprite(getSpriteArray()[getNextSpriteIndex()]);
+				dt-= getTimeBeforeSpriteChange();
+				setTimeBeforeSpriteChange(frameRate);
+			}
+			updatePosition(dt);
+			setTimeBeforeSpriteChange(getTimeBeforeSpriteChange()-dt);
+			
+		}
+		else if (isTerminated()) {
+			dt = 0;
+		}
+		else if (timeSinceDeath <0.6) {
+			if (dt< 0.6 -timeSinceDeath) {
+				timeSinceDeath += dt;
 			}
 			else {
-				timeSinceLastMove = 0.0;
+				timeSinceDeath += dt;
+				this.getWorld().removeObject(this);
+				terminate();
 			}
 		}
-		updatePosition(dt % frameRate);
-		timeToSpare += dt % frameRate;
-		
-		if (!isMoving && !isJumping && !isDucking ) {
-			timeSinceLastMove += dt % frameRate;
-		}
 		else {
-			timeSinceLastMove = 0.0;
+			if (getWorld() != null) {
+			this.getWorld().removeObject(this);
+			terminate();
+			}
 		}
-		
-		
-		if (timeToSpare > frameRate) {
-			updatePositionAndSprite(0, getNextSpriteIndex());
-			timeToSpare -= frameRate;
-		}
-		
-		if (timeSinceLastMove >= 1) {
-			updatePositionAndSprite(0, 0);
-			timeSinceLastMove = 0.0;
-//			setVerticalSpeedMeters(0.0);
-//			setVerticalAcceleration(0.0);
-		}
+	this.tempObject = false;
+	if(!this.isPositionInWorld(this.getXPositionPixel(), this.getYPositionPixel()))
+		terminate();
 	}
+	double timeSinceDeath;
 	
 	private boolean overlapsWithMagma() {
 		List<int[]> overlappingTiles = getOverlappingTiles();
@@ -459,9 +489,9 @@ public class Mazub extends GameObject {
 		return false;
 	}
 	
-	private boolean overlapsWithSolidGround() {
-		for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize() ; x++)
-			for (int y = getYPositionPixel() + 1; y < getYPositionPixel() + getYsize() ; y++) {
+	private boolean overlapsWithSolidGround(int xx, int yy) {
+		for (int x=xx; x < xx + getXsize() ; x++)
+			for (int y = yy + 1; y < yy + getYsize() ; y++) {
 				if (getWorld().getGeologicalFeature(x, y) == World.SOLID_GROUND)
 					return true;
 			}
@@ -478,7 +508,7 @@ public class Mazub extends GameObject {
 	}
 
 	private double maxTimeFrame = 0.2;
-	private double frameRate = 0.075;
+	private final static double frameRate = 0.075;
 	
 	/**
 	 * Returns whether an array of sprites has valid dimensions
