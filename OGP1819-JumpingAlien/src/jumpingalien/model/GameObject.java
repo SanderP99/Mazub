@@ -236,7 +236,7 @@ public abstract class GameObject {
 	 * 		| (this.ySize == Y_size)
 	 */
 	protected void setYSize(int Y_size) {
-		this.ySize = Y_size;
+		this.ySize = Y_size ;
 	}
 	
 	/**
