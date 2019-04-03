@@ -59,7 +59,15 @@ public class Facade implements IFacade {
 		}
 		if (getWorld(alien) != null && !alien.isPositionInWorld((int) (newPosition[0]*100),(int)(newPosition[1]*100)))
 			alien.terminate();
-
+		
+		if (alien.getWorld() != null) {
+			for (double x = newPosition[0]; x < newPosition[0] + (double)alien.getXsize() / 100 ; x += 0.01)
+				for (double y = newPosition[1] + 0.01; y < newPosition[0] + (double)alien.getYsize() / 100 ; y += 0.01) {
+					if (alien.getWorld().getGeologicalFeature((int)(x * 100),(int)( y * 100)) == World.SOLID_GROUND)
+						throw new ModelException("Can't place here");
+			}
+		}
+		
 		alien.setXPositionActual(newPosition[0]);
 		alien.setYPositionActual(newPosition[1]);
 
@@ -343,29 +351,25 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isGameOver(World world) throws ModelException {
-//		if (world.getPlayer() == null)
-//			return true;
-//		if (world.getPlayer().isTerminated())
-//			return true;
-//		if (world.getPlayer().getXPositionPixel() >= world.getTargetTileX()
-//				&& world.getPlayer().getXPositionPixel() < world.getTargetTileX() + world.getTileLength()
-//				&& world.getPlayer().getYPositionPixel() >= world.getTargetTileY()-1 
-//				&& world.getPlayer().getYPositionPixel() < world.getTargetTileY() + world.getTileLength()
-//				&& !world.getPlayer().isDead())
-//			return true;
+		if (world.getPlayer() == null)
+			return true;
+		if (world.getPlayer().isTerminated())
+			return true;
+		if (didPlayerWin(world))
+			return true;
 		return false;
 	}
 
 	@Override
 	public boolean didPlayerWin(World world) throws ModelException {
-//		if (world.getPlayer() == null)
-//			return false;
-//		if (world.getPlayer().getXPositionPixel() >= world.getTargetTileX()
-//				&& world.getPlayer().getXPositionPixel() < world.getTargetTileX() + world.getTileLength()
-//				&& world.getPlayer().getYPositionPixel() >= world.getTargetTileY() -1
-//				&& world.getPlayer().getYPositionPixel() < world.getTargetTileY() + world.getTileLength()
-//				&& !world.getPlayer().isDead())
-//			return true;
+		if (world.getPlayer() == null)
+			return false;
+		if (world.getPlayer().getXPositionPixel() >= world.getTargetTileX()
+				&& world.getPlayer().getXPositionPixel() < world.getTargetTileX() + world.getTileLength()
+				&& world.getPlayer().getYPositionPixel() >= world.getTargetTileY() -1
+				&& world.getPlayer().getYPositionPixel() < world.getTargetTileY() + world.getTileLength()
+				&& !world.getPlayer().isDead())
+			return true;
 		return false;
 	}
 

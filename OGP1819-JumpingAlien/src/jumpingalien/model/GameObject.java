@@ -806,13 +806,14 @@ public abstract class GameObject {
 	 * TODO commentaar updaten
 	 */
 	protected boolean collidesWith(GameObject other) {
-		if (this.getXPositionPixel() + (this.getXsize() - 2) < other.getXPositionPixel()) 
-			return false;
-		if (other.getXPositionPixel() + (other.getXsize() - 2) < this.getXPositionPixel()) 
+		
+		if (other.getXPositionPixel() + (other.getXsize() - 1) < this.getXPositionPixel()) 
 			return false; 
-		if (this.getYPositionPixel() + (this.getYsize() - 2) < other.getYPositionPixel())
+		if (this.getXPositionPixel() + (this.getXsize() - 1) < other.getXPositionPixel()) 
 			return false;
-		if (other.getYPositionPixel() + (other.getYsize() - 2) < this.getYPositionPixel())
+		if (this.getYPositionPixel() + (this.getYsize() - 1) < other.getYPositionPixel())
+			return false;
+		if (other.getYPositionPixel() + (other.getYsize() - 1) < this.getYPositionPixel())
 			return false;
 		return true;
 	}

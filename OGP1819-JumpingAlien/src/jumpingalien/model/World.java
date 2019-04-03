@@ -515,10 +515,10 @@ public class World {
 	public void removeObject(GameObject gameObject) {
 		objects.remove(gameObject);
 		gameObject.world = null;
-		if (!getAllObjects().contains(getPlayer()))
-			this.player = null;
-//			this.hasPlayer = false;
-		//TODO
+		if (!getAllObjects().contains(getPlayer())) {
+			this.player = null;		
+			this.hasPlayer = false;
+		}
 		
 	}
 	
@@ -545,7 +545,7 @@ public class World {
 	private void advanceVisibleWindow() {
 		int newWindowXPos = 0;
 		int newWindowYPos = 0;
-		if (! hasPlayer) {
+		if (getPlayer() == null) {
 			newWindowXPos = this.getVisibleWindowPosition()[0];
 			newWindowYPos = this.getVisibleWindowPosition()[1];
 		}

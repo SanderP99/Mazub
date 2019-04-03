@@ -386,7 +386,7 @@ public class Mazub extends GameObject {
 			this.timeInWater = 0;
 		}
 		
-		if(this.timeInWater > 0.2) {
+		if(this.timeInWater >= 0.1940) {
 			timeInWater -= 0.2;
 			if (!this.collidesWithMagma)
 			this.changeHitPoints(-2);
