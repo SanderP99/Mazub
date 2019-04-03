@@ -243,7 +243,9 @@ public class Mazub extends GameObject {
 				this.setYSize(getCurrentSprite().getHeight());
 				this.setXSize(getCurrentSprite().getWidth());
 			}
+			setTimeBeforeSpriteChange(frameRate);
 		}
+		
 		else if( this.isFalling);
 		else {
 			throw new RuntimeException();
@@ -646,6 +648,7 @@ public class Mazub extends GameObject {
 				this.setYSize(getCurrentSprite().getHeight());
 				this.setXSize(getCurrentSprite().getWidth());
 			}
+			setTimeBeforeSpriteChange(frameRate);
 		}
 		
 	}
