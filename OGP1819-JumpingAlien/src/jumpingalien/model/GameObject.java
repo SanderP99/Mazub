@@ -117,7 +117,7 @@ public abstract class GameObject {
 		if (!isValidSprite(sprite))
 			throw new RuntimeException();	
 		this.sprite = sprite;
-		this.setYSize(getCurrentSprite().getHeight());
+		this.setYSize(getCurrentSprite().getHeight()-2);
 		this.setXSize(getCurrentSprite().getWidth());
 
 		
@@ -236,7 +236,7 @@ public abstract class GameObject {
 	 * 		| (this.ySize == Y_size)
 	 */
 	protected void setYSize(int Y_size) {
-		this.ySize = Y_size;
+		this.ySize = Y_size ;
 	}
 	
 	/**
