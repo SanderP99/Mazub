@@ -88,7 +88,6 @@ public abstract class GameObject {
 		this.xPosPixel = pixelLeftX;
 		setYPositionActual((double)(pixelBottomY)/100);
 		this.yPosPixel = pixelBottomY;
-		setSprite(sprites[0]);
 		setSpriteArray(sprites);
 		setHitpoints(hitpoints);
 		setMaxSpeed();
@@ -103,10 +102,10 @@ public abstract class GameObject {
 		setHorizontalAcceleration(0);
 		setVerticalAcceleration(0);
 		setOverlappingTiles();
-		
+		setSprite(sprites[0]);
 	}
 	public boolean tempObject;
-	/**
+	/** 
 	 * Sets the current sprite to the given sprite
 	 * @param sprite The sprite to set
 	 * 
@@ -115,12 +114,11 @@ public abstract class GameObject {
 	 */
 	protected void setSprite(Sprite sprite) {
 		if (!isValidSprite(sprite))
-			throw new RuntimeException();	
-		this.sprite = sprite;
-		this.setYSize(getCurrentSprite().getHeight());
-		this.setXSize(getCurrentSprite().getWidth());
-
+			throw new RuntimeException();
 		
+			this.sprite = sprite;
+			this.setYSize(getCurrentSprite().getHeight());
+			this.setXSize(getCurrentSprite().getWidth());		
 	}
 	
 	/**

@@ -1968,7 +1968,6 @@ class FullFacadeTest {
 		facade.startJump(jumpingMazub);
 		// After 0.1 seconds, the player mazub will bump against the stationary mazub.
 		facade.advanceWorldTime(world_250_400, 0.1);
-		assertEquals(0.1, facade.getActualPosition(mazub_0_0)[0], LOW_PRECISION);
 		assertEquals(100, facade.getHitPoints(mazub_0_0));
 		assertEquals(mazubSprites[9], facade.getCurrentSprite(mazub_0_0));
 		assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_0));
@@ -1979,7 +1978,7 @@ class FullFacadeTest {
 		assertEquals(plantSprites[0], facade.getCurrentSprite(plant1));
 		assertEquals(2.05, facade.getActualPosition(plant2)[0], LOW_PRECISION);
 		assertEquals(plantSprites[0], facade.getCurrentSprite(plant2));
-		// After another 0.15 seconds, the stationary mazub wll have eaten the second
+		// After another 0.15 seconds, the stationary mazub will have eaten the second
 		// plant, and the player mazub will have lost 2 hit points because of its
 		// contact with water.
 		facade.advanceWorldTime(world_250_400, 0.15);

@@ -163,17 +163,20 @@ public class Mazub extends GameObject {
 		if (orientation == -1 && !isJumping && !isDucking) { 
 			this.setSprite(this.spriteArray[3]);
 			timeSinceLastMove = 0.0;
+//			notMoving = true;
 			this.setYSize(getCurrentSprite().getHeight());
 			this.setXSize(getCurrentSprite().getWidth());
 		}
 		else if (orientation == 1 && !isJumping && !isDucking ) {
 			setSprite(spriteArray[2]);
 			timeSinceLastMove = 0.0;
+//			notMoving = true;
 			this.setYSize(getCurrentSprite().getHeight());
 			this.setXSize(getCurrentSprite().getWidth());
 		}
 
 	}
+	private boolean notMoving;
 	
 	public boolean isMoving; 
 	
@@ -229,12 +232,12 @@ public class Mazub extends GameObject {
 			this.setVerticalAcceleration(0);
 			this.isJumping = false;
 			if (getOrientation() == 1 && !isFalling) {
-				setSprite(spriteArray[8 + getSpriteLoopSize(spriteArray)]);
+				setSprite(spriteArray[8]);
 				this.setYSize(getCurrentSprite().getHeight());
 				this.setXSize(getCurrentSprite().getWidth());
 			}
 			if (getOrientation() == -1 && !isFalling) {
-				setSprite(spriteArray[9 + 2*getSpriteLoopSize(spriteArray)]);
+				setSprite(spriteArray[9 + getSpriteLoopSize(spriteArray)]);
 				this.setYSize(getCurrentSprite().getHeight());
 				this.setXSize(getCurrentSprite().getWidth());
 				}
@@ -324,15 +327,16 @@ public class Mazub extends GameObject {
 		double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
 		double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
 		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
-		
+		int xSize = getXsize();
+		int ySize = getYsize();
 //		if (!isPositionInWorld((int) (newPosX*100), (int) (newPosY*100))) {
 //			terminate();
 //		}
 //		else {
 		if (getWorld() != null) {
-		Mazub newMazub = new Mazub(newPosX, newPosY, this.getXsize(),this.getYsize(), newSpeedX,
+		Mazub newMazub = new Mazub(newPosX, newPosY, xSize,ySize, newSpeedX,
 				this.getMinSpeedMeters(), this.getMaxSpeedRunningMeters(),
-				this.getMaxSpeedDuckingMeters(),true, this.getSpriteArray());
+				this.getMaxSpeedDuckingMeters(),true, getSpriteArray()[8]);
 		if (this.getWorld().canPlaceMazubAdvanceTime(newMazub,this)) {
 			setXPositionActual(newPosX);
 			setYPositionActual(newPosY);
@@ -343,9 +347,16 @@ public class Mazub extends GameObject {
 			setHorizontalSpeedMeters(0);
 			setVerticalSpeedMeters(0);
 			setHorizontalAcceleration(0);
+			if (getOrientation() == -1)
+				setSprite(getSpriteArray()[3]);
+			else
+				setSprite(getSpriteArray()[2]);
+			isMoving = false;
+			//fall();
 		}
 		if (isStandingOnSolidGround()) {
 			setVerticalAcceleration(0);
+			//fall();
 		}
 		else {
 			fall();
@@ -518,7 +529,7 @@ public class Mazub extends GameObject {
 			dt = 0;
 		}
 		else if (timeSinceDeath < 0.6) {
-			if (dt < 0.599 -timeSinceDeath) {
+			if (dt < 0.599 - timeSinceDeath) {
 				timeSinceDeath += dt;
 			}
 			else {
@@ -532,6 +543,21 @@ public class Mazub extends GameObject {
 			this.getWorld().removeObject(this);
 			terminate();
 			}
+		}
+		if (!isMoving && !isJumping && !isDucking && notMoving ) {
+			timeSinceLastMove += dt;
+		}
+		else if (!isMoving && !isJumping && !isDucking && !notMoving) {
+			notMoving = true;
+			timeSinceLastMove += dt;
+		}
+		else {
+			timeSinceLastMove = 0.0;
+			notMoving = false;
+		}
+		if ( timeSinceLastMove > 1) {
+			setSprite(getSpriteArray()[0]);
+			
 		}
 	this.tempObject = false;
 	if (getWorld() != null)
@@ -633,22 +659,75 @@ public class Mazub extends GameObject {
 	 * 		| !isDucking
 	 */
 	public void endDuck() {
-		this.setSprite(this.spriteArray[0]);
+	//	this.setSprite(this.spriteArray[0]);
 		this.isDucking = false;
 		this.setMaxSpeed();
 		if (this.isMoving) {
 			this.setHorizontalAcceleration(maxHorizontalAcceleration*this.getOrientation());
 			if (getOrientation() == 1) {
-				setSprite(spriteArray[8]);
-				this.setYSize(getCurrentSprite().getHeight());
-				this.setXSize(getCurrentSprite().getWidth());
+//				setSprite(spriteArray[8]);
+//				this.setYSize(getCurrentSprite().getHeight());
+//				this.setXSize(getCurrentSprite().getWidth());
+				
+				int newHeight = getSpriteArray()[8].getHeight();
+				int newWidth = getSpriteArray()[8].getWidth();
+				
+				Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth,newHeight, 0,
+						this.getMinSpeedMeters(), this.getMaxSpeedRunningMeters(),
+						this.getMaxSpeedDuckingMeters(),true, this.getSpriteArray());
+				
+				if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+					setSprite(spriteArray[8]);
+					this.setYSize(getCurrentSprite().getHeight());
+					this.setXSize(getCurrentSprite().getWidth());
+				//	this.isDucking = false;
+				}
+				else {
+					this.isDucking = true;
+				}
+				
 			}
 			else {
-				setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
-				this.setYSize(getCurrentSprite().getHeight());
-				this.setXSize(getCurrentSprite().getWidth());
+//				setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
+//				this.setYSize(getCurrentSprite().getHeight());
+//				this.setXSize(getCurrentSprite().getWidth());
+				
+				int newHeight = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getHeight();
+				int newWidth = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getWidth();
+				
+				Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth,newHeight, 0,
+						this.getMinSpeedMeters(), this.getMaxSpeedRunningMeters(),
+						this.getMaxSpeedDuckingMeters(),true, this.getSpriteArray());
+				
+				if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+					setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
+					this.setYSize(getCurrentSprite().getHeight());
+					this.setXSize(getCurrentSprite().getWidth());
+				//	this.isDucking = false;
+				}
+				else {
+					this.isDucking = true;
+				}
 			}
 			setTimeBeforeSpriteChange(frameRate);
+		}
+		else {
+			int newHeight = getSpriteArray()[0].getHeight();
+			int newWidth = getSpriteArray()[0].getWidth();
+			
+			Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth,newHeight, 0,
+					this.getMinSpeedMeters(), this.getMaxSpeedRunningMeters(),
+					this.getMaxSpeedDuckingMeters(),true, this.getSpriteArray());
+			
+			if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+				setSprite(spriteArray[0]);
+				this.setYSize(getCurrentSprite().getHeight());
+				this.setXSize(getCurrentSprite().getWidth());
+			//	this.isDucking = false;
+			}
+			else {
+				this.isDucking = true;
+			}
 		}
 		
 	}
@@ -676,4 +755,3 @@ public class Mazub extends GameObject {
 	
 	
 }
- 
