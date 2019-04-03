@@ -1,5 +1,6 @@
 package jumpingalien.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import be.kuleuven.cs.som.annotate.Raw;
@@ -343,9 +344,9 @@ public class Mazub extends GameObject {
 			setVerticalSpeedMeters(newSpeedY);
 		}
 		else {
-			setHorizontalSpeedMeters(0);
-			setVerticalSpeedMeters(0);
-			setHorizontalAcceleration(0);
+			this.setHorizontalSpeedMeters(0);
+			this.setVerticalSpeedMeters(0);
+			this.setHorizontalAcceleration(0);
 		}
 		if (isStandingOnSolidGround()) {
 			setVerticalAcceleration(0);
@@ -354,22 +355,26 @@ public class Mazub extends GameObject {
 			fall();
 		}
 		
-		collidesWithMagma = false;
-		collidesWithWater = false;
-		List<int[]> tiles = this.getOverlappingTiles();
+		List<int[]> tiles = new ArrayList<int[]>();
+		tiles = this.getAllOverlappingTiles();
+		this.collidesWithMagma = false;
+		this.collidesWithWater = false;
 		for(int[] tile : tiles ) {
 			if (this.getWorld().getGeologicalFeatureTile(tile) == World.MAGMA)
 				this.collidesWithMagma = true;
 			if (this.getWorld().getGeologicalFeatureTile(tile) == World.WATER)
 				this.collidesWithWater = true;	
 		}
+//		if (this.overlapsWithWater())
+//			this.collidesWithWater = true;
 		if (this.collidesWithWater) {
 			this.timeInWater +=dt;	
 		}
 		else {
 			this.timeInWater = 0;
 		}
-		if(this.timeInWater >= 0.2) {
+		
+		if(this.timeInWater > 0.2) {
 			timeInWater -= 0.2;
 			if (!this.collidesWithMagma)
 			this.changeHitPoints(-2);
@@ -388,9 +393,9 @@ public class Mazub extends GameObject {
 		else {
 			this.timeInMagma = 0;
 		}
-//		if (this.getHitpoints()==0) {
-//			this.isDead = true;
-//		}
+		if (this.getHitpoints()==0) {
+			this.isDead = true;
+		}
 		
 			for (Object object : getWorld().getAllObjects()) {
 				if (collidesWith((GameObject) object) && object instanceof Plant && getHitpoints() != 500 && !((GameObject) object).isDead()) {
@@ -494,7 +499,7 @@ public class Mazub extends GameObject {
 		if (! isDead()) {
 			if (getTimeBeforeSpriteChange() == 0)
 				setTimeBeforeSpriteChange(frameRate);
-			while (dt >= timeStep && !isDead() && !isTerminated()) {
+			while (dt > timeStep && !isDead() && !isTerminated()) {
 				if (getTimeBeforeSpriteChange() > timeStep) {
 					updatePosition(timeStep);
 					dt -= timeStep;
@@ -558,32 +563,6 @@ public class Mazub extends GameObject {
 	}
 	double timeSinceDeath = 0;
 	
-	private boolean overlapsWithMagma() {
-		List<int[]> overlappingTiles = getOverlappingTiles();
-		
-		for (int[] tile : overlappingTiles)
-			if (getWorld().getGeologicalFeature(tile[0] * getWorld().getTileLength(), tile[1] * getWorld().getTileLength()) == World.MAGMA)
-				return true;
-		return false;
-	}
-	
-	private boolean overlapsWithWater() {
-		List<int[]> overlappingTiles = getOverlappingTiles();
-		
-		for (int[] tile : overlappingTiles)
-			if (getWorld().getGeologicalFeature(tile[0] * getWorld().getTileLength(), tile[1] * getWorld().getTileLength()) == World.WATER)
-				return true;
-		return false;
-	}
-	
-	private boolean overlapsWithSolidGround(int xx, int yy) {
-		for (int x=xx; x < xx + getXsize() ; x++)
-			for (int y = yy + 1; y < yy + getYsize() ; y++) {
-				if (getWorld().getGeologicalFeature(x, y) == World.SOLID_GROUND)
-					return true;
-			}
-		return false;
-	}
 	
 	private void setTimeBeforeSpriteChange(double d) {
 		this.timeBeforeSpriteChange = d;

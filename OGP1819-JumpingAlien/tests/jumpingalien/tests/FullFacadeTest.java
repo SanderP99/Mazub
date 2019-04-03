@@ -1001,7 +1001,7 @@ class FullFacadeTest {
 		// After moving to the right for at least 0.2268 seconds, mazub is out of the
 		// water.
 		// The hit points after moving to the right for 0.9 seconds may therefore only
-		// diminish with 2.
+	 	// diminish with 2.
 		facade.startMoveRight(mazub_100_0);
 		for (int i = 1; i <= 5; i++)
 			facade.advanceTime(mazub_100_0, 0.18);
