@@ -516,7 +516,7 @@ public class Mazub extends GameObject {
 			dt = 0;
 		}
 		else if (timeSinceDeath < 0.6) {
-			if (dt < 0.6 -timeSinceDeath) {
+			if (dt < 0.599 -timeSinceDeath) {
 				timeSinceDeath += dt;
 			}
 			else {
