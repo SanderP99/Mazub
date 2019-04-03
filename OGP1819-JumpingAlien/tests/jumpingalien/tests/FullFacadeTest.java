@@ -212,6 +212,8 @@ class FullFacadeTest {
 		facade.changeActualPosition(theMazub, new double[] { -0.1, 33.6 });
 		assertTrue(facade.isTerminatedGameObject(theMazub));
 		assertFalse(facade.hasAsGameObject(theMazub, world_250_400));
+		// Position to under the bottom of the world
+		theMazub = facade.createMazub(12, 7, mazubSprites);
 		facade.changeActualPosition(theMazub, new double[] { 12.3, -0.1 });
 		assertTrue(facade.isTerminatedGameObject(theMazub));
 		assertFalse(facade.hasAsGameObject(theMazub, world_250_400));
