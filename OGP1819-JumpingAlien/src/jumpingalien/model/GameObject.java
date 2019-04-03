@@ -809,7 +809,7 @@ public abstract class GameObject {
 		if (this.getXPositionPixel() + (this.getXsize() - 2) < other.getXPositionPixel()) 
 			return false;
 		if (other.getXPositionPixel() + (other.getXsize() - 2) < this.getXPositionPixel()) 
-			return false;
+			return false; 
 		if (this.getYPositionPixel() + (this.getYsize() - 2) < other.getYPositionPixel())
 			return false;
 		if (other.getYPositionPixel() + (other.getYsize() - 2) < this.getYPositionPixel())
@@ -846,7 +846,7 @@ public abstract class GameObject {
 
 	public abstract void advanceTime(double dt, double timeStep);
 	
-	private List<int[]> getAllOverlappingTiles(){
+	protected List<int[]> getAllOverlappingTiles(){
 		int xPosition = getXPositionPixel();
 		int yPosition = getYPositionPixel();
 		int xSize = getXsize();
@@ -870,10 +870,10 @@ public abstract class GameObject {
 	public void setOverlappingTiles() {
 		this.overlappingTiles = getAllOverlappingTiles();
 	}
-	
-	protected List<int[]> getOverlappingTiles(){
-		return this.overlappingTiles;
-	}
+//	
+//	protected List<int[]> getOverlappingTiles(){
+//		return this.overlappingTiles;
+//	}
 	
 	private List<int[]> overlappingTiles;
 

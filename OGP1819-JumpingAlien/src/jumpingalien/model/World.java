@@ -394,7 +394,7 @@ public class World {
 			return WATER;}
 		if (this.tiles.contains(tile_cord[0] + " " + tile_cord[1]  + " " + MAGMA))
 			return MAGMA;
-		return AIR;		
+		return AIR;		 
 		
 	}
 	public final static int AIR = 0;
@@ -454,7 +454,7 @@ public class World {
 	public boolean canPlaceObject(GameObject gameObject) {
 		if (!(gameObject instanceof Plant)) {
 			for (Object object : getAllObjects()) {
-				if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object)
+		 		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object)
 					return false;
 				}
 
