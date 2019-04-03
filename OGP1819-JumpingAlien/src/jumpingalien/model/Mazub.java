@@ -163,17 +163,20 @@ public class Mazub extends GameObject {
 		if (orientation == -1 && !isJumping && !isDucking) { 
 			this.setSprite(this.spriteArray[3]);
 			timeSinceLastMove = 0.0;
+//			notMoving = true;
 			this.setYSize(getCurrentSprite().getHeight());
 			this.setXSize(getCurrentSprite().getWidth());
 		}
 		else if (orientation == 1 && !isJumping && !isDucking ) {
 			setSprite(spriteArray[2]);
 			timeSinceLastMove = 0.0;
+//			notMoving = true;
 			this.setYSize(getCurrentSprite().getHeight());
 			this.setXSize(getCurrentSprite().getWidth());
 		}
 
 	}
+	private boolean notMoving;
 	
 	public boolean isMoving; 
 	
@@ -229,12 +232,12 @@ public class Mazub extends GameObject {
 			this.setVerticalAcceleration(0);
 			this.isJumping = false;
 			if (getOrientation() == 1 && !isFalling) {
-				setSprite(spriteArray[8 + getSpriteLoopSize(spriteArray)]);
+				setSprite(spriteArray[8]);
 				this.setYSize(getCurrentSprite().getHeight());
 				this.setXSize(getCurrentSprite().getWidth());
 			}
 			if (getOrientation() == -1 && !isFalling) {
-				setSprite(spriteArray[9 + 2*getSpriteLoopSize(spriteArray)]);
+				setSprite(spriteArray[9 + getSpriteLoopSize(spriteArray)]);
 				this.setYSize(getCurrentSprite().getHeight());
 				this.setXSize(getCurrentSprite().getWidth());
 				}
@@ -532,6 +535,21 @@ public class Mazub extends GameObject {
 			this.getWorld().removeObject(this);
 			terminate();
 			}
+		}
+		if (!isMoving && !isJumping && !isDucking && notMoving ) {
+			timeSinceLastMove += dt;
+		}
+		else if (!isMoving && !isJumping && !isDucking && !notMoving) {
+			notMoving = true;
+			timeSinceLastMove += dt;
+		}
+		else {
+			timeSinceLastMove = 0.0;
+			notMoving = false;
+		}
+		if ( timeSinceLastMove > 1) {
+			setSprite(getSpriteArray()[0]);
+			
 		}
 	this.tempObject = false;
 	if (getWorld() != null)
