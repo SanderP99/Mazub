@@ -50,7 +50,8 @@ public class Facade implements IFacade {
 			throw new ModelException("Only 2  coordinates allowed");
 		if (newPosition[0] != newPosition[0] || newPosition[1] != newPosition[1])
 			throw new ModelException("NaN as position argument");
-		if (alien.getWorld() != null && alien.getWorld().getGeologicalFeature((int)(newPosition[0] * 100), (int)(newPosition[1] * 100)) == World.SOLID_GROUND)
+		if (alien.getWorld() != null && alien.collidesWithImpassableTerrain(newPosition))
+//		if (alien.getWorld() != null && alien.getWorld().getGeologicalFeature((int)(newPosition[0] * 100), (int)(newPosition[1] * 100)) == World.SOLID_GROUND)
 			throw new ModelException("New position on impassable terrain");
 		if(getWorld(alien) != null && !getWorld(alien).canPlaceObject(alien))
 			throw new ModelException("Can't place new alien");

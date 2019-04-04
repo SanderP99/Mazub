@@ -735,6 +735,20 @@ public class Mazub extends GameObject {
 	public void resetHitPoints(){
 		this.setHitpoints(100);
 	}
-	
+	public boolean collidesWithImpassableTerrain(double[] newPosition) {
+		Mazub newMazub = new Mazub(newPosition[0], newPosition[1],this.getXsize(),this.getYsize(), 0,
+				this.getMinSpeedMeters(), this.getMaxSpeedRunningMeters(),
+				this.getMaxSpeedDuckingMeters(),true, getSpriteArray()[8]);
+		List<int[]> tiles = new ArrayList<int[]>();
+		tiles = newMazub.getAllOverlappingTiles();
+		this.collidesWithSolidGround = false;
+		for(int[] tile : tiles ) {
+			if (this.getWorld().getGeologicalFeatureTile(tile) == World.SOLID_GROUND)
+				this.collidesWithSolidGround = true;
+			
+		}
+		return this.collidesWithSolidGround;
+	}
+	public boolean collidesWithSolidGround;
 	
 }
