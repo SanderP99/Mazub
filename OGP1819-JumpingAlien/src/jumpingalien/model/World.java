@@ -61,13 +61,23 @@ public class World {
 	setTargetTileY(targetTileY);
 	if (!canHaveAsVisibleWindowHeight(visibleWindowHeight))
 	    throw new RuntimeException();
-	this.visibleWindowHeight = visibleWindowHeight;
+	setVisibleWindowHeight(visibleWindowHeight);
 	if (!canHaveAsVisibleWindowWidth(visibleWindowWidth))
 	    throw new RuntimeException();
-	this.visibleWindowWidth = visibleWindowWidth;
+	setVisibleWindowWidth(visibleWindowWidth);
 	setVisibleWindowPosition(new int[] { 0, 0 });
 	initializeGeologicalFeatures(nbTilesX, nbTilesY, geologicalFeatures);
 	setMaxNbOfObjects(maxNbOfObjects);
+
+    }
+
+    private void setVisibleWindowWidth(int visibleWindowWidth) {
+	World.visibleWindowWidth = visibleWindowWidth;
+
+    }
+
+    private void setVisibleWindowHeight(int visibleWindowHeight) {
+	World.visibleWindowHeight = visibleWindowHeight;
 
     }
 
@@ -174,12 +184,6 @@ public class World {
 	this.targetTileX = targetTileX;
     }
 
-//	private boolean isValidTargetTileX(int targetTileX) {
-//		if (targetTileX > (getWorldSizeX()/getTileLength() - 1) || targetTileX < 0)
-//			return false;
-//		return true;
-//	}
-
     private int targetTileX;
 
     @Basic
@@ -191,12 +195,6 @@ public class World {
 	assert !isTerminated();
 	this.targetTileY = targetTileY;
     }
-
-//	private boolean isValidTargetTileY(int targetTileY) {
-//		if (targetTileY > (getWorldSizeY()/getTileLength() - 1) || targetTileY < 0)
-//			return false;
-//		return true;
-//	}
 
     private int targetTileY;
 
@@ -247,7 +245,7 @@ public class World {
     /**
      * Variable registering the visisbleWindowHeigth of this World.
      */
-    private final int visibleWindowHeight;
+    private static int visibleWindowHeight;
 
     /**
      * Return the visibleWindowWidth of this World.
@@ -279,7 +277,7 @@ public class World {
     /**
      * Variable registering the visibleWindowWidth of this World.
      */
-    private final int visibleWindowWidth;
+    private static int visibleWindowWidth;
 
     /**
      * Return the visibleWindowPosition of this World.

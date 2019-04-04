@@ -84,9 +84,17 @@ public class Mazub extends GameObject {
      * Starts the movement in a given direction
      * 
      * @param direction The direction in which to move. -1 to go left, 1 to go right
+     * 
      * @pre The given direction is valid | direction == 1 || direction == -1
      * @pre The given alien is valid | this.isValidAlien()
      * @pre The alien is not moving | !isMoving()
+     * 
+     * @post ... | new.orientation == direction
+     * @post ... | new.isMoving == true
+     * @post ... | new.getHorizontalAcceleration() == direction *
+     *       maxHorizontalAcceleration
+     * @post ... | new.getXSize() == getCurrentSprite().getWidth()
+     * @post ... | new.getYSize() == getCurrentSprite().getHeight()
      */
     public void startMove(int direction) {
 	assert isValidGameObject();
@@ -124,6 +132,7 @@ public class Mazub extends GameObject {
      * 
      * @pre The given alien is valid | this.isValidAlien()
      * @pre The alien is moving | this.isMoving
+     * 
      * @post The horizontal speed of Mazub is 0 | new.getHorizontalSpeedActual == 0
      * @post The horizontal acceleration of Mazub is 0 |
      *       new.getHorizontalAcceleration == 0
@@ -148,11 +157,17 @@ public class Mazub extends GameObject {
 	    setYSize(getCurrentSprite().getHeight());
 	    setXSize(getCurrentSprite().getWidth());
 	}
-
     }
 
+    /**
+     * A boolean to store if Mazub is standing still and is not ducking and not
+     * jumping
+     */
     private boolean notMoving;
 
+    /**
+     * A boolean to store if Mazub is moving
+     */
     public boolean isMoving;
 
     /**
@@ -160,16 +175,18 @@ public class Mazub extends GameObject {
      * 
      * @throws RuntimeException when Mazub is not on the ground |(isJuming ||
      *                          isFalling)
+     * 
      * @post The new speed is equal to the given maximum vertical speed. |
      *       new.verticalSpeed == maxVerticalSpeed
      * @post The new acceleration is equal to the given maximum vertical
      *       acceleration. | new.VerticalAcceleration == maxVerticalAcceleration
+     * @post ... | new.isJumping == true
+     * @post ... | new.getXSize() == getCurrentSprite().getWidth()
+     * @post ... | new.getYSize() == getCurrentSprite().getHeight()
+     * @post ... | new.getVerticalSpeedMeters() == maxVerticalSpeed
+     * @post ... | new.getVerticalAcceleration() == maxVerticalAcceleration
      */
     public void startJump() throws RuntimeException {
-//		if (this.isJumping)
-//			throw new RuntimeException();
-//		else if (this.isFalling);
-//		else {
 	isFalling = false;
 	setVerticalSpeedMeters(maxVerticalSpeed);
 	setVerticalAcceleration(maxVerticalAcceleration);
@@ -187,17 +204,21 @@ public class Mazub extends GameObject {
 	    setYSize(getCurrentSprite().getHeight());
 	    setXSize(getCurrentSprite().getWidth());
 	}
-
-//		}
     }
 
     /**
      * Ends a jump for a given Mazub
      * 
      * @throws RuntimeException when Mazub is on the ground |(!isJuming)
+     * 
      * @post The new speed is equal to 0. | new.verticalSpeed == 0
      * @post The new acceleration is equal to the given maximum vertical
      *       acceleration. | new.VerticalAcceleration == maxVerticalAcceleration
+     * @post ... | new.getVerticalAcceleration() == maxVerticalAcceleration
+     * @post ... | new.getXSize() == getCurrentSprite().getWidth()
+     * @post ... | new.getYSize() == getCurrentSprite().getHeight()
+     * @post ... | new.isJumping == false
+     * @post ... | new.getTimeBeforeSpriteChange() == frameRate
      */
     public void endJump() throws RuntimeException {
 	if (isJumping) {
@@ -229,6 +250,9 @@ public class Mazub extends GameObject {
 	    throw new RuntimeException();
     }
 
+    /**
+     * A boolean to store if Mazub is jumping
+     */
     public boolean isJumping;
 
     /**
@@ -244,6 +268,9 @@ public class Mazub extends GameObject {
 	    setVerticalAcceleration(0);
     }
 
+    /**
+     * A boolean to store if Mazub is falling
+     */
     public boolean isFalling;
 
 //	private void updatePosition(double dt) {
@@ -403,7 +430,6 @@ public class Mazub extends GameObject {
 	}
     }
 
-//	}
     private boolean collidesWithMagma;
     private boolean collidesWithWater;
     private double timeInWater;
@@ -529,8 +555,6 @@ public class Mazub extends GameObject {
 	return (sprites.length - 10) / 2;
     }
 
-//	private Sprite sprite;
-
     /**
      * Starts the duck move for a Mazub
      * 
@@ -558,18 +582,14 @@ public class Mazub extends GameObject {
     /**
      * Ends the duck move for a Mazub
      * 
-     * @post Mazub is not ducking | !isDucking
+     * @post Mazub is not ducking if possible | !isDucking
      */
     public void endDuck() {
-	// this.setSprite(this.spriteArray[0]);
 	isDucking = false;
 	setMaxSpeed();
 	if (isMoving) {
 	    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
 	    if (getOrientation() == 1) {
-//				setSprite(spriteArray[8]);
-//				this.setYSize(getCurrentSprite().getHeight());
-//				this.setXSize(getCurrentSprite().getWidth());
 
 		final int newHeight = getSpriteArray()[8].getHeight();
 		final int newWidth = getSpriteArray()[8].getWidth();
@@ -582,14 +602,10 @@ public class Mazub extends GameObject {
 		    setSprite(spriteArray[8]);
 		    setYSize(getCurrentSprite().getHeight());
 		    setXSize(getCurrentSprite().getWidth());
-		    // this.isDucking = false;
 		} else
 		    isDucking = true;
 
 	    } else {
-//				setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
-//				this.setYSize(getCurrentSprite().getHeight());
-//				this.setXSize(getCurrentSprite().getWidth());
 
 		final int newHeight = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getHeight();
 		final int newWidth = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getWidth();
@@ -602,7 +618,6 @@ public class Mazub extends GameObject {
 		    setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
 		    setYSize(getCurrentSprite().getHeight());
 		    setXSize(getCurrentSprite().getWidth());
-		    // this.isDucking = false;
 		} else
 		    isDucking = true;
 	    }
@@ -619,30 +634,19 @@ public class Mazub extends GameObject {
 		setSprite(spriteArray[0]);
 		setYSize(getCurrentSprite().getHeight());
 		setXSize(getCurrentSprite().getWidth());
-		// this.isDucking = false;
 	    } else
 		isDucking = true;
 	}
-
     }
 
-    public boolean isDucking;
+    private boolean isDucking;
 
     private double timeSinceLastMove;
 
     boolean isPlayer;
 
-    public void setPlayer() {
-	isPlayer = true;
-	getWorld().player = this;
-    }
-
-    public boolean isPlayer() {
-	return isPlayer;
-    }
-
-    public void resetHitPoints() {
-	setHitpoints(100);
+    public boolean isDucking() {
+	return isDucking;
     }
 
 }
