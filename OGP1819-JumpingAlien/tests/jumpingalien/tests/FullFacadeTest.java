@@ -469,7 +469,7 @@ class FullFacadeTest {
 		actualScore += 2;
 	}
 
-	@Test
+	@Test 
 	public void endDuck_OverlappingImpassableTerrain() throws Exception {
 		maximumScore += 8;
 		facade.setGeologicalFeature(world_250_400, 220, 35, SOLID_GROUND);

@@ -470,7 +470,7 @@ public class World {
 	    for (final Object object : getAllObjects())
 		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
 			&& object != other)
-		    return false;
+		    return false; 
 
 	    for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
 		    + gameObject.getXsize(); x++) {
@@ -537,7 +537,14 @@ public class World {
 	return 0.01 / (velocityRoot + accelerationRoot * deltaT);
     }
 
-    public void advanceWorldTime(double dt) {
+    public void advanceWorldTime(double dt) throws RuntimeException{ 
+    if (dt <0)
+    	throw new RuntimeException();
+    if (dt > 0.2)
+    	throw new RuntimeException();
+    if (dt != dt)
+    	throw new RuntimeException();
+    
 	for (final Object object : getAllObjects()) {
 	    final double timeStep = getTimeStep((GameObject) object, dt);
 	    ((GameObject) object).advanceTime(dt, timeStep);

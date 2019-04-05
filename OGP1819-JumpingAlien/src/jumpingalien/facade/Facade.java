@@ -48,7 +48,7 @@ public class Facade implements IFacade {
 	    throw new ModelException("Position can not be null");
 	if (!alien.isValidGameObject())
 	    throw new ModelException("The alien is not valid");
-	if (newPosition.length != 2)
+	if (newPosition.length != 2) 
 	    throw new ModelException("Only 2  coordinates allowed");
 	if (newPosition[0] != newPosition[0] || newPosition[1] != newPosition[1])
 	    throw new ModelException("NaN as position argument");
@@ -71,6 +71,10 @@ public class Facade implements IFacade {
 
 	alien.setXPositionActual(newPosition[0]);
 	alien.setYPositionActual(newPosition[1]);
+	
+	if (alien.getWorld() != null)
+		if (!alien.isStandingOnSolidGround())
+			alien.setVerticalAcceleration(-10.0);
 
     }
 
@@ -213,7 +217,7 @@ public class Facade implements IFacade {
 	return alien.isDucking();
     }
 
-    @Override
+    @Override 
     public void startDuck(Mazub alien) throws ModelException {
 	if (alien.isDead())
 	    throw new ModelException("The alien is dead");
@@ -344,8 +348,8 @@ public class Facade implements IFacade {
 	    return true;
 	if (world.getPlayer().isTerminated())
 	    return true;
-	if (didPlayerWin(world))
-	    return true;
+//	if (didPlayerWin(world))
+//	    return true;
 	return false;
     }
 
@@ -363,8 +367,14 @@ public class Facade implements IFacade {
     }
 
     @Override
-    public void advanceWorldTime(World world, double dt) {
-	world.advanceWorldTime(dt);
+    public void advanceWorldTime(World world, double dt) throws ModelException {
+	
+	try {
+		world.advanceWorldTime(dt);
+		
+	} catch (Exception e) {
+		throw new ModelException("dt is not valid");
+	}
 
     }
 

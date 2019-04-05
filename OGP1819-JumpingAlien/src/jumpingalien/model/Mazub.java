@@ -157,6 +157,7 @@ public class Mazub extends GameObject {
 	    setYSize(getCurrentSprite().getHeight());
 	    setXSize(getCurrentSprite().getWidth());
 	}
+	timeSinceLastMove = 0.0;
     }
 
     /**
@@ -224,7 +225,7 @@ public class Mazub extends GameObject {
 	if (isJumping) {
 	    if (getVerticalSpeedMeters() > 0)
 		setVerticalSpeedMeters(0);
-	    setVerticalAcceleration(0);
+	    setVerticalAcceleration(maxVerticalAcceleration);
 	    isJumping = false;
 	    if (getOrientation() == 1 && !isFalling) {
 		setSprite(spriteArray[8]);
@@ -273,39 +274,7 @@ public class Mazub extends GameObject {
      */
     public boolean isFalling;
 
-//	private void updatePosition(double dt) {
-//		this.setMaxSpeed();
-//		fall();
-//		double newPosX = getXPositionActual() + getHorizontalSpeedMeters()*dt + 0.5*getHorizontalAcceleration()*dt*dt;
-//		if(!isValidActualXPosition(newPosX)) {
-//			if( newPosX <0) {
-//				newPosX = 0;
-//			}
-//			else newPosX = ((double) this.getMaxXPosition())/100;
-//		}
-//		setXPositionActual(newPosX);
-//		double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration()*dt;
-//		setHorizontalSpeedMeters(newSpeedX);
-//		double newPosY = getYPositionActual() + getVerticalSpeedMeters()*dt + 0.5*getVerticalAcceleration()*dt*dt;
-//		if(!isValidActualYPosition(newPosY)) {
-//			if( newPosY <0) {
-//				newPosY = 0;
-//			}
-//			else newPosY = (((double) this.getMaxYPosition()))/100;
-//			}
-//		setYPositionActual(newPosY);
-//		double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration()*dt;
-//
-//		this.setVerticalSpeedMeters(newSpeedY);
-//		if(newPosY <= 0)
-//			this.isFalling=false;
-//		if (newSpeedY < 0 && newPosY > 0) {
-//			this.isJumping = false;
-//			this.isFalling = true;
-//			}
-//		if(newPosY == 0)
-//			this.isFalling=false;
-//		}
+
 
     /**
      * Updates the position of Mazub over a given time interval
@@ -349,7 +318,7 @@ public class Mazub extends GameObject {
 
 	if (getWorld() != null) {
 	    final Mazub newMazub = new Mazub(newPosX, newPosY, xSize, ySize, newSpeedX, getMinSpeedMeters(),
-		    getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true, getSpriteArray()[8]);
+		    getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true, this.getCurrentSprite());
 	    if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
 		setXPositionActual(newPosX);
 		setYPositionActual(newPosY);
@@ -364,7 +333,7 @@ public class Mazub extends GameObject {
 		else
 		    setSprite(getSpriteArray()[2]);
 		isMoving = false;
-		// fall();
+		// fall(); 
 		setHorizontalSpeedMeters(0);
 		setVerticalSpeedMeters(0);
 		setHorizontalAcceleration(0);
@@ -465,8 +434,17 @@ public class Mazub extends GameObject {
     @Override
     public void advanceTime(double dt, double timeStep) {
 	tempObject = true;
+	if (!isMoving && !isJumping && !isDucking && notMoving)
+	    timeSinceLastMove += dt;
+	else if (!isMoving && !isJumping && !isDucking && !notMoving) {
+	    notMoving = true;
+	    timeSinceLastMove += dt;
+	} else {
+	    timeSinceLastMove = 0.0;
+	    notMoving = false;
+	}
 	if (!isDead()) {
-	    if (getTimeBeforeSpriteChange() == 0)
+	    if (getTimeBeforeSpriteChange() <= 0)
 		setTimeBeforeSpriteChange(frameRate);
 	    while (dt > timeStep && !isDead() && !isTerminated())
 		if (getTimeBeforeSpriteChange() > timeStep) {
@@ -502,15 +480,7 @@ public class Mazub extends GameObject {
 	    getWorld().removeObject(this);
 	    terminate();
 	}
-	if (!isMoving && !isJumping && !isDucking && notMoving)
-	    timeSinceLastMove += dt;
-	else if (!isMoving && !isJumping && !isDucking && !notMoving) {
-	    notMoving = true;
-	    timeSinceLastMove += dt;
-	} else {
-	    timeSinceLastMove = 0.0;
-	    notMoving = false;
-	}
+	
 	if (timeSinceLastMove > 1)
 	    setSprite(getSpriteArray()[0]);
 	tempObject = false;
@@ -637,32 +607,11 @@ public class Mazub extends GameObject {
 	    } else
 		isDucking = true;
 	}
+	timeSinceLastMove = 0.0;
     }
-	public boolean isPlayer() {
-		return this.isPlayer;
-	}
-	
-	public void resetHitPoints(){
-		this.setHitpoints(100);
-	}
-	public boolean collidesWithImpassableTerrain(double[] newPosition) {
-		Mazub newMazub = new Mazub(newPosition[0], newPosition[1],this.getXsize(),this.getYsize(), 0,
-				this.getMinSpeedMeters(), this.getMaxSpeedRunningMeters(),
-				this.getMaxSpeedDuckingMeters(),true, getSpriteArray()[8]);
-		List<int[]> tiles = new ArrayList<int[]>();
-		tiles = newMazub.getAllOverlappingTiles();
-		this.collidesWithSolidGround = false;
-		for(int[] tile : tiles ) {
-			if (this.getWorld().getGeologicalFeatureTile(tile) == World.SOLID_GROUND)
-				this.collidesWithSolidGround = true;
-			
-		}
-		return this.collidesWithSolidGround;
-	}
-	public boolean collidesWithSolidGround;
-	
 
-    
+	
+   
 
     private boolean isDucking;
 

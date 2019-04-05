@@ -825,7 +825,7 @@ public abstract class GameObject {
      * @post The new vertical acceleration is equal to the given vertical
      *       acceleration | new.getVerticalAcceleration() == verticalAcceleration
      */
-    protected void setVerticalAcceleration(double verticalAcceleration) {
+    public void setVerticalAcceleration(double verticalAcceleration) {
 	if (verticalAcceleration == 0 || verticalAcceleration == maxVerticalAcceleration)
 	    this.verticalAcceleration = verticalAcceleration;
     }
@@ -913,11 +913,11 @@ public abstract class GameObject {
      */
     protected List<int[]> getAllOverlappingTiles() {
 	final int xPosition = getXPositionPixel();
-	final int yPosition = getYPositionPixel();
+	final int yPosition = getYPositionPixel(); 
 	final int xSize = getXsize();
 	final int ySize = getYsize();
-	if (getWorld() == null)
-	    return null;
+//	if (getWorld() == null)
+//	    return null;
 	final int tileLength = getWorld().getTileLength();
 
 	final List<int[]> overlappingTiles = new ArrayList<>();
