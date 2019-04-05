@@ -29,7 +29,8 @@ class FullFacadeTest {
 	IFacade facade = new Facade();
 
 	// Variables referencing some predefined mazub's
-	private static Mazub mazub_0_0, mazub_100_0, mazub_20_45;
+	private static Mazub mazub_0_0, mazub_0_1000, mazub_100_0, mazub_100_1000,
+			mazub_20_45;
 
 	// Variables referencing some predefined plants
 	private static Plant plant_120_10;
@@ -78,7 +79,9 @@ class FullFacadeTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		mazub_0_0 = facade.createMazub(0, 0, mazubSprites);
+		mazub_0_1000 = facade.createMazub(0, 1000, mazubSprites);
 		mazub_100_0 = facade.createMazub(100, 0, mazubSprites);
+		mazub_100_1000 = facade.createMazub(100, 1000, mazubSprites);
 		mazub_20_45 = facade.createMazub(20, 45, mazubSprites);
 		plant_120_10 = facade.createPlant(120, 10, plantSprites);
 		world_100_200 = facade.createWorld(10, 100, 200, new int[] { 10, 20 }, 20, 10);
@@ -101,10 +104,12 @@ class FullFacadeTest {
 		assertFalse(facade.isJumping(newMazub));
 		assertFalse(facade.isDucking(newMazub));
 		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(newMazub));
-		assertEquals(0.0 , facade.getAcceleration(newMazub)[0], HIGH_PRECISION);
+		assertEquals(0.0, facade.getAcceleration(newMazub)[0], HIGH_PRECISION);
 		assertTrue((Math.abs(facade.getAcceleration(newMazub)[1]) <= HIGH_PRECISION) ||
-				( (Math.abs(facade.getAcceleration(newMazub)[1]) >= 10.0-HIGH_PRECISION) &&
-				  (Math.abs(facade.getAcceleration(newMazub)[1]) <= 10.0+HIGH_PRECISION)));
+				((Math.abs(facade.getAcceleration(newMazub)[1]) >= 10.0 -
+						HIGH_PRECISION) &&
+						(Math.abs(facade.getAcceleration(newMazub)[1]) <= 10.0 +
+								HIGH_PRECISION)));
 		assertEquals(100, facade.getHitPoints(newMazub));
 		if (facade.isTeamSolution()) {
 			assertArrayEquals(mazubSprites, facade.getSprites(newMazub));
@@ -112,7 +117,7 @@ class FullFacadeTest {
 		}
 		actualScore += 18;
 	}
-	
+
 	@Test
 	void createMazub_IllegalSprites() throws Exception {
 		if (facade.isTeamSolution()) {
@@ -249,8 +254,9 @@ class FullFacadeTest {
 	@Test
 	void changeActualPosition_DeadObject() throws Exception {
 		maximumScore += 15;
-		facade.setGeologicalFeature(world_250_400, 10, 10, MAGMA);
-		Mazub theMazub = facade.createMazub(0, 0, mazubSprites);
+		facade.setGeologicalFeature(world_250_400, 10, 1010, MAGMA);
+		facade.setGeologicalFeature(world_250_400, 50, 996, SOLID_GROUND);
+		Mazub theMazub = facade.createMazub(0, 1000, mazubSprites);
 		facade.addGameObject(theMazub, world_250_400);
 		// After 0.2 seconds, mazub will be dead because of its contact with water.
 		facade.advanceTime(theMazub, 0.15);
@@ -259,11 +265,11 @@ class FullFacadeTest {
 		assertThrows(ModelException.class, () -> facade.startMoveRight(theMazub));
 		assertThrows(ModelException.class, () -> facade.startJump(theMazub));
 		facade.advanceTime(theMazub, 0.15);
-		assertArrayEquals(new double[] {0.0,0.0}, facade.getActualPosition(theMazub));
-		assertArrayEquals(new double[] {0.0,0.0}, facade.getVelocity(theMazub));
-		assertArrayEquals(new double[] {0.0,0.0}, facade.getAcceleration(theMazub));
+		assertArrayEquals(new double[] { 0.0, 10.0 }, facade.getActualPosition(theMazub));
+		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(theMazub));
+		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getAcceleration(theMazub));
 		// 0.6 seconds after its dead, mazub must be removed from its game world.
-		for (int i=1; i<=3; i++)
+		for (int i = 1; i <= 3; i++)
 			facade.advanceTime(theMazub, 0.15);
 		assertTrue(facade.isTerminatedGameObject(theMazub));
 		assertNull(facade.getWorld(theMazub));
@@ -442,18 +448,19 @@ class FullFacadeTest {
 	@Test
 	public void endDuck_MazubDucking() throws Exception {
 		maximumScore += 2;
-		facade.addGameObject(mazub_100_0, world_250_400);
-		facade.startMoveLeft(mazub_100_0);
-		facade.advanceTime(mazub_100_0, 0.15);
-		facade.startDuck(mazub_100_0);
-		facade.endDuck(mazub_100_0);
-		assertFalse(facade.isDucking(mazub_100_0));
-		assertArrayEquals(new double[] { -1.0, 0.0 }, facade.getVelocity(mazub_100_0),
+		facade.setGeologicalFeature(world_250_400, 150, 996, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
+		facade.startMoveLeft(mazub_100_1000);
+		facade.advanceTime(mazub_100_1000, 0.15);
+		facade.startDuck(mazub_100_1000);
+		facade.endDuck(mazub_100_1000);
+		assertFalse(facade.isDucking(mazub_100_1000));
+		assertArrayEquals(new double[] { -1.0, 0.0 }, facade.getVelocity(mazub_100_1000),
 				LOW_PRECISION);
-		assertArrayEquals(new double[] { -0.9, 0.0 }, facade.getAcceleration(mazub_100_0),
-				LOW_PRECISION);
+		assertArrayEquals(new double[] { -0.9, 0.0 },
+				facade.getAcceleration(mazub_100_1000), LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[13], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[13], facade.getCurrentSprite(mazub_100_1000));
 		actualScore += 2;
 	}
 
@@ -470,28 +477,34 @@ class FullFacadeTest {
 
 	@Test
 	public void endDuck_OverlappingImpassableTerrain() throws Exception {
-		maximumScore += 8;
-		facade.setGeologicalFeature(world_250_400, 220, 35, SOLID_GROUND);
-		facade.addGameObject(mazub_100_0, world_250_400);
-		// Mazub will move over a distance of 100.0 cm in 1 second.
-		facade.startMoveRight(mazub_100_0);
-		facade.startDuck(mazub_100_0);
-		for (int i = 0; i < 10; i++)
-			facade.advanceTime(mazub_100_0, 0.1);
-		// Mazub will not be able to stand up, because of the solid ground at (220,35).
-		facade.endDuck(mazub_100_0);
-		assertTrue(facade.isDucking(mazub_100_0));
-		// Mazub will move over 50.0 cm in 0.5 seconds.
-		for (int i = 0; i < 5; i++)
-			facade.advanceTime(mazub_100_0, 0.1);
-		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[6], facade.getCurrentSprite(mazub_100_0));
-		// Mazub will now be able to stand up.
-		facade.endDuck(mazub_100_0);
-		assertFalse(facade.isDucking(mazub_100_0));
-		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[8], facade.getCurrentSprite(mazub_100_0));
-		actualScore += 8;
+		if (facade.isTeamSolution()) {
+			maximumScore += 8;
+			facade.setGeologicalFeature(world_250_400, 220, 1035, SOLID_GROUND);
+			facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
+			facade.setGeologicalFeature(world_250_400, 200, 995, SOLID_GROUND);
+			facade.setGeologicalFeature(world_250_400, 250, 995, SOLID_GROUND);
+			facade.setGeologicalFeature(world_250_400, 300, 995, SOLID_GROUND);
+			facade.addGameObject(mazub_100_1000, world_250_400);
+			// Mazub will move over a distance of 100.0 cm in 1 second.
+			facade.startMoveRight(mazub_100_1000);
+			facade.startDuck(mazub_100_1000);
+			for (int i = 0; i < 10; i++)
+				facade.advanceTime(mazub_100_1000, 0.1);
+			// Mazub will not be able to stand up, because of the solid ground at (220,35).
+			facade.endDuck(mazub_100_1000);
+			assertTrue(facade.isDucking(mazub_100_1000));
+			// Mazub will move over 50.0 cm in 0.5 seconds.
+			for (int i = 0; i < 5; i++)
+				facade.advanceTime(mazub_100_1000, 0.1);
+			if (facade.isTeamSolution())
+				assertEquals(mazubSprites[6], facade.getCurrentSprite(mazub_100_1000));
+			// Mazub will now be able to stand up.
+			facade.endDuck(mazub_100_1000);
+			assertFalse(facade.isDucking(mazub_100_1000));
+			if (facade.isTeamSolution())
+				assertEquals(mazubSprites[8], facade.getCurrentSprite(mazub_100_1000));
+			actualScore += 8;
+		}
 	}
 
 	@Test
@@ -518,46 +531,49 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_StationaryMazub() throws Exception {
 		maximumScore += 4;
-		facade.addGameObject(mazub_100_0, world_100_200);
-		facade.advanceTime(mazub_100_0, 0.15);
-		assertArrayEquals(new double[] { 1.0, 0.0 },
-				facade.getActualPosition(mazub_100_0), HIGH_PRECISION);
-		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(mazub_100_0),
+		facade.setGeologicalFeature(world_100_200, 120, 995, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_100_200);
+		facade.advanceTime(mazub_100_1000, 0.15);
+		assertArrayEquals(new double[] { 1.0, 10.0 },
+				facade.getActualPosition(mazub_100_1000), HIGH_PRECISION);
+		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(mazub_100_1000),
 				HIGH_PRECISION);
-		assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getAcceleration(mazub_100_0),
-				HIGH_PRECISION);
+		assertArrayEquals(new double[] { 0.0, 0.0 },
+				facade.getAcceleration(mazub_100_1000), HIGH_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_1000));
 		actualScore += 4;
 	}
 
 	@Test
 	public void advanceTime_MazubMovingLeftWithinBoundaries() throws Exception {
 		maximumScore += 6;
-		facade.addGameObject(mazub_100_0, world_250_400);
-		facade.startMoveLeft(mazub_100_0);
+		facade.setGeologicalFeature(world_250_400, 50, 996, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
+		facade.startMoveLeft(mazub_100_1000);
 		// Mazub will move 14.882 cm over 0.14 seconds; its velocity increases with 0.126
 		// m/s
-		facade.advanceTime(mazub_100_0, 0.14);
-		assertEquals(0.85118, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
-		assertEquals(-1.126, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
+		facade.advanceTime(mazub_100_1000, 0.14);
+		assertEquals(0.85118, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
+		assertEquals(-1.126, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[14], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[14], facade.getCurrentSprite(mazub_100_1000));
 		actualScore += 6;
 	}
 
 	@Test
 	public void advanceTime_MazubMovingRightWithinBoundaries() throws Exception {
 		maximumScore += 3;
-		facade.addGameObject(mazub_100_0, world_250_400);
-		facade.startMoveRight(mazub_100_0);
+		facade.setGeologicalFeature(world_250_400, 50, 996, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
+		facade.startMoveRight(mazub_100_1000);
 		// Mazub will move 18.3 cm over 0.17 seconds; its velocity increases with 0.153
 		// m/s
-		facade.advanceTime(mazub_100_0, 0.17);
-		assertEquals(1.183, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
-		assertEquals(1.153, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
+		facade.advanceTime(mazub_100_1000, 0.17);
+		assertEquals(1.183, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
+		assertEquals(1.153, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[10], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[10], facade.getCurrentSprite(mazub_100_1000));
 		actualScore += 3;
 	}
 
@@ -591,14 +607,13 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubCollidingWithMazubAtLeftSide() throws Exception {
 		maximumScore += 6;
-		facade.addGameObject(mazub_0_0, world_250_400);
-		facade.startDuck(mazub_0_0);
-		Mazub moving_mazub = facade.createMazub(95, 0, mazubSprites);
+		facade.addGameObject(mazub_0_1000, world_250_400);
+		facade.startDuck(mazub_0_1000);
+		Mazub moving_mazub = facade.createMazub(95, 1000, mazubSprites);
 		facade.addGameObject(moving_mazub, world_250_400);
 		facade.startMoveLeft(moving_mazub);
 		// The moving mazub is at a distance of 20 cm from the other mazub and will
-		// collide
-		// with it after 0.184656 seconds.It will have a velocity of -1.1662 m/s
+		// collide with it after 0.184656 seconds.It will have a velocity of -1.1662 m/s
 		facade.advanceTime(moving_mazub, 0.19);
 		assertEquals(0.75, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
 		assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
@@ -609,15 +624,22 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubCollidingWithMazubAtRightSide() throws Exception {
 		maximumScore += 6;
-		Mazub mazubToCollideWith = facade.createMazub(200, 20, mazubSprites);
+		Mazub mazubToCollideWith = facade.createMazub(200, 990, mazubSprites);
 		facade.addGameObject(mazubToCollideWith, world_250_400);
-		Mazub moving_mazub = facade.createMazub(95, 0, mazubSprites);
+		Mazub moving_mazub = facade.createMazub(95, 1000, mazubSprites);
 		facade.addGameObject(moving_mazub, world_250_400);
 		facade.startMoveRight(moving_mazub);
-		// The moving mazub is at a distance of 15 cm fro the other mazub and will collide
-		// with it after 0.141 seconds.
-		facade.advanceTime(moving_mazub, 0.15);
-		assertEquals(1.1, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
+		// The moving mazub is at a distance of 15 cm from the other mazub and will
+		// collide with it after 0.141 seconds. For students working alone, the moving
+		// mazub is at a distance of 5 cm and will collide after 0.0489 seconds.
+		if (facade.isTeamSolution()) {
+			facade.advanceTime(moving_mazub, 0.15);
+			assertEquals(1.1, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
+		}
+		else {
+			facade.advanceTime(moving_mazub, 0.05);
+			assertEquals(1.0, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
+		}
 		assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
 		assertEquals(0.0, facade.getAcceleration(moving_mazub)[0], HIGH_PRECISION);
 		actualScore += 6;
@@ -626,8 +648,9 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubReachingImpassbleTerrainAtLeftSide() throws Exception {
 		maximumScore += 6;
-		facade.setGeologicalFeature(world_250_400, 100, 10, SOLID_GROUND);
-		Mazub moving_mazub = facade.createMazub(110, 0, mazubSprites);
+		facade.setGeologicalFeature(world_250_400, 100, 1010, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 55, 996, SOLID_GROUND);
+		Mazub moving_mazub = facade.createMazub(110, 1000, mazubSprites);
 		facade.addGameObject(moving_mazub, world_250_400);
 		facade.startMoveLeft(moving_mazub);
 		// The moving mazub will collide with the other mazub after 0.0489 seconds.
@@ -641,11 +664,11 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubReachingImpassbleTerrainAtRightSide() throws Exception {
 		maximumScore += 6;
-		facade.setGeologicalFeature(world_250_400, 205, 15, SOLID_GROUND);
-		Mazub moving_mazub = facade.createMazub(100, 0, mazubSprites);
+		facade.setGeologicalFeature(world_250_400, 205, 1015, SOLID_GROUND);
+		Mazub moving_mazub = facade.createMazub(100, 1000, mazubSprites);
 		facade.addGameObject(moving_mazub, world_250_400);
 		facade.startMoveRight(moving_mazub);
-		// The moving mazub will collide with the other mazub after 0.141 seconds.
+		// The moving mazub will collide with the impassable terrain after 0.141 seconds.
 		facade.advanceTime(moving_mazub, 0.15);
 		assertEquals(1.15, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
 		assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
@@ -656,32 +679,41 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubReachingTopSpeed() throws Exception {
 		maximumScore += 8;
-		facade.addGameObject(mazub_100_0, world_250_400);
+		facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 200, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 250, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 300, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 350, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 400, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 450, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 500, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 550, 995, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
 		// Mazub needs (3.0-1.0)/0.9 = 2.22 seconds to reach top speed.
 		// Mazub will move over 452.778 cm in a period of 2.25 seconds (444.438 cm in
 		// 2.2222
 		// seconds at increasing speed, and 8.34 cm in a period of 2.25-0.2222 seconds at
 		// top speed)
-		facade.startMoveRight(mazub_100_0);
+		facade.startMoveRight(mazub_100_1000);
 		for (int i = 1; i <= 15; i++)
-			facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(3.0, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
-		assertEquals(5.52778, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
+			facade.advanceTime(mazub_100_1000, 0.15);
+		assertEquals(3.0, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
+		assertEquals(5.52778, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
 		// After having reached its top speed, Mazub no longer accelerates.
 		// It will move over 30.0 cm at top speed in a period of 0.1 seconds.
-		facade.advanceTime(mazub_100_0, 0.1);
-		assertEquals(5.52778 + 0.3, facade.getActualPosition(mazub_100_0)[0],
+		facade.advanceTime(mazub_100_1000, 0.1);
+		assertEquals(5.52778 + 0.3, facade.getActualPosition(mazub_100_1000)[0],
 				LOW_PRECISION);
-		assertEquals(3.0, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
+		assertEquals(3.0, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[9], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[9], facade.getCurrentSprite(mazub_100_1000));
 		actualScore += 8;
 	}
 
 	@Test
 	public void advanceTime_MazubJumpingUpwardsOnly() throws Exception {
 		maximumScore += 6;
-		facade.addGameObject(mazub_0_0, world_250_400);
+		facade.addGameObject(mazub_100_0, world_250_400);
 		facade.startJump(mazub_100_0);
 		// Mazub will jump over 108.75 cm in 0.15 seconds; it will have a velocity of
 		// 6.5m/s
@@ -788,7 +820,8 @@ class FullFacadeTest {
 		assertEquals(0.65, facade.getActualPosition(jumpingMazub)[1], LOW_PRECISION);
 		// Mazub reaches lands on solid ground after another 0.0165 seconds.
 		facade.advanceTime(jumpingMazub, 0.04);
-		assertEquals(0.5, facade.getActualPosition(jumpingMazub)[1], LOW_PRECISION);
+		assertTrue((0.49 <= facade.getActualPosition(jumpingMazub)[1]) &&
+				facade.getActualPosition(jumpingMazub)[1] <= 0.5);
 		actualScore += 15;
 	}
 
@@ -857,92 +890,95 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubMovingRightAndDucking() throws Exception {
 		maximumScore += 12;
-		facade.addGameObject(mazub_100_0, world_250_400);
-		facade.startMoveRight(mazub_100_0);
+		facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 200, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 250, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 300, 995, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
+		facade.startMoveRight(mazub_100_1000);
 		// Mazub will have moved over 14.822 cm in a period of 0.14 seconds. Its
 		// velocity will have raised to 1.126 m/s.
-		facade.advanceTime(mazub_100_0, 0.14);
-		assertEquals(1.14822, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
-		assertEquals(1.126, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
+		facade.advanceTime(mazub_100_1000, 0.14);
+		assertEquals(1.14822, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
+		assertEquals(1.126, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 		// Starting to duck
-		facade.startDuck(mazub_100_0);
-		assertTrue(facade.isDucking(mazub_100_0));
-		assertEquals(MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_0)[0],
+		facade.startDuck(mazub_100_1000);
+		assertTrue(facade.isDucking(mazub_100_1000));
+		assertEquals(MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_1000)[0],
 				LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[6], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[6], facade.getCurrentSprite(mazub_100_1000));
 		// Mazub will have moved over 12 cm in a period of 0.12 seconds. Its
 		// velocity stays constant at 1.0 m/s.
-		facade.advanceTime(mazub_100_0, 0.12);
-		assertEquals(1.14822 + 0.12, facade.getActualPosition(mazub_100_0)[0],
+		facade.advanceTime(mazub_100_1000, 0.12);
+		assertEquals(1.14822 + 0.12, facade.getActualPosition(mazub_100_1000)[0],
 				LOW_PRECISION);
-		assertEquals(MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_0)[0],
+		assertEquals(MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_1000)[0],
 				LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[6], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[6], facade.getCurrentSprite(mazub_100_1000));
 		// Ending the duck
-		facade.endDuck(mazub_100_0);
+		facade.endDuck(mazub_100_1000);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[8], facade.getCurrentSprite(mazub_100_0));
-		assertFalse(facade.isDucking(mazub_100_0));
-		assertEquals(HORIZONTAL_ACCELERATION, facade.getAcceleration(mazub_100_0)[0],
+			assertEquals(mazubSprites[8], facade.getCurrentSprite(mazub_100_1000));
+		assertFalse(facade.isDucking(mazub_100_1000));
+		assertEquals(HORIZONTAL_ACCELERATION, facade.getAcceleration(mazub_100_1000)[0],
 				LOW_PRECISION);
 		// Mazub will have moved over 10.45 cm in a period of 0.14 seconds. Its
 		// velocity will have raised to 1.09 m/s.
-		facade.advanceTime(mazub_100_0, 0.1);
-		assertEquals(1.14822 + 0.12 + 0.1045, facade.getActualPosition(mazub_100_0)[0],
+		facade.advanceTime(mazub_100_1000, 0.1);
+		assertEquals(1.14822 + 0.12 + 0.1045, facade.getActualPosition(mazub_100_1000)[0],
 				0.1);
-		assertEquals(1.09, facade.getVelocity(mazub_100_0)[0], 0.1E-10);
+		assertEquals(1.09, facade.getVelocity(mazub_100_1000)[0], 0.1E-10);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[9], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[9], facade.getCurrentSprite(mazub_100_1000));
 		actualScore += 12;
 	}
-
 
 	@Test
 	public void advanceTime_MazubMovingLeftAndDucking() throws Exception {
 		maximumScore += 4;
-		facade.addGameObject(mazub_100_0, world_250_400);
-		facade.startMoveLeft(mazub_100_0);
+		facade.addGameObject(mazub_100_1000, world_250_400);
+		facade.startMoveLeft(mazub_100_1000);
 		// Mazub will have moved over 14.822 cm in a period of 0.14 seconds. Its
 		// velocity will have raised to 1.126 m/s.
-		facade.advanceTime(mazub_100_0, 0.14);
-		assertEquals(1.0 - 0.14822, facade.getActualPosition(mazub_100_0)[0],
+		facade.advanceTime(mazub_100_1000, 0.14);
+		assertEquals(1.0 - 0.14822, facade.getActualPosition(mazub_100_1000)[0],
 				LOW_PRECISION);
-		assertEquals(-1.126, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
+		assertEquals(-1.126, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 		// Starting to duck
-		facade.startDuck(mazub_100_0);
-		assertTrue(facade.isDucking(mazub_100_0));
-		assertEquals(-MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_0)[0],
+		facade.startDuck(mazub_100_1000);
+		assertTrue(facade.isDucking(mazub_100_1000));
+		assertEquals(-MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_1000)[0],
 				LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[7], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[7], facade.getCurrentSprite(mazub_100_1000));
 		// Mazub will have moved over 12 cm in a period of 0.12 seconds. Its
 		// velocity stays constant at 1.0 m/s.
-		facade.advanceTime(mazub_100_0, 0.12);
-		assertEquals(1.0 - 0.14822 - 0.12, facade.getActualPosition(mazub_100_0)[0],
+		facade.advanceTime(mazub_100_1000, 0.12);
+		assertEquals(1.0 - 0.14822 - 0.12, facade.getActualPosition(mazub_100_1000)[0],
 				LOW_PRECISION);
-		assertEquals(-MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_0)[0],
+		assertEquals(-MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_1000)[0],
 				LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[7], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[7], facade.getCurrentSprite(mazub_100_1000));
 		// Ending the duck
-		facade.endDuck(mazub_100_0);
+		facade.endDuck(mazub_100_1000);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[13], facade.getCurrentSprite(mazub_100_0));
-		assertFalse(facade.isDucking(mazub_100_0));
-		assertEquals(-HORIZONTAL_ACCELERATION, facade.getAcceleration(mazub_100_0)[0],
+			assertEquals(mazubSprites[13], facade.getCurrentSprite(mazub_100_1000));
+		assertFalse(facade.isDucking(mazub_100_1000));
+		assertEquals(-HORIZONTAL_ACCELERATION, facade.getAcceleration(mazub_100_1000)[0],
 				LOW_PRECISION);
-		assertEquals(-MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_0)[0],
+		assertEquals(-MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_1000)[0],
 				LOW_PRECISION);
 		// Mazub will have moved over 10.45 cm in a period of 0.14 seconds. Its
 		// velocity will have raised to 1.09 m/s.
-		facade.advanceTime(mazub_100_0, 0.1);
+		facade.advanceTime(mazub_100_1000, 0.1);
 		assertEquals(1.0 - 0.14822 - 0.12 - 0.1045,
-				facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
-		assertEquals(-1.09, facade.getVelocity(mazub_100_0)[0], LOW_PRECISION);
+				facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
+		assertEquals(-1.09, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 		if (facade.isTeamSolution())
-			assertEquals(mazubSprites[14], facade.getCurrentSprite(mazub_100_0));
+			assertEquals(mazubSprites[14], facade.getCurrentSprite(mazub_100_1000));
 		actualScore += 4;
 	}
 
@@ -972,101 +1008,108 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_MazubInWater() {
 		maximumScore += 12;
-		facade.setGeologicalFeature(world_250_400, 120, 10, WATER);
-		facade.addGameObject(mazub_100_0, world_250_400);
+		facade.setGeologicalFeature(world_250_400, 120, 1010, WATER);
+		facade.setGeologicalFeature(world_250_400, 150, 996, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
 		// No loss of hit points as long as the time in water is below 0.2 seconds.
-		facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(100, facade.getHitPoints(mazub_100_0));
+		facade.advanceTime(mazub_100_1000, 0.15);
+		assertEquals(100, facade.getHitPoints(mazub_100_1000));
 		// After 0.30 seconds in water, mazub looses 2 hit points.
-		facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(98, facade.getHitPoints(mazub_100_0));
+		facade.advanceTime(mazub_100_1000, 0.15);
+		assertEquals(98, facade.getHitPoints(mazub_100_1000));
 		// After 0.98 seconds in water, mazub has lost 8 hit points in total.
 		for (int i = 1; i <= 4; i++)
-			facade.advanceTime(mazub_100_0, 0.15);
-		facade.advanceTime(mazub_100_0, 0.08);
-		assertEquals(92, facade.getHitPoints(mazub_100_0));
+			facade.advanceTime(mazub_100_1000, 0.15);
+		facade.advanceTime(mazub_100_1000, 0.08);
+		assertEquals(92, facade.getHitPoints(mazub_100_1000));
 		actualScore += 12;
 	}
 
 	@Test
 	public void advanceTime_MazubInAndOutWater() {
 		maximumScore += 15;
-		facade.setGeologicalFeature(world_250_400, 120, 10, WATER);
-		facade.addGameObject(mazub_100_0, world_250_400);
+		facade.setGeologicalFeature(world_250_400, 120, 1010, WATER);
+		facade.setGeologicalFeature(world_250_400, 050, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 100, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 200, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 250, 995, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
 		// After 0.45 seconds in water, mazub looses 4 hit points.
 		for (int i = 1; i <= 3; i++)
-			facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(96, facade.getHitPoints(mazub_100_0));
+			facade.advanceTime(mazub_100_1000, 0.15);
+		assertEquals(96, facade.getHitPoints(mazub_100_1000));
 		// After moving to the right for at least 0.2268 seconds, mazub is out of the
 		// water.
 		// The hit points after moving to the right for 0.9 seconds may therefore only
 		// diminish with 2.
-		facade.startMoveRight(mazub_100_0);
+		facade.startMoveRight(mazub_100_1000);
 		for (int i = 1; i <= 5; i++)
-			facade.advanceTime(mazub_100_0, 0.18);
-		assertEquals(94, facade.getHitPoints(mazub_100_0));
-		assertEquals(2.2645, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
+			facade.advanceTime(mazub_100_1000, 0.18);
+		assertEquals(94, facade.getHitPoints(mazub_100_1000));
+		assertEquals(2.2645, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
 		// After moving back to the left for 0.9 seconds, mazub will only have contact
-		// with
-		// water for < 0.2 seconds (its velocity increases)
-		facade.endMove(mazub_100_0);
-		facade.startMoveLeft(mazub_100_0);
+		// with water for < 0.2 seconds (its velocity increases)
+		facade.endMove(mazub_100_1000);
+		facade.startMoveLeft(mazub_100_1000);
 		for (int i = 1; i <= 5; i++)
-			facade.advanceTime(mazub_100_0, 0.18);
-		assertEquals(94, facade.getHitPoints(mazub_100_0));
-		assertEquals(1.0, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
+			facade.advanceTime(mazub_100_1000, 0.18);
+		assertEquals(94, facade.getHitPoints(mazub_100_1000));
+		assertEquals(1.0, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
 		// After moving for another 0.15 seconds, the hit points must be diminished with
 		// 2.
-		facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(92, facade.getHitPoints(mazub_100_0));
+		facade.advanceTime(mazub_100_1000, 0.15);
+		assertEquals(92, facade.getHitPoints(mazub_100_1000));
 		actualScore += 15;
 	}
 
 	@Test
 	public void advanceTime_DyingInWater() {
 		maximumScore += 6;
-		facade.setGeologicalFeature(world_250_400, 120, 10, WATER);
-		facade.addGameObject(mazub_100_0, world_250_400);
+		facade.setGeologicalFeature(world_250_400, 120, 1010, WATER);
+		facade.setGeologicalFeature(world_250_400, 120, 995, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
 		// After 9.90 seconds in water, mazub has lost 98 hit points.
 		for (int i = 1; i <= 99; i++)
-			facade.advanceTime(mazub_100_0, 0.1);
-		assertEquals(2, facade.getHitPoints(mazub_100_0));
+			facade.advanceTime(mazub_100_1000, 0.1);
+		assertEquals(2, facade.getHitPoints(mazub_100_1000));
 		// After another 0.15 seconds in water, mazub is dead.
-		facade.advanceTime(mazub_100_0, 0.15);
-		assertEquals(0, facade.getHitPoints(mazub_100_0));
+		facade.advanceTime(mazub_100_1000, 0.15);
+		assertEquals(0, facade.getHitPoints(mazub_100_1000));
 		// After another 0.60 seconds, mazub is terminated and removed from its world
 		for (int i = 1; i <= 4; i++)
-			facade.advanceTime(mazub_100_0, 0.15);
-		assertTrue(facade.isTerminatedGameObject(mazub_100_0));
-		assertNull(facade.getWorld(mazub_100_0));
+			facade.advanceTime(mazub_100_1000, 0.15);
+		assertTrue(facade.isTerminatedGameObject(mazub_100_1000));
+		assertNull(facade.getWorld(mazub_100_1000));
 		actualScore += 6;
 	}
 
 	@Test
 	public void advanceTime_MazubInMagma() {
 		maximumScore += 16;
-		facade.setGeologicalFeature(world_250_400, 120, 10, MAGMA);
-		facade.addGameObject(mazub_100_0, world_250_400);
+		facade.setGeologicalFeature(world_250_400, 120, 1010, MAGMA);
+		facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
+		facade.addGameObject(mazub_100_1000, world_250_400);
 		// Mazub immediately looses 50 hit points when in contact with water.
-		facade.advanceTime(mazub_100_0, 0.10);
-		assertEquals(50, facade.getHitPoints(mazub_100_0));
+		facade.advanceTime(mazub_100_1000, 0.10);
+		assertEquals(50, facade.getHitPoints(mazub_100_1000));
 		// After 0.15 seconds in magma, the loss of hit points is still equal to 50.
-		facade.advanceTime(mazub_100_0, 0.05);
-		assertEquals(50, facade.getHitPoints(mazub_100_0));
+		facade.advanceTime(mazub_100_1000, 0.05);
+		assertEquals(50, facade.getHitPoints(mazub_100_1000));
 		// After 0.22 seconds in magma, mazug has lost all its hit points
-		facade.advanceTime(mazub_100_0, 0.07);
-		assertEquals(0, facade.getHitPoints(mazub_100_0));
-		assertTrue(facade.isDeadGameObject(mazub_100_0));
+		facade.advanceTime(mazub_100_1000, 0.07);
+		assertEquals(0, facade.getHitPoints(mazub_100_1000));
+		assertTrue(facade.isDeadGameObject(mazub_100_1000));
 		// After 0.45 seconds, mazub is still dead.
 		for (int i = 1; i <= 3; i++)
-			facade.advanceTime(mazub_100_0, 0.15);
-		assertTrue(facade.isDeadGameObject(mazub_100_0));
+			facade.advanceTime(mazub_100_1000, 0.15);
+		assertTrue(facade.isDeadGameObject(mazub_100_1000));
 		// After another 0.30 seconds, mazub is terminated and is no longer part of its
 		// world.
 		for (int i = 1; i <= 2; i++)
-			facade.advanceTime(mazub_100_0, 0.15);
-		assertTrue(facade.isTerminatedGameObject(mazub_100_0));
-		assertNull(facade.getWorld(mazub_100_0));
+			facade.advanceTime(mazub_100_1000, 0.15);
+		assertTrue(facade.isTerminatedGameObject(mazub_100_1000));
+		assertNull(facade.getWorld(mazub_100_1000));
 		actualScore += 16;
 	}
 
@@ -1100,17 +1143,18 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_EatingSinglePlant() {
 		maximumScore += 15;
-		facade.addGameObject(mazub_0_0, world_250_400);
+		facade.addGameObject(mazub_0_1000, world_250_400);
+		plant_120_10 = facade.createPlant(120, 960, plantSprites);
 		facade.addGameObject(plant_120_10, world_250_400);
 		// Mazub will reach the plant after 0.2677 seconds.
-		facade.startMoveRight(mazub_0_0);
-		facade.advanceTime(mazub_0_0, 0.19);
-		assertEquals(100, facade.getHitPoints(mazub_0_0));
-		assertEquals(0.206, facade.getActualPosition(mazub_0_0)[0], LOW_PRECISION);
+		facade.startMoveRight(mazub_0_1000);
+		facade.advanceTime(mazub_0_1000, 0.19);
+		assertEquals(100, facade.getHitPoints(mazub_0_1000));
+		assertEquals(0.206, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
 		assertFalse(facade.isTerminatedGameObject(plant_120_10));
-		facade.advanceTime(mazub_0_0, 0.1);
-		assertEquals(0.328, facade.getActualPosition(mazub_0_0)[0], LOW_PRECISION);
-		assertEquals(150, facade.getHitPoints(mazub_0_0));
+		facade.advanceTime(mazub_0_1000, 0.1);
+		assertEquals(0.328, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
+		assertEquals(150, facade.getHitPoints(mazub_0_1000));
 		assertTrue(facade.isTerminatedGameObject(plant_120_10));
 		assertNull(facade.getWorld(plant_120_10));
 		actualScore += 15;
@@ -1119,29 +1163,30 @@ class FullFacadeTest {
 	@Test
 	public void advanceTime_EatingDeadPlant() {
 		maximumScore += 15;
-		facade.addGameObject(mazub_0_0, world_250_400);
+		facade.addGameObject(mazub_0_1000, world_250_400);
 		// Let the plant duck such that there is no overlap with the plant.
-		facade.startDuck(mazub_0_0);
-		facade.addGameObject(plant_120_10, world_250_400);
+		facade.startDuck(mazub_0_1000);
+		Plant plant_120_960 = facade.createPlant(120, 960, plantSprites);
+		facade.addGameObject(plant_120_960, world_250_400);
 		// The plant dies after 10 seconds of game time, but is still in the world
 		// for 0.6 seconds.
-		for (int i=1; i<=100; i++)
-			facade.advanceTime(plant_120_10, 0.1);
-		facade.advanceTime(plant_120_10, 0.05);
-		assertTrue(facade.isDeadGameObject(plant_120_10));
-		assertEquals(world_250_400,facade.getWorld(plant_120_10));
+		for (int i = 1; i <= 100; i++)
+			facade.advanceTime(plant_120_960, 0.1);
+		facade.advanceTime(plant_120_960, 0.05);
+		assertTrue(facade.isDeadGameObject(plant_120_960));
+		assertEquals(world_250_400, facade.getWorld(plant_120_960));
 		// Mazub will reach the plant after 0.2474 seconds.
-		facade.endDuck(mazub_0_0);
-		facade.startMoveRight(mazub_0_0);
-		facade.advanceTime(mazub_0_0, 0.19);
-		assertEquals(100, facade.getHitPoints(mazub_0_0));
-		assertEquals(0.206, facade.getActualPosition(mazub_0_0)[0], LOW_PRECISION);
-		assertFalse(facade.isTerminatedGameObject(plant_120_10));
-		facade.advanceTime(mazub_0_0, 0.1);
-		assertEquals(0.328, facade.getActualPosition(mazub_0_0)[0], LOW_PRECISION);
-		assertEquals(80, facade.getHitPoints(mazub_0_0));
-		assertTrue(facade.isTerminatedGameObject(plant_120_10));
-		assertNull(facade.getWorld(plant_120_10));
+		facade.endDuck(mazub_0_1000);
+		facade.startMoveRight(mazub_0_1000);
+		facade.advanceTime(mazub_0_1000, 0.19);
+		assertEquals(100, facade.getHitPoints(mazub_0_1000));
+		assertEquals(0.206, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
+		assertFalse(facade.isTerminatedGameObject(plant_120_960));
+		facade.advanceTime(mazub_0_1000, 0.1);
+		assertEquals(0.328, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
+		assertEquals(80, facade.getHitPoints(mazub_0_1000));
+		assertTrue(facade.isTerminatedGameObject(plant_120_960));
+		assertNull(facade.getWorld(plant_120_960));
 		actualScore += 15;
 	}
 
@@ -1221,9 +1266,14 @@ class FullFacadeTest {
 			int windowRight = facade.getVisibleWindowPosition(theWorld)[0] + 150;
 			int windowBottom = facade.getVisibleWindowPosition(theWorld)[1];
 			int windowTop = facade.getVisibleWindowPosition(theWorld)[1] + 120;
-			assertTrue(((windowLeft >= 100) && (windowLeft < 200)) ||
+			// Some pixels of mazub must be in the window, meaning that mazub is
+			// completely in the window, its left part is in the window or its
+			// right part is in the window. The same holds in the vertical direction.
+			assertTrue(((windowLeft <= 100) && (windowRight >= 200)) ||
+					((windowLeft >= 100) && (windowLeft < 200)) ||
 					((windowRight > 100) && (windowRight <= 200)));
-			assertTrue(((windowBottom >= 70) && (windowBottom < 120)) ||
+			assertTrue(((windowBottom <= 70) && (windowTop >= 120)) ||
+					((windowBottom >= 70) && (windowBottom < 120)) ||
 					((windowTop > 70) && (windowTop <= 120)));
 			// After 0.37 seconds, mazub will have moved 43.16 cm to the right and will
 			// have
@@ -1234,9 +1284,11 @@ class FullFacadeTest {
 			windowRight = facade.getVisibleWindowPosition(theWorld)[0] + 150;
 			windowBottom = facade.getVisibleWindowPosition(theWorld)[1];
 			windowTop = facade.getVisibleWindowPosition(theWorld)[1] + 120;
-			assertTrue(((windowLeft >= 100) && (windowLeft < 200)) ||
+			assertTrue(((windowLeft <= 100) && (windowRight >= 200)) ||
+					((windowLeft >= 100) && (windowLeft < 200)) ||
 					((windowRight > 100) && (windowRight <= 200)));
-			assertTrue(((windowBottom >= 70) && (windowBottom < 120)) ||
+			assertTrue(((windowBottom <= 70) && (windowTop >= 120)) ||
+					((windowBottom >= 70) && (windowBottom < 120)) ||
 					((windowTop > 70) && (windowTop <= 120)));
 			actualScore += 15;
 		}
@@ -1260,7 +1312,12 @@ class FullFacadeTest {
 			maximumScore += 15;
 			World broadWorld = facade.createWorld(10, 1000, 200, new int[] { 10, 20 },
 					200, 100);
-			Mazub mazubToPlayWith = facade.createMazub(850, 0, mazubSprites);
+			facade.setGeologicalFeature(broadWorld, 900, 96, SOLID_GROUND);
+			facade.setGeologicalFeature(broadWorld, 825, 96, SOLID_GROUND);
+			facade.setGeologicalFeature(broadWorld, 750, 96, SOLID_GROUND);
+			facade.setGeologicalFeature(broadWorld, 675, 96, SOLID_GROUND);
+			facade.setGeologicalFeature(broadWorld, 600, 96, SOLID_GROUND);
+			Mazub mazubToPlayWith = facade.createMazub(850, 100, mazubSprites);
 			facade.addGameObject(mazubToPlayWith, broadWorld);
 			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazubToPlayWith));
 			facade.startMoveLeft(mazubToPlayWith);
@@ -1299,38 +1356,40 @@ class FullFacadeTest {
 	public void getCurrentSprite_NewSpriteTooLarge() {
 		if (facade.isTeamSolution()) {
 			maximumScore += 15;
-			facade.setGeologicalFeature(world_250_400, 205, 10, SOLID_GROUND);
-			facade.addGameObject(mazub_100_0, world_250_400);
-			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_0));
-			facade.startMoveRight(mazub_100_0);
+			facade.setGeologicalFeature(world_250_400, 205, 1010, SOLID_GROUND);
+			facade.setGeologicalFeature(world_250_400, 75, 996, SOLID_GROUND);
+			facade.setGeologicalFeature(world_250_400, 150, 996, SOLID_GROUND);
+			facade.addGameObject(mazub_100_1000, world_250_400);
+			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_1000));
+			facade.startMoveRight(mazub_100_1000);
 			// Mazub needs 0.141 seconds to reach the impassable terrain.
 			// We invoke advanceTime twice to force a change of sprite half-way the move.
 			// Because the move has ended, the sprite reflects the end of the move.
-			facade.advanceTime(mazub_100_0, 0.08);
-			facade.advanceTime(mazub_100_0, 0.08);
-			assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_100_0));
+			facade.advanceTime(mazub_100_1000, 0.08);
+			facade.advanceTime(mazub_100_1000, 0.08);
+			assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_100_1000));
 			// After 1 second mazub should switch to stationary sprite, but that would
 			// cause an overlap with stationary terrain.
 			for (int i = 1; i <= 7; i++)
-				facade.advanceTime(mazub_100_0, 0.15);
-			assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_100_0));
+				facade.advanceTime(mazub_100_1000, 0.15);
+			assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_100_1000));
 			// After moving to the left for 0.05 seconds, mazub is still not able to
 			// switch to the stationary sprite.
-			facade.startMoveLeft(mazub_100_0);
-			facade.advanceTime(mazub_100_0, 0.05);
-			facade.endMove(mazub_100_0);
+			facade.startMoveLeft(mazub_100_1000);
+			facade.advanceTime(mazub_100_1000, 0.05);
+			facade.endMove(mazub_100_1000);
 			for (int i = 1; i <= 7; i++)
-				facade.advanceTime(mazub_100_0, 0.15);
-			assertEquals(mazubSprites[3], facade.getCurrentSprite(mazub_100_0));
-			facade.advanceTime(mazub_100_0, 0.01);
+				facade.advanceTime(mazub_100_1000, 0.15);
+			assertEquals(mazubSprites[3], facade.getCurrentSprite(mazub_100_1000));
+			facade.advanceTime(mazub_100_1000, 0.01);
 			// After moving to the left for another 0.05 seconds, mazub is able to
 			// switch to the stationary sprite.
-			facade.startMoveLeft(mazub_100_0);
-			facade.advanceTime(mazub_100_0, 0.05);
-			facade.endMove(mazub_100_0);
+			facade.startMoveLeft(mazub_100_1000);
+			facade.advanceTime(mazub_100_1000, 0.05);
+			facade.endMove(mazub_100_1000);
 			for (int i = 1; i <= 7; i++)
-				facade.advanceTime(mazub_100_0, 0.15);
-			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_0));
+				facade.advanceTime(mazub_100_1000, 0.15);
+			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_1000));
 			actualScore += 15;
 		}
 	}
@@ -1384,7 +1443,7 @@ class FullFacadeTest {
 		facade.advanceTime(plant_120_10, 0.1);
 		// The plant will have moved 5 cm to the left after 0.1 seconds
 		assertArrayEquals(new double[] { 1.15, 0.1 },
-				facade.getActualPosition(plant_120_10));
+				facade.getActualPosition(plant_120_10), LOW_PRECISION);
 		if (facade.isTeamSolution())
 			assertEquals(plantSprites[0], facade.getCurrentSprite(plant_120_10));
 		actualScore += 8;
@@ -1399,7 +1458,7 @@ class FullFacadeTest {
 		// The plant will have moved 25 cm to the left after 0.5 seconds and 5 cm to
 		// the right after and additional 0.1 seconds.
 		assertArrayEquals(new double[] { 1.0, 0.1 },
-				facade.getActualPosition(plant_120_10));
+				facade.getActualPosition(plant_120_10), LOW_PRECISION);
 		if (facade.isTeamSolution())
 			assertEquals(plantSprites[1], facade.getCurrentSprite(plant_120_10));
 		actualScore += 8;
@@ -1413,7 +1472,7 @@ class FullFacadeTest {
 		for (int i = 1; i <= 2; i++)
 			facade.advanceTime(plant_120_10, 0.15);
 		assertArrayEquals(new double[] { 1.05, 0.1 },
-				facade.getActualPosition(plant_120_10));
+				facade.getActualPosition(plant_120_10), LOW_PRECISION);
 		facade.advanceTime(plant_120_10, 0.15);
 		assertTrue(facade.isTerminatedGameObject(plant_120_10));
 		assertNull(facade.getWorld(plant_120_10));
@@ -1433,11 +1492,11 @@ class FullFacadeTest {
 		facade.advanceTime(plant_120_10, 0.15);
 		assertTrue(facade.isDeadGameObject(plant_120_10));
 		assertFalse(facade.isTerminatedGameObject(plant_120_10));
-		assertEquals(world_250_400,facade.getWorld(plant_120_10));
+		assertEquals(world_250_400, facade.getWorld(plant_120_10));
 		// The plant no longer moves onze it has died.
 		double[] oldPosition = facade.getActualPosition(plant_120_10);
 		facade.advanceTime(plant_120_10, 0.15);
-		assertArrayEquals(oldPosition,facade.getActualPosition(plant_120_10));
+		assertArrayEquals(oldPosition, facade.getActualPosition(plant_120_10));
 		// The plant is destroyed 0.6 seconds after its dead.
 		for (int i = 1; i <= 3; i++)
 			facade.advanceTime(plant_120_10, 0.15);
@@ -1445,7 +1504,7 @@ class FullFacadeTest {
 		assertNull(facade.getWorld(plant_120_10));
 		actualScore += 12;
 	}
-	
+
 	@Test
 	void advanceTimePlant_PlantLeavingWorld() throws Exception {
 		maximumScore += 8;
@@ -1455,15 +1514,13 @@ class FullFacadeTest {
 		facade.advanceTime(thePlant, 0.15);
 		facade.advanceTime(thePlant, 0.14);
 		assertFalse(facade.isTerminatedGameObject(thePlant));
-		assertEquals(world_250_400,facade.getWorld(thePlant));
+		assertEquals(world_250_400, facade.getWorld(thePlant));
 		facade.advanceTime(thePlant, 0.03);
 		assertTrue(facade.isTerminatedGameObject(thePlant));
 		assertNull(facade.getWorld(thePlant));
 		assertFalse(facade.getAllGameObjects(world_250_400).contains(thePlant));
 		actualScore += 8;
 	}
-		
-
 
 	/*******************
 	 * Tests for World *
@@ -1717,14 +1774,14 @@ class FullFacadeTest {
 		int width = mazubSprites[0].getWidth();
 		int height = mazubSprites[0].getHeight();
 		// Adjacent left and right
-		facade.addGameObject(facade.createMazub(140 - width + 1, 270, mazubSprites),
+		facade.addGameObject(facade.createMazub(140 - width, 270, mazubSprites),
 				world_100_200);
-		facade.addGameObject(facade.createMazub(140 + width - 1, 270, mazubSprites),
+		facade.addGameObject(facade.createMazub(140 + width, 270, mazubSprites),
 				world_100_200);
 		mazubInWorld = facade.createMazub(40, 450, mazubSprites);
-		facade.addGameObject(facade.createMazub(60, 450 - height + 1, mazubSprites),
+		facade.addGameObject(facade.createMazub(60, 450 - height, mazubSprites),
 				world_100_200);
-		facade.addGameObject(facade.createMazub(60, 450 + height - 1, mazubSprites),
+		facade.addGameObject(facade.createMazub(60, 450 + height, mazubSprites),
 				world_100_200);
 		actualScore += 10;
 
@@ -1915,16 +1972,17 @@ class FullFacadeTest {
 	@Test
 	void isGameOver_WinningScenario() {
 		maximumScore += 6;
-		World theWorld = facade.createWorld(10, 100, 200, new int[] { 11, 1 }, 20, 10);
-		facade.addGameObject(mazub_0_0, theWorld);
+		World theWorld = facade.createWorld(10, 100, 200, new int[] { 11, 101 }, 20, 10);
+		facade.setGeologicalFeature(theWorld, 50, 996, SOLID_GROUND);
+		facade.addGameObject(mazub_0_1000, theWorld);
 		assertFalse(facade.isGameOver(theWorld));
 		assertFalse(facade.didPlayerWin(theWorld));
 		facade.startGame(theWorld);
 		assertFalse(facade.isGameOver(theWorld));
 		assertFalse(facade.didPlayerWin(theWorld));
 		// Mazub will reach the target tile after 0.1847 seconds.
-		facade.startMoveRight(mazub_0_0);
-		facade.advanceTime(mazub_0_0, 0.19);
+		facade.startMoveRight(mazub_0_1000);
+		facade.advanceTime(mazub_0_1000, 0.19);
 		assertTrue(facade.isGameOver(theWorld));
 		assertTrue(facade.didPlayerWin(theWorld));
 		actualScore += 6;
@@ -1949,91 +2007,101 @@ class FullFacadeTest {
 	@Test
 	void advanceWorldTime_SimpleScenario() {
 		maximumScore += 60;
-		Mazub jumpingMazub = facade.createMazub(200, 75, mazubSprites);
-		Plant plant1 = facade.createPlant(55, 380, plantSprites);
-		Plant plant2 = facade.createPlant(210, 10, plantSprites);
-		facade.setGeologicalFeature(world_250_400, 200, 70, SOLID_GROUND);
-		facade.setGeologicalFeature(world_250_400, 15, 315, MAGMA);
-		facade.setGeologicalFeature(world_250_400, 95, 20, WATER);
-		facade.addGameObject(mazub_0_0, world_250_400);
-		facade.addGameObject(mazub_100_0, world_250_400);
+		facade.setGeologicalFeature(world_250_400, 50, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 100, 995, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
+		Mazub jumpingMazub = facade.createMazub(200, 1075, mazubSprites);
+		Plant plant1 = facade.createPlant(55, 1380, plantSprites);
+		Plant plant2 = facade.createPlant(210, 1010, plantSprites);
+		facade.setGeologicalFeature(world_250_400, 200, 1070, SOLID_GROUND);
+		facade.setGeologicalFeature(world_250_400, 15, 1315, MAGMA);
+		facade.setGeologicalFeature(world_250_400, 95, 1020, WATER);
+		facade.addGameObject(mazub_0_1000, world_250_400);
+		facade.addGameObject(mazub_100_1000, world_250_400);
 		facade.addGameObject(jumpingMazub, world_250_400);
 		facade.addGameObject(plant1, world_250_400);
 		facade.addGameObject(plant2, world_250_400);
-		assertEquals(5,facade.getAllGameObjects(world_250_400).size());
+		assertEquals(5, facade.getAllGameObjects(world_250_400).size());
 		facade.startGame(world_250_400);
-		facade.startMoveRight(mazub_0_0);
+		facade.startMoveRight(mazub_0_1000);
 		facade.startMoveLeft(jumpingMazub);
 		facade.startJump(jumpingMazub);
 		// After 0.1 seconds, the player mazub will bump against the stationary mazub.
 		facade.advanceWorldTime(world_250_400, 0.1);
-		assertEquals(0.1, facade.getActualPosition(mazub_0_0)[0], LOW_PRECISION);
-		assertEquals(100, facade.getHitPoints(mazub_0_0));
-		assertEquals(mazubSprites[9], facade.getCurrentSprite(mazub_0_0));
-		assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_0));
-		assertArrayEquals(new double[] { 1.8955, 1.5 },
+		assertEquals(0.1, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
+		assertEquals(100, facade.getHitPoints(mazub_0_1000));
+		if (facade.isTeamSolution()) {
+			assertEquals(mazubSprites[9], facade.getCurrentSprite(mazub_0_1000));
+			assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_1000));
+		}
+		assertArrayEquals(new double[] { 1.8955, 11.5 },
 				facade.getActualPosition(jumpingMazub), LOW_PRECISION);
-		assertEquals(mazubSprites[5], facade.getCurrentSprite(jumpingMazub));
+		if (facade.isTeamSolution())
+			assertEquals(mazubSprites[5], facade.getCurrentSprite(jumpingMazub));
 		assertEquals(0.5, facade.getActualPosition(plant1)[0], LOW_PRECISION);
-		assertEquals(plantSprites[0], facade.getCurrentSprite(plant1));
+		if (facade.isTeamSolution())
+			assertEquals(plantSprites[0], facade.getCurrentSprite(plant1));
 		assertEquals(2.05, facade.getActualPosition(plant2)[0], LOW_PRECISION);
-		assertEquals(plantSprites[0], facade.getCurrentSprite(plant2));
+		if (facade.isTeamSolution())
+			assertEquals(plantSprites[0], facade.getCurrentSprite(plant2));
 		// After another 0.15 seconds, the stationary mazub wll have eaten the second
 		// plant, and the player mazub will have lost 2 hit points because of its
 		// contact with water.
 		facade.advanceWorldTime(world_250_400, 0.15);
-		assertEquals(4,facade.getAllGameObjects(world_250_400).size());
-		assertEquals(0.1, facade.getActualPosition(mazub_0_0)[0], LOW_PRECISION);
-		assertEquals(98, facade.getHitPoints(mazub_0_0));
-		assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_0_0));
-		assertEquals(150, facade.getHitPoints(mazub_100_0));
+		assertEquals(4, facade.getAllGameObjects(world_250_400).size());
+		assertEquals(0.1, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
+		assertEquals(98, facade.getHitPoints(mazub_0_1000));
+		if (facade.isTeamSolution())
+			assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_0_1000));
+		assertEquals(150, facade.getHitPoints(mazub_100_1000));
 		assertTrue(facade.isTerminatedGameObject(plant2));
-		assertArrayEquals(new double[] { 2.0 - 0.2781, 0.75 + 1.6875 },
+		assertArrayEquals(new double[] { 2.0 - 0.2781, 10.75 + 1.6875 },
 				facade.getActualPosition(jumpingMazub), LOW_PRECISION);
 		assertEquals(0.55 - 0.125, facade.getActualPosition(plant1)[0], LOW_PRECISION);
 		// After a total playing time of 0.5 seconds, plant1 switches direction.
 		facade.advanceWorldTime(world_250_400, 0.15);
 		facade.advanceWorldTime(world_250_400, 0.15);
-		assertEquals(96, facade.getHitPoints(mazub_0_0));
-		assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_0_0));
-		assertArrayEquals(new double[] { 2.0 - 0.6861, 0.75 + 2.8875 },
+		assertEquals(96, facade.getHitPoints(mazub_0_1000));
+		if (facade.isTeamSolution())
+			assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_0_1000));
+		assertArrayEquals(new double[] { 2.0 - 0.6861, 10.75 + 2.8875 },
 				facade.getActualPosition(jumpingMazub), LOW_PRECISION);
 		assertEquals(0.55 - 0.225, facade.getActualPosition(plant1)[0], LOW_PRECISION);
 		// After about 1 second of total playing time, the jumping mazub will have eaten
 		// the other plant.
 		for (int i = 1; i <= 3; i++)
 			facade.advanceWorldTime(world_250_400, 0.15);
-		assertEquals(3,facade.getAllGameObjects(world_250_400).size());
-		assertArrayEquals(new double[] { 2.0 - 1.45, 0.75 + 3.0 },
+		assertEquals(3, facade.getAllGameObjects(world_250_400).size());
+		assertArrayEquals(new double[] { 2.0 - 1.45, 10.75 + 3.0 },
 				facade.getActualPosition(jumpingMazub), LOW_PRECISION);
 		assertEquals(150, facade.getHitPoints(jumpingMazub));
 		assertTrue(facade.isTerminatedGameObject(plant1));
 		// After another 0.2 seconds, jumping mazub falls into magma
 		for (int i = 1; i <= 2; i++)
 			facade.advanceWorldTime(world_250_400, 0.1);
-		assertArrayEquals(new double[] { 2.0 - 1.848, 0.75 + 2.4 },
+		assertArrayEquals(new double[] { 2.0 - 1.848, 10.75 + 2.4 },
 				facade.getActualPosition(jumpingMazub), LOW_PRECISION);
 		assertEquals(100, facade.getHitPoints(jumpingMazub));
 		// After 1.272 seconds of total playing time, the jumping mazub falls out of its
 		// world.
 		facade.advanceWorldTime(world_250_400, 0.1);
-		assertEquals(2,facade.getAllGameObjects(world_250_400).size());
+		assertEquals(2, facade.getAllGameObjects(world_250_400).size());
 		assertTrue(facade.isTerminatedGameObject(jumpingMazub));
 		assertNull(facade.getWorld(jumpingMazub));
 		assertFalse(facade.getAllGameObjects(world_250_400).contains(jumpingMazub));
-		assertEquals(100 - 6 * 2, facade.getHitPoints(mazub_0_0));
+		assertEquals(100 - 6 * 2, facade.getHitPoints(mazub_0_1000));
 		// After 10 seconds in contact with water, the player will have no hit points
 		// left.
 		for (int i = 1; i <= 87; i++)
 			facade.advanceWorldTime(world_250_400, 0.1);
 		facade.advanceWorldTime(world_250_400, 0.1);
-		assertTrue(facade.isDeadGameObject(mazub_0_0));
+		assertTrue(facade.isDeadGameObject(mazub_0_1000));
 		// After another 0.6 seconds of playing time, the player must have been removed
 		// from the game world, and the game has been lost.
 		for (int i = 1; i <= 4; i++)
 			facade.advanceWorldTime(world_250_400, 0.15);
-		assertTrue(facade.isTerminatedGameObject(mazub_0_0));
-		assertNull(facade.getWorld(mazub_0_0));
+		assertTrue(facade.isTerminatedGameObject(mazub_0_1000));
+		assertNull(facade.getWorld(mazub_0_1000));
 		assertTrue(facade.isGameOver(world_250_400));
 		assertFalse(facade.didPlayerWin(world_250_400));
 		actualScore += 60;
