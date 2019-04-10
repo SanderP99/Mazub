@@ -57,8 +57,8 @@ public class World {
 	setTileLength(tileLength);
 	setWorldSizeX(nbTilesX * getTileLength());
 	setWorldSizeY(nbTilesY * getTileLength());
-	setTargetTileX(targetTileX);
-	setTargetTileY(targetTileY);
+	setTargetTileX(targetTileX * getTileLength());
+	setTargetTileY(targetTileY * getTileLength());
 	if (!canHaveAsVisibleWindowHeight(visibleWindowHeight))
 	    throw new RuntimeException();
 	setVisibleWindowHeight(visibleWindowHeight);
@@ -470,7 +470,7 @@ public class World {
 	    for (final Object object : getAllObjects())
 		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
 			&& object != other)
-		    return false; 
+		    return false;
 
 	    for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
 		    + gameObject.getXsize(); x++) {
@@ -534,17 +534,19 @@ public class World {
 		Math.pow(gameObject.getHorizontalSpeedMeters(), 2) + Math.pow(gameObject.getVerticalSpeedMeters(), 2));
 	final double accelerationRoot = Math.sqrt(Math.pow(gameObject.getHorizontalAcceleration(), 2)
 		+ Math.pow(gameObject.getVerticalAcceleration(), 2));
+//	if (velocityRoot + accelerationRoot * deltaT == 0)
+//	    return 0.02;
 	return 0.01 / (velocityRoot + accelerationRoot * deltaT);
     }
 
-    public void advanceWorldTime(double dt) throws RuntimeException{ 
-    if (dt <0)
-    	throw new RuntimeException();
-    if (dt > 0.2)
-    	throw new RuntimeException();
-    if (dt != dt)
-    	throw new RuntimeException();
-    
+    public void advanceWorldTime(double dt) throws RuntimeException {
+	if (dt < 0)
+	    throw new RuntimeException();
+	if (dt > 0.2)
+	    throw new RuntimeException();
+	if (dt != dt)
+	    throw new RuntimeException();
+
 	for (final Object object : getAllObjects()) {
 	    final double timeStep = getTimeStep((GameObject) object, dt);
 	    ((GameObject) object).advanceTime(dt, timeStep);
@@ -602,5 +604,10 @@ public class World {
 	}
 	setVisibleWindowPosition(new int[] { newWindowXPos, newWindowYPos });
 
+    }
+
+    public boolean isPositionInTargetTile(int pixelX, int pixelY) {
+	return pixelX >= getTargetTileX() && pixelX < getTargetTileX() + getTileLength() && pixelY >= getTargetTileY()
+		&& pixelY < getTargetTileY() + getTileLength();
     }
 }

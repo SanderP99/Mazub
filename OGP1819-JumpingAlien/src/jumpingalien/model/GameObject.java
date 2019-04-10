@@ -911,9 +911,9 @@ public abstract class GameObject {
     /**
      * Returns a list with all the tiles that are overlapping with the GameObject
      */
-    protected List<int[]> getAllOverlappingTiles() {
+    public List<int[]> getAllOverlappingTiles() {
 	final int xPosition = getXPositionPixel();
-	final int yPosition = getYPositionPixel(); 
+	final int yPosition = getYPositionPixel();
 	final int xSize = getXsize();
 	final int ySize = getYsize();
 //	if (getWorld() == null)
@@ -923,8 +923,7 @@ public abstract class GameObject {
 	final List<int[]> overlappingTiles = new ArrayList<>();
 
 	final int[] tileBottomLeft = new int[] { xPosition / tileLength, yPosition / tileLength };
-	final int[] tileTopRight = new int[] { (xPosition + xSize - 1) / tileLength,
-		(yPosition + ySize - 1) / tileLength };
+	final int[] tileTopRight = new int[] { (xPosition + xSize) / tileLength, (yPosition + ySize - 1) / tileLength };
 
 	for (int i = tileBottomLeft[0]; i <= tileTopRight[0]; i++)
 	    for (int j = tileBottomLeft[1]; j <= tileTopRight[1]; j++)
@@ -937,9 +936,16 @@ public abstract class GameObject {
      * Returns whether the GameObject is standing on the ground
      */
     public boolean isStandingOnSolidGround() {
-	for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
+	for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++) {
 	    if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == World.SOLID_GROUND)
 		return true;
+	    if (getWorld().getGeologicalFeature(x, getYPositionPixel() - 1) == World.SOLID_GROUND)
+		return true;
+	}
+	final Mazub newMazub = new Mazub(getXPositionPixel(), getYPositionPixel(), 1, 1, getHorizontalSpeedMeters(), 1,
+		3, 1, true, getCurrentSprite());
+	if (!getWorld().canPlaceMazubAdvanceTime(newMazub, this))
+	    return true;
 	return false;
     }
 }

@@ -1,5 +1,6 @@
 package jumpingalien.facade;
 
+import java.util.List;
 import java.util.Set;
 
 import jumpingalien.model.GameObject;
@@ -41,14 +42,13 @@ public class Facade implements IFacade {
 	return position;
     }
 
-	
     @Override
     public void changeActualPosition(Mazub alien, double[] newPosition) throws ModelException {
 	if (newPosition == null)
 	    throw new ModelException("Position can not be null");
 	if (!alien.isValidGameObject())
 	    throw new ModelException("The alien is not valid");
-	if (newPosition.length != 2) 
+	if (newPosition.length != 2)
 	    throw new ModelException("Only 2  coordinates allowed");
 	if (newPosition[0] != newPosition[0] || newPosition[1] != newPosition[1])
 	    throw new ModelException("NaN as position argument");
@@ -71,10 +71,10 @@ public class Facade implements IFacade {
 
 	alien.setXPositionActual(newPosition[0]);
 	alien.setYPositionActual(newPosition[1]);
-	
+
 	if (alien.getWorld() != null)
-		if (!alien.isStandingOnSolidGround())
-			alien.setVerticalAcceleration(-10.0);
+	    if (!alien.isStandingOnSolidGround())
+		alien.setVerticalAcceleration(-10.0);
 
     }
 
@@ -217,7 +217,7 @@ public class Facade implements IFacade {
 	return alien.isDucking();
     }
 
-    @Override 
+    @Override
     public void startDuck(Mazub alien) throws ModelException {
 	if (alien.isDead())
 	    throw new ModelException("The alien is dead");
@@ -324,13 +324,14 @@ public class Facade implements IFacade {
 
     @Override
     public int[] getTargetTileCoordinate(World world) throws ModelException {
-	return new int[] { world.getTargetTileX(), world.getTargetTileY() };
+	return new int[] { world.getTargetTileX() / getTileLength(world),
+		world.getTargetTileY() / getTileLength(world) };
     }
 
     @Override
     public void setTargetTileCoordinate(World world, int[] tileCoordinate) throws ModelException {
-	world.setTargetTileX(tileCoordinate[0]);
-	world.setTargetTileY(tileCoordinate[1]);
+	world.setTargetTileX(tileCoordinate[0] * getTileLength(world));
+	world.setTargetTileY(tileCoordinate[1] * getTileLength(world));
 
     }
 
@@ -348,8 +349,8 @@ public class Facade implements IFacade {
 	    return true;
 	if (world.getPlayer().isTerminated())
 	    return true;
-//	if (didPlayerWin(world))
-//	    return true;
+	if (didPlayerWin(world))
+	    return true;
 	return false;
     }
 
@@ -357,23 +358,24 @@ public class Facade implements IFacade {
     public boolean didPlayerWin(World world) throws ModelException {
 	if (world.getPlayer() == null)
 	    return false;
-	if (world.getPlayer().getXPositionPixel() >= world.getTargetTileX()
-		&& world.getPlayer().getXPositionPixel() < world.getTargetTileX() + world.getTileLength()
-		&& world.getPlayer().getYPositionPixel() >= world.getTargetTileY() - 1
-		&& world.getPlayer().getYPositionPixel() < world.getTargetTileY() + world.getTileLength()
-		&& !world.getPlayer().isDead())
-	    return true;
+
+	final List<int[]> tiles = world.getPlayer().getAllOverlappingTiles();
+	final int[] targetTile = new int[] { getTargetTileCoordinate(world)[0], getTargetTileCoordinate(world)[1] };
+
+	for (final int[] tile : tiles)
+	    if (tile[0] == targetTile[0] && tile[1] == targetTile[1])
+		return true;
 	return false;
     }
 
     @Override
     public void advanceWorldTime(World world, double dt) throws ModelException {
-	
+
 	try {
-		world.advanceWorldTime(dt);
-		
-	} catch (Exception e) {
-		throw new ModelException("dt is not valid");
+	    world.advanceWorldTime(dt);
+
+	} catch (final Exception e) {
+	    throw new ModelException("dt is not valid");
 	}
 
     }
@@ -468,7 +470,7 @@ public class Facade implements IFacade {
 	    ((GameObject) gameObject).advanceTime(dt,
 		    ((GameObject) gameObject).getWorld().getTimeStep((GameObject) gameObject, dt));
 	else
-	    ((GameObject) gameObject).advanceTime(dt, 0.02);
+	    ((GameObject) gameObject).advanceTime(dt, 0.002);
     }
 
 }

@@ -164,7 +164,7 @@ public class Mazub extends GameObject {
      * A boolean to store if Mazub is standing still and is not ducking and not
      * jumping
      */
-    private boolean notMoving;
+    public boolean notMoving;
 
     /**
      * A boolean to store if Mazub is moving
@@ -265,6 +265,9 @@ public class Mazub extends GameObject {
     private void fall() {
 	if (getYPositionActual() > 0)
 	    setVerticalAcceleration(maxVerticalAcceleration);
+	for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
+	    if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == World.SOLID_GROUND)
+		setVerticalAcceleration(0);
 	if (getYPositionActual() < 0 && getVerticalSpeedMeters() < 0)
 	    setVerticalAcceleration(0);
     }
@@ -273,8 +276,6 @@ public class Mazub extends GameObject {
      * A boolean to store if Mazub is falling
      */
     public boolean isFalling;
-
-
 
     /**
      * Updates the position of Mazub over a given time interval
@@ -318,7 +319,7 @@ public class Mazub extends GameObject {
 
 	if (getWorld() != null) {
 	    final Mazub newMazub = new Mazub(newPosX, newPosY, xSize, ySize, newSpeedX, getMinSpeedMeters(),
-		    getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true, this.getCurrentSprite());
+		    getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true, getCurrentSprite());
 	    if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
 		setXPositionActual(newPosX);
 		setYPositionActual(newPosY);
@@ -328,20 +329,29 @@ public class Mazub extends GameObject {
 		setHorizontalSpeedMeters(0);
 		setVerticalSpeedMeters(0);
 		setHorizontalAcceleration(0);
-		if (getOrientation() == -1)
+
+		if (getOrientation() == -1 && !isDucking())
 		    setSprite(getSpriteArray()[3]);
-		else
+		else if (getOrientation() == 0 && !isDucking())
+		    setSprite(getSpriteArray()[0]);
+		else if (!isDucking())
 		    setSprite(getSpriteArray()[2]);
+		else if (getOrientation() == -1)
+		    setSprite(getSpriteArray()[7]);
+		else if (getOrientation() == 1)
+		    setSprite(getSpriteArray()[6]);
+		else
+		    setSprite(getSpriteArray()[1]);
+
 		isMoving = false;
-		// fall(); 
 		setHorizontalSpeedMeters(0);
 		setVerticalSpeedMeters(0);
 		setHorizontalAcceleration(0);
 
 	    }
-	    if (isStandingOnSolidGround())
+
+	    if (isStandingOnSolidGround() && !isJumping)
 		setVerticalAcceleration(0);
-	    // fall();
 	    else
 		fall();
 
@@ -480,7 +490,7 @@ public class Mazub extends GameObject {
 	    getWorld().removeObject(this);
 	    terminate();
 	}
-	
+
 	if (timeSinceLastMove > 1)
 	    setSprite(getSpriteArray()[0]);
 	tempObject = false;
@@ -609,9 +619,6 @@ public class Mazub extends GameObject {
 	}
 	timeSinceLastMove = 0.0;
     }
-
-	
-   
 
     private boolean isDucking;
 
