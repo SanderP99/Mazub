@@ -4,8 +4,12 @@ import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 /**
+ * A class that implements a plant
+ * 
  * @author Warre Dreesen
  * @author Sander Prenen
+ * 
+ * @version 1
  *
  */
 public class Plant extends GameObject {
@@ -64,6 +68,14 @@ public class Plant extends GameObject {
     }
 
     /**
+     * Returns how many seconds the plant has left to live.
+     */
+    @Basic
+    public double getSecondsToLive() {
+        return secondsToLive;
+    }
+
+    /**
      * Sets how long the plant will live
      * 
      * @param secondsToLive The seconds to live
@@ -72,14 +84,6 @@ public class Plant extends GameObject {
      */
     private void setSecondsToLive(double secondsToLive) {
 	this.secondsToLive = secondsToLive;
-    }
-
-    /**
-     * Returns how many seconds the plant has left to live.
-     */
-    @Basic
-    public double getSecondsToLive() {
-	return secondsToLive;
     }
 
     /**
@@ -114,91 +118,13 @@ public class Plant extends GameObject {
 	return sprites.length == 2;
     }
 
-    @Override
-    public void advanceTime(double dt, double timeStep) {
-	if (!isDead()) {
-	    while (dt >= timeStep && !isDead())
-		if (getSecondsToLive() >= timeStep) {
-		    if (getOrientation() == -1) {
-			if (getXPositionActual()
-				- Math.abs(getHorizontalSpeedMeters()) * timeStep < (double) getBoundaries()[0] / 100) {
-			    final double newPosX = getXPositionActual()
-				    - Math.abs(getHorizontalSpeedMeters()) * timeStep;
-			    final double actualPosX = (double) getBoundaries()[0] / 100
-				    + Math.abs(newPosX - (double) getBoundaries()[0] / 100);
-			    setXPositionActual(actualPosX);
-
-			    setOrientation(1);
-			    setSprite(getSpriteArray()[1]);
-			    dt -= timeStep;
-			    setSecondsToLive(getSecondsToLive() - timeStep);
-			} else {
-			    dt -= timeStep;
-			    setSecondsToLive(getSecondsToLive() - timeStep);
-			    setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep);
-			}
-		    } else if (getXPositionActual()
-			    + Math.abs(getHorizontalSpeedMeters()) * timeStep > (double) getBoundaries()[1] / 100) {
-			final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep;
-			final double actualPosX = (double) getBoundaries()[1] / 100
-				- Math.abs(newPosX - (double) getBoundaries()[1] / 100);
-			setXPositionActual(actualPosX);
-
-			setOrientation(-1);
-			setSprite(getSpriteArray()[0]);
-			dt -= timeStep;
-			setSecondsToLive(getSecondsToLive() - timeStep);
-
-		    } else {
-			dt -= timeStep;
-			setSecondsToLive(getSecondsToLive() - timeStep);
-			if (getOrientation() == 1)
-			    setXPositionActual(getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep);
-			else
-			    setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep);
-		    }
-
-		} else {
-		    dt = 0;
-		    setXPositionActual(getXPositionActual() + getHorizontalSpeedMeters() * getSecondsToLive());
-		    setSecondsToLive(0);
-		    isDead = true;
-		    setTimeSinceDeath(0.0);
-		}
-	    if (getOrientation() == 1)
-		setXPositionActual(getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * dt);
-	    else
-		setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * dt);
-
-	    setSecondsToLive(getSecondsToLive() - dt);
-
-	    if (getWorld() != null)
-		for (final Object object : getWorld().getAllObjects())
-		    if (collidesWith((GameObject) object) && object instanceof Mazub
-			    && ((GameObject) object).getHitpoints() != ((GameObject) object).getMaxHitpoints()) {
-			terminate();
-			((GameObject) object).changeHitPoints(50);
-		    }
-	} else if (getTimeSinceDeath() < 0.6) {
-	    if (dt < 0.599 - getTimeSinceDeath())
-		setTimeSinceDeath(dt + getTimeSinceDeath());
-	    else {
-		setTimeSinceDeath(dt + getTimeSinceDeath());
-		getWorld().removeObject(this);
-		terminate();
-	    }
-
-	} else {
-	    getWorld().removeObject(this);
-	    terminate();
-	}
-
-    }
-
     /**
-     * A timer to keep track of how long ago the plant died.
+     * Returns the time since death
      */
-    double timeSinceDeath;
+    @Basic
+    public double getTimeSinceDeath() {
+        return timeSinceDeath;
+    }
 
     /**
      * Sets the time since death to the given time
@@ -211,12 +137,90 @@ public class Plant extends GameObject {
 	timeSinceDeath = time;
     }
 
-    /**
-     * Returns the time since death
-     */
-    @Basic
-    public double getTimeSinceDeath() {
-	return timeSinceDeath;
+    @Override
+    public void advanceTime(double dt, double timeStep) {
+        if (!isDead()) {
+            while (dt >= timeStep && !isDead())
+        	if (getSecondsToLive() >= timeStep) {
+        	    if (getOrientation() == -1) {
+        		if (getXPositionActual()
+        			- Math.abs(getHorizontalSpeedMeters()) * timeStep < (double) getBoundaries()[0] / 100) {
+        		    final double newPosX = getXPositionActual()
+        			    - Math.abs(getHorizontalSpeedMeters()) * timeStep;
+        		    final double actualPosX = (double) getBoundaries()[0] / 100
+        			    + Math.abs(newPosX - (double) getBoundaries()[0] / 100);
+        		    setXPositionActual(actualPosX);
+    
+        		    setOrientation(1);
+        		    setSprite(getSpriteArray()[1]);
+        		    dt -= timeStep;
+        		    setSecondsToLive(getSecondsToLive() - timeStep);
+        		} else {
+        		    dt -= timeStep;
+        		    setSecondsToLive(getSecondsToLive() - timeStep);
+        		    setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep);
+        		}
+        	    } else if (getXPositionActual()
+        		    + Math.abs(getHorizontalSpeedMeters()) * timeStep > (double) getBoundaries()[1] / 100) {
+        		final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep;
+        		final double actualPosX = (double) getBoundaries()[1] / 100
+        			- Math.abs(newPosX - (double) getBoundaries()[1] / 100);
+        		setXPositionActual(actualPosX);
+    
+        		setOrientation(-1);
+        		setSprite(getSpriteArray()[0]);
+        		dt -= timeStep;
+        		setSecondsToLive(getSecondsToLive() - timeStep);
+    
+        	    } else {
+        		dt -= timeStep;
+        		setSecondsToLive(getSecondsToLive() - timeStep);
+        		if (getOrientation() == 1)
+        		    setXPositionActual(getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * timeStep);
+        		else
+        		    setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * timeStep);
+        	    }
+    
+        	} else {
+        	    dt = 0;
+        	    setXPositionActual(getXPositionActual() + getHorizontalSpeedMeters() * getSecondsToLive());
+        	    setSecondsToLive(0);
+        	    isDead = true;
+        	    setTimeSinceDeath(0.0);
+        	}
+            if (getOrientation() == 1)
+        	setXPositionActual(getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * dt);
+            else
+        	setXPositionActual(getXPositionActual() - Math.abs(getHorizontalSpeedMeters()) * dt);
+    
+            setSecondsToLive(getSecondsToLive() - dt);
+    
+            if (getWorld() != null)
+        	for (final Object object : getWorld().getAllObjects())
+        	    if (collidesWith((GameObject) object) && object instanceof Mazub
+        		    && ((GameObject) object).getHitpoints() != ((GameObject) object).getMaxHitpoints()) {
+        		terminate();
+        		((GameObject) object).changeHitPoints(50);
+        	    }
+        } else if (getTimeSinceDeath() < 0.6) {
+            if (dt < 0.599 - getTimeSinceDeath())
+        	setTimeSinceDeath(dt + getTimeSinceDeath());
+            else {
+        	setTimeSinceDeath(dt + getTimeSinceDeath());
+        	getWorld().removeObject(this);
+        	terminate();
+            }
+    
+        } else {
+            getWorld().removeObject(this);
+            terminate();
+        }
+    
     }
+
+    /**
+     * A timer to keep track of how long ago the plant died.
+     */
+    double timeSinceDeath;
 
 }

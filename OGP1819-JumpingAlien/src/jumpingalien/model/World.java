@@ -8,9 +8,12 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
+ * A class that implements a game world
  * 
  * @author Warre Dreesen
  * @author Sander Prenen
+ * 
+ * @version 1
  *
  * @invar Each World can have its visibleWindowWidth as visibleWindowWidth. |
  *        canHaveAsVisibleWindowWidth(this.getVisibleWindowWidth())
@@ -20,19 +23,20 @@ import be.kuleuven.cs.som.annotate.Raw;
  *        visibleWindowPosition for any World. |
  *        isValidVisibleWindowPosition(getVisibleWindowPosition())
  * 
+ * 
  */
 public class World {
 
     /**
      * 
-     * @param worldSizeX
-     * @param worldSizeY
-     * @param tileLength
-     * @param targetTileX
-     * @param targetTileY
-     * @param visibleWindowWidth
-     * @param visibleWindowHeight
-     * @param geologicalFeatures
+     * @param worldSizeX          The width of the world in pixels
+     * @param worldSizeY          The height of the world in pixels
+     * @param tileLength          The length of a tile in pixels
+     * @param targetTileX         The x coordinate of the targettile in pixels
+     * @param targetTileY         The y coordinate of the target tile in pixels
+     * @param visibleWindowWidth  The width of the visible window in pixels
+     * @param visibleWindowHeight The height of the visible window in pixels
+     * @param geologicalFeatures  A list of geological features
      * 
      * @pre 0 < visibleWindowWidth <= worldSizeX
      * @pre 0 < visibleWindowHeight <= worldSizeY
@@ -40,15 +44,19 @@ public class World {
      * @post The visisbleWindowHeigth of this new World is equal to the given
      *       visisbleWindowHeigth. | new.getVisibleWindowHeight() ==
      *       visibleWindowHeight
+     * 
      * @throws RuntimeException This new World cannot have the given
      *                          visisbleWindowHeigth as its visisbleWindowHeigth. |
      *                          !
      *                          canHaveAsVisibleWindowHeight(this.getVisibleWindowHeight())
+     * 
      * @post The visibleWindowWidth of this new World is equal to the given
      *       visibleWindowWidth. | new.getVisibleWindowWidth() == visibleWindowWidth
+     * 
      * @throws RuntimeException This new World cannot have the given
      *                          visibleWindowWidth as its visibleWindowWidth. | !
      *                          canHaveAsVisibleWindowWidth(this.getVisibleWindowWidth())
+     * 
      * @effect The visibleWindowPosition of this new World is set to (0,0). |
      *         this.setVisibleWindowPosition(new int[] {0, 0})
      */
@@ -72,15 +80,32 @@ public class World {
     }
 
     /**
-     * Sets the visible window width to the given width
+     * Check whether this World can have the given visisbleWindowHeigth as its
+     * visisbleWindowHeigth.
      * 
-     * @param visibleWindowWidth The width to set in pixels
+     * @param visibleWindowHeight The visisbleWindowHeigth to check.
      * 
-     * @post ... | new.visibleWindowWidth == visibleWindowWidth
+     * @return | result == !(visibleWindowHeight < 0) && !(visibleWindowHeight >
+     *         this.getWorldSizeY())
      */
-    private void setVisibleWindowWidth(int visibleWindowWidth) {
-	World.visibleWindowWidth = visibleWindowWidth;
+    @Raw
+    public boolean canHaveAsVisibleWindowHeight(int visibleWindowHeight) {
+	if (visibleWindowHeight < 0)
+	    return false;
+	if (visibleWindowHeight > getWorldSizeY())
+	    return false;
+	return true;
 
+    }
+
+    /**
+     * Return the visisbleWindowHeigth of this World.
+     */
+    @Basic
+    @Raw
+    @Immutable
+    public int getVisibleWindowHeight() {
+	return visibleWindowHeight;
     }
 
     /**
@@ -96,6 +121,119 @@ public class World {
     }
 
     /**
+     * Variable registering the visisbleWindowHeigth of this World.
+     */
+    private static int visibleWindowHeight;
+
+    /**
+     * Check whether this World can have the given visibleWindowWidth as its
+     * visibleWindowWidth.
+     * 
+     * @param visibleWindowWidth The visibleWindowWidth to check.
+     * 
+     * @return | result == !(visibleWindowWidth < 0) && !(visibleWindowWidth >
+     *         this.getWorldSizeX())
+     */
+    @Raw
+    public boolean canHaveAsVisibleWindowWidth(int visibleWindowWidth) {
+	if (visibleWindowWidth < 0)
+	    return false;
+	if (visibleWindowWidth > getWorldSizeX())
+	    return false;
+	return true;
+    }
+
+    /**
+     * Return the visibleWindowWidth of this World.
+     */
+    @Basic
+    @Raw
+    @Immutable
+    public int getVisibleWindowWidth() {
+	return visibleWindowWidth;
+    }
+
+    /**
+     * Sets the visible window width to the given width
+     * 
+     * @param visibleWindowWidth The width to set in pixels
+     * 
+     * @post ... | new.visibleWindowWidth == visibleWindowWidth
+     */
+    private void setVisibleWindowWidth(int visibleWindowWidth) {
+	World.visibleWindowWidth = visibleWindowWidth;
+
+    }
+
+    /**
+     * Variable registering the visibleWindowWidth of this World.
+     */
+    private static int visibleWindowWidth;
+
+    /**
+     * Check whether the given visibleWindowPosition is a valid
+     * visibleWindowPosition for any World.
+     * 
+     * @param visibleWindowPosition The visibleWindowPosition to check.
+     * @return | result == !(visibleWindowPosition.length != 2) &&
+     *         !(visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0) &&
+     *         !(visibleWindowPosition[0] + this.getVisibleWindowWidth() >
+     *         this.getWorldSizeX() || visibleWindowPosition[1] +
+     *         this.getVisibleWindowHeight() > this.getWorldSizeY())
+     */
+    public boolean isValidVisibleWindowPosition(int[] visibleWindowPosition) {
+	if (visibleWindowPosition.length != 2)
+	    return false;
+	if (visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0)
+	    return false;
+	if (visibleWindowPosition[0] + getVisibleWindowWidth() > getWorldSizeX()
+		|| visibleWindowPosition[1] + getVisibleWindowHeight() > getWorldSizeY())
+	    return false;
+	return true;
+    }
+
+    /**
+     * Return the visibleWindowPosition of this World.
+     */
+    @Basic
+    @Raw
+    public int[] getVisibleWindowPosition() {
+	return visibleWindowPosition;
+    }
+
+    /**
+     * Set the visibleWindowPosition of this World to the given
+     * visibleWindowPosition.
+     * 
+     * @param visibleWindowPosition The new visibleWindowPosition for this World.
+     * @post The visibleWindowPosition of this new World is equal to the given
+     *       visibleWindowPosition. | new.getVisibleWindowPosition() ==
+     *       visibleWindowPosition
+     * @throws RuntimeException The given visibleWindowPosition is not a valid
+     *                          visibleWindowPosition for any World. | !
+     *                          isValidVisibleWindowPosition(getVisibleWindowPosition())
+     */
+    @Raw
+    public void setVisibleWindowPosition(int[] visibleWindowPosition) throws RuntimeException {
+	if (!isValidVisibleWindowPosition(visibleWindowPosition))
+	    throw new RuntimeException();
+	this.visibleWindowPosition = visibleWindowPosition;
+    }
+
+    /**
+     * Variable registering the visibleWindowPosition of this World.
+     */
+    private int[] visibleWindowPosition;
+
+    /**
+     * Returns the maximum number of objects in the world
+     */
+    @Basic
+    private int getMaxNbOfObjects() {
+	return maxNbOfObjects;
+    }
+
+    /**
      * Sets the maximum number of objects the world can have
      * 
      * @param maxNbOfObjects The maximum number of objects
@@ -107,13 +245,6 @@ public class World {
     }
 
     /**
-     * Returns the maximum number of objects in the world
-     */
-    private int getMaxNbOfObjects() {
-	return maxNbOfObjects;
-    }
-
-    /**
      * A variable to store the maximum number of objects
      */
     private int maxNbOfObjects;
@@ -122,6 +253,7 @@ public class World {
      * Returns the horizontal size of the world in pixels
      */
     @Basic
+    @Immutable
     public int getWorldSizeX() {
 	return worldSizeX;
     }
@@ -150,6 +282,7 @@ public class World {
      * Returns the vertical size of the world in pixels
      */
     @Basic
+    @Immutable
     public int getWorldSizeY() {
 	return worldSizeY;
     }
@@ -174,11 +307,23 @@ public class World {
      */
     private int worldSizeY;
 
+    /**
+     * Returns the length of a tile in pixels
+     */
     @Basic
+    @Immutable
     public int getTileLength() {
 	return tileLength;
     }
 
+    /**
+     * Sets the length of a tile to a given length
+     * 
+     * @param length The length to set in pixels
+     * 
+     * @post ... | if length > 0 then new.tileLenght == length
+     * @post ... | if length <= 0 then new.tileLength == 10
+     */
     private void setTileLength(int length) {
 	if (length > 0)
 	    tileLength = length;
@@ -186,31 +331,75 @@ public class World {
 	    tileLength = 10;
     }
 
+    /**
+     * A variable to store the length of the tiles.
+     */
     private int tileLength;
 
+    /**
+     * Returns the tile x coordinate of the target tile.
+     */
     @Basic
     public int getTargetTileX() {
 	return targetTileX;
     }
 
+    /**
+     * Sets the target tile x coordinate to the given tile coordinate
+     * 
+     * @param targetTileX The tile coordinate to set
+     * 
+     * @pre !isTerminated()
+     * 
+     * @post ... | new.targetTileX == targetTileX
+     */
     public void setTargetTileX(int targetTileX) {
 	assert !isTerminated();
 	this.targetTileX = targetTileX;
     }
 
+    /**
+     * A variable to store the target tile x coordinate
+     */
     private int targetTileX;
 
+    /**
+     * Returns the tile y coordinate of the target tile.
+     */
     @Basic
     public int getTargetTileY() {
 	return targetTileY;
     }
 
+    /**
+     * Sets the target tile y coordinate to the given tile coordinate
+     * 
+     * @param targetTileY The tile coordinate to set
+     * 
+     * @pre !isTerminated()
+     * 
+     * @post ... | new.targetTileY == targetTileY
+     */
     public void setTargetTileY(int targetTileY) {
 	assert !isTerminated();
 	this.targetTileY = targetTileY;
     }
 
+    /**
+     * A variable to store the target tile y coordinate
+     */
     private int targetTileY;
+
+    /**
+     * Returns if the given position is a position in the target tile
+     * 
+     * @param pixelX The x coordinate
+     * @param pixelY The y coordinate
+     */
+    public boolean isPositionInTargetTile(int pixelX, int pixelY) {
+	return pixelX >= getTargetTileX() && pixelX < getTargetTileX() + getTileLength() && pixelY >= getTargetTileY()
+		&& pixelY < getTargetTileY() + getTileLength();
+    }
 
     /**
      * Check whether this world is terminated.
@@ -221,132 +410,77 @@ public class World {
 	return isTerminated;
     }
 
+    /**
+     * Terminates the world
+     * 
+     * @post ... | new.isTerminated == true
+     */
     public void terminate() {
 	if (!isTerminated())
 	    isTerminated = true;
     }
 
+    /**
+     * A boolean to store if the given world is terminated
+     */
     private boolean isTerminated;
 
     /**
-     * Return the visisbleWindowHeigth of this World.
+     * Returns whether the geological feature to set is valid
+     * 
+     * @param geologicalFeature The geological feature to set
+     */
+    private boolean isValidGeologicalFeature(int geologicalFeature) {
+	return geologicalFeature == AIR || geologicalFeature == SOLID_GROUND || geologicalFeature == WATER
+		|| geologicalFeature == MAGMA;
+    }
+
+    /**
+     * Returns the geological feature at the given pixel position. 0 for AIR, 1 for
+     * SOLID_GROUND, 2 for WATER and 3 for MAGMA
+     * 
+     * @param pixelX The x pixel of the feature to get
+     * @param pixelY The y pixel of the feature to get
      */
     @Basic
-    @Raw
-    @Immutable
-    public int getVisibleWindowHeight() {
-	return visibleWindowHeight;
+    public int getGeologicalFeature(int pixelX, int pixelY) {
+	if (!isValidPixelYPosition(pixelY))
+	    pixelY = 0;
+	if (!isValidPixelXPosition(pixelX))
+	    pixelX = 0;
+
+	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + AIR))
+	    return AIR;
+	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + SOLID_GROUND))
+	    return SOLID_GROUND;
+	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + WATER))
+	    return WATER;
+	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + MAGMA))
+	    return MAGMA;
+	return AIR;
     }
 
     /**
-     * Check whether this World can have the given visisbleWindowHeigth as its
-     * visisbleWindowHeigth.
+     * Returns the geological feature at the given pixel position. 0 for AIR, 1 for
+     * SOLID_GROUND, 2 for WATER and 3 for MAGMA
      * 
-     * @param visibleWindowHeight The visisbleWindowHeigth to check.
-     * @return | result == !(visibleWindowHeight < 0) && !(visibleWindowHeight >
-     *         this.getWorldSizeY())
-     */
-    @Raw
-    public boolean canHaveAsVisibleWindowHeight(int visibleWindowHeight) {
-	if (visibleWindowHeight < 0)
-	    return false;
-	if (visibleWindowHeight > getWorldSizeY())
-	    return false;
-	return true;
-
-    }
-
-    /**
-     * Variable registering the visisbleWindowHeigth of this World.
-     */
-    private static int visibleWindowHeight;
-
-    /**
-     * Return the visibleWindowWidth of this World.
-     */
-    @Basic
-    @Raw
-    @Immutable
-    public int getVisibleWindowWidth() {
-	return visibleWindowWidth;
-    }
-
-    /**
-     * Check whether this World can have the given visibleWindowWidth as its
-     * visibleWindowWidth.
+     * @param tile_cord The coordinate to check
      * 
-     * @param visibleWindowWidth The visibleWindowWidth to check.
-     * @return | result == !(visibleWindowWidth < 0) && !(visibleWindowWidth >
-     *         this.getWorldSizeX())
+     * @effect getGeologicalFeature(tile_cord[0], tile_cord[1])
      */
-    @Raw
-    public boolean canHaveAsVisibleWindowWidth(int visibleWindowWidth) {
-	if (visibleWindowWidth < 0)
-	    return false;
-	if (visibleWindowWidth > getWorldSizeX())
-	    return false;
-	return true;
+    public int getGeologicalFeatureTile(int[] tile_cord) {
+	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + AIR))
+	    return AIR;
+	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + SOLID_GROUND))
+	    return SOLID_GROUND;
+
+	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + WATER))
+	    return WATER;
+	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + MAGMA))
+	    return MAGMA;
+	return AIR;
+
     }
-
-    /**
-     * Variable registering the visibleWindowWidth of this World.
-     */
-    private static int visibleWindowWidth;
-
-    /**
-     * Return the visibleWindowPosition of this World.
-     */
-    @Basic
-    @Raw
-    public int[] getVisibleWindowPosition() {
-	return visibleWindowPosition;
-    }
-
-    /**
-     * Check whether the given visibleWindowPosition is a valid
-     * visibleWindowPosition for any World.
-     * 
-     * @param visibleWindowPosition The visibleWindowPosition to check.
-     * @return | result == !(visibleWindowPosition.length != 2) &&
-     *         !(visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0) &&
-     *         !(visibleWindowPosition[0] + this.getVisibleWindowWidth() >
-     *         this.getWorldSizeX() || visibleWindowPosition[1] +
-     *         this.getVisibleWindowHeight() > this.getWorldSizeY())
-     */
-    public boolean isValidVisibleWindowPosition(int[] visibleWindowPosition) {
-	if (visibleWindowPosition.length != 2)
-	    return false;
-	if (visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0)
-	    return false;
-	if (visibleWindowPosition[0] + getVisibleWindowWidth() > getWorldSizeX()
-		|| visibleWindowPosition[1] + getVisibleWindowHeight() > getWorldSizeY())
-	    return false;
-	return true;
-    }
-
-    /**
-     * Set the visibleWindowPosition of this World to the given
-     * visibleWindowPosition.
-     * 
-     * @param visibleWindowPosition The new visibleWindowPosition for this World.
-     * @post The visibleWindowPosition of this new World is equal to the given
-     *       visibleWindowPosition. | new.getVisibleWindowPosition() ==
-     *       visibleWindowPosition
-     * @throws RuntimeException The given visibleWindowPosition is not a valid
-     *                          visibleWindowPosition for any World. | !
-     *                          isValidVisibleWindowPosition(getVisibleWindowPosition())
-     */
-    @Raw
-    public void setVisibleWindowPosition(int[] visibleWindowPosition) throws RuntimeException {
-	if (!isValidVisibleWindowPosition(visibleWindowPosition))
-	    throw new RuntimeException();
-	this.visibleWindowPosition = visibleWindowPosition;
-    }
-
-    /**
-     * Variable registering the visibleWindowPosition of this World.
-     */
-    private int[] visibleWindowPosition;
 
     public void setGeologicalFeature(int pixelX, int pixelY, int geologicalFeature) {
 	if (!isValidGeologicalFeature(geologicalFeature))
@@ -354,12 +488,27 @@ public class World {
 	if (isValidPixelYPosition(pixelY) && isValidPixelXPosition(pixelX)) {
 	    tiles.remove(pixelX / getTileLength() + " " + pixelY / getTileLength() + " "
 		    + getGeologicalFeature(pixelX, pixelY));
-//			this.tiles.remove(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),
-//					getGeologicalFeature(pixelX,pixelY)});
+
 	    tiles.add(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + geologicalFeature);
 
-//			this.tiles.add(new int[] {pixelX/getTileLength(),pixelY/getTileLength(),geologicalFeature});
 	}
+    }
+
+    /**
+     * Sets the geological features in the world
+     * 
+     * @param xLength            The number of tiles in the x direction of the world
+     * @param yLength            The number of tiles in the y direction of the world
+     * @param geologicalFeatures A list of geological features. Starting bottom left
+     *                           going to the left and starting a row higher once
+     *                           the right boundary is reached.
+     */
+    private void initializeGeologicalFeatures(int xLength, int yLength, int... geologicalFeatures) {
+	tiles = new HashSet<String>();
+
+	for (int i = 0; i < geologicalFeatures.length; i++)
+	    tiles.add(i % xLength + " " + i / xLength + " " + geologicalFeatures[i]);
+
     }
 
     /**
@@ -380,89 +529,50 @@ public class World {
 	return Y_pos >= 0 && Y_pos <= getWorldSizeY();
     }
 
-    public int getGeologicalFeature(int pixelX, int pixelY) {
-	if (!isValidPixelYPosition(pixelY))
-	    pixelY = 0;
-	if (!isValidPixelXPosition(pixelX))
-	    pixelX = 0;
-
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + AIR))
-	    return AIR;
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + SOLID_GROUND))
-	    return SOLID_GROUND;
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + WATER))
-	    return WATER;
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + MAGMA))
-	    return MAGMA;
-	return AIR;
-    }
-
-    public int getGeologicalFeatureTile(int[] tile_cord) {
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + AIR))
-	    return AIR;
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + SOLID_GROUND))
-	    return SOLID_GROUND;
-
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + WATER))
-	    return WATER;
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + MAGMA))
-	    return MAGMA;
-	return AIR;
-
-    }
-
+    /**
+     * A variable to store the value of air
+     */
     public final static int AIR = 0;
+
+    /**
+     * A variable to store the value of solid ground
+     */
     public final static int SOLID_GROUND = 1;
+    /**
+     * A variable to store the value of water
+     */
     public final static int WATER = 2;
+
+    /**
+     * A variable to store the value of magma
+     */
     public final static int MAGMA = 3;
 
-    private boolean isValidGeologicalFeature(int geologicalFeature) {
-	return geologicalFeature == AIR || geologicalFeature == SOLID_GROUND || geologicalFeature == WATER
-		|| geologicalFeature == MAGMA;
-
-    }
-
-    private void initializeGeologicalFeatures(int xLength, int yLength, int... geologicalFeatures) {
-	tiles = new HashSet<String>();
-
-	for (int i = 0; i < geologicalFeatures.length; i++)
-	    tiles.add(i % xLength + " " + i / xLength + " " + geologicalFeatures[i]);
-
-    }
-
+    /**
+     * A set to store the tiles and the geological feature
+     */
     public HashSet<String> tiles;
 
+    /**
+     * A set to store all the objects in the world
+     */
     private final HashSet<GameObject> objects = new HashSet<GameObject>();
 
+    /**
+     * A variable to store the playable Mazub of this world
+     */
     GameObject player;
+
+    /**
+     * A boolean to store if the world has a playable Mazub
+     */
     private boolean hasPlayer;
 
-    public void addGameObject(GameObject gameObject) throws RuntimeException {
-	if (getAllObjects().size() - 1 == getMaxNbOfObjects())
-	    throw new RuntimeException();
-	if (!gameObject.isValidGameObject())
-	    throw new RuntimeException();
-	if (gameObject.getXPositionPixel() >= getWorldSizeX() || gameObject.getXPositionActual() < 0)
-	    throw new RuntimeException();
-	if (gameObject.getYPositionPixel() >= getWorldSizeY() || gameObject.getYPositionActual() < 0)
-	    throw new RuntimeException();
-	if (gameObject.getWorld() != null)
-	    throw new RuntimeException();
-
-	if (!canPlaceObject(gameObject))
-	    throw new RuntimeException();
-
-	if (getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND
-		&& getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
-	    throw new RuntimeException();
-
-	if (!hasPlayer() && gameObject instanceof Mazub)
-	    setPlayer(gameObject);
-
-	objects.add(gameObject);
-	gameObject.world = this;
-    }
-
+    /**
+     * Returns whether the object can be placed in the world
+     * 
+     * @param gameObject The object to place
+     */
     public boolean canPlaceObject(GameObject gameObject) {
 	if (!(gameObject instanceof Plant)) {
 	    for (final Object object : getAllObjects())
@@ -503,36 +613,25 @@ public class World {
 	}
 	return true;
     }
+
     public boolean canPlaceMazubFullCheck(GameObject gameObject, GameObject other) {
-    	if (!(gameObject instanceof Plant)) {
-    	    for (final Object object : getAllObjects())
-    		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
-    			&& object != other)
-    		    return false;  
-    	    }
-    	    for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
-    			    + gameObject.getXsize(); x++)
-    			for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
-    				+ gameObject.getYsize(); y++)
-    			    if (getGeologicalFeature(x, y) == SOLID_GROUND)
-    				return false;
-    	return true;
-        }
-
-    private boolean hasPlayer() {
-	return hasPlayer;
+	if (!(gameObject instanceof Plant))
+	    for (final Object object : getAllObjects())
+		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
+			&& object != other)
+		    return false;
+	for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel() + gameObject.getXsize(); x++)
+	    for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
+		    + gameObject.getYsize(); y++)
+		if (getGeologicalFeature(x, y) == SOLID_GROUND)
+		    return false;
+	return true;
     }
 
-    void setPlayer(GameObject gameObject) {
-	player = gameObject;
-	((Mazub) gameObject).isPlayer = true;
-	hasPlayer = true;
-    }
-
-    public GameObject getPlayer() {
-	return player;
-    }
-
+    /**
+     * Returns a set with all the gameObjects in the world
+     */
+    @Basic
     public Set<Object> getAllObjects() {
 	final HashSet<Object> allObjects = new HashSet<Object>(objects.size());
 	for (final GameObject object : objects) {
@@ -542,6 +641,80 @@ public class World {
 	return allObjects;
     }
 
+    /**
+     * Returns whether a given object is in the world
+     * 
+     * @param gameObject The object to check
+     */
+    public boolean hasAsGameObject(GameObject gameObject) {
+	if (getAllObjects().contains(gameObject))
+	    return true;
+	return false;
+    }
+
+    /**
+     * Adds a gameobject to the world
+     * 
+     * @param gameObject The gameobject to add
+     * 
+     * @throws RuntimeException ... | getAllObjects().size() - 1 ==
+     *                          getMaxNbOfObjects()
+     * @throws RuntimeException ... | !gameObject.isValidGameObject()
+     * @throws RuntimeException ... | gameObject.getXPositionPixel() >=
+     *                          getWorldSizeX() || gameObject.getXPositionActual() <
+     *                          0
+     * @throws RuntimeException ... | gameObject.getYPositionPixel() >=
+     *                          getWorldSizeY() || gameObject.getYPositionActual() <
+     *                          0
+     * @throws RuntimeException ... | gameObject.getWorld() != null
+     * @throws RuntimeException ... | !canPlaceObject(gameObject)
+     * @throws RuntimeException ... |
+     *                          getGeologicalFeature(gameObject.getXPositionPixel(),
+     *                          gameObject.getYPositionPixel()) == SOLID_GROUND &&
+     *                          getGeologicalFeature(gameObject.getXPositionPixel()
+     *                          + 1, gameObject.getYPositionPixel() + 1) != AIR
+     * 
+     * @post ... | new.getAllObjects().contains(gameObject)
+     * @post ... | if !hasPlayer and gameObject instanceof Mazub then hasPlayer ==
+     *       true and setPlayer(gameObject)
+     * @post ... | new.gameObject.world == this
+     */
+    public void addGameObject(GameObject gameObject) throws RuntimeException {
+	if (getAllObjects().size() - 1 == getMaxNbOfObjects())
+	    throw new RuntimeException();
+	if (!gameObject.isValidGameObject())
+	    throw new RuntimeException();
+	if (gameObject.getXPositionPixel() >= getWorldSizeX() || gameObject.getXPositionActual() < 0)
+	    throw new RuntimeException();
+	if (gameObject.getYPositionPixel() >= getWorldSizeY() || gameObject.getYPositionActual() < 0)
+	    throw new RuntimeException();
+	if (gameObject.getWorld() != null)
+	    throw new RuntimeException();
+
+	if (!canPlaceObject(gameObject))
+	    throw new RuntimeException();
+
+	if (getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND
+		&& getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
+	    throw new RuntimeException();
+
+	if (!hasPlayer() && gameObject instanceof Mazub)
+	    setPlayer(gameObject);
+
+	objects.add(gameObject);
+	gameObject.world = this;
+    }
+
+    /**
+     * Removes a object from the world
+     * 
+     * @param gameObject The object to remove
+     * 
+     * @post ... | !new.getAllObjects().contains(gameObject)
+     * @post ... | new.gameObject.world == null
+     * @post ... | if getPlayer() == gameObject then new.player == null and
+     *       new.hasPlayer == false
+     */
     public void removeObject(GameObject gameObject) {
 	objects.remove(gameObject);
 	gameObject.world = null;
@@ -552,19 +725,47 @@ public class World {
 
     }
 
-    public boolean hasAsGameObject(GameObject gameObject) {
-	if (getAllObjects().contains(gameObject))
-	    return true;
-	return false;
+    /**
+     * Returns whether the world has a playable Mazub
+     */
+    private boolean hasPlayer() {
+	return hasPlayer;
     }
 
+    /**
+     * Returns the player for this world
+     */
+    @Basic
+    public GameObject getPlayer() {
+	return player;
+    }
+
+    /**
+     * Sets the given gameObject as player for this world
+     * 
+     * @param gameObject The gameObject to set as player
+     * 
+     * @post ... | new.player == gameObject
+     * @post ... | new.hasPlayer == true
+     * @post ... | new.gameObject.isPlayer == true
+     */
+    void setPlayer(GameObject gameObject) {
+	player = gameObject;
+	((Mazub) gameObject).isPlayer = true;
+	hasPlayer = true;
+    }
+
+    /**
+     * Returns the timeStep for a given gameObject
+     * 
+     * @param gameObject The gameObject to advance time for
+     * @param deltaT     The total time to advance
+     */
     public double getTimeStep(GameObject gameObject, double deltaT) {
 	final double velocityRoot = Math.sqrt(
 		Math.pow(gameObject.getHorizontalSpeedMeters(), 2) + Math.pow(gameObject.getVerticalSpeedMeters(), 2));
 	final double accelerationRoot = Math.sqrt(Math.pow(gameObject.getHorizontalAcceleration(), 2)
 		+ Math.pow(gameObject.getVerticalAcceleration(), 2));
-//	if (velocityRoot + accelerationRoot * deltaT == 0)
-//	    return 0.02;
 	return 0.01 / (velocityRoot + accelerationRoot * deltaT);
     }
 
@@ -633,10 +834,5 @@ public class World {
 	}
 	setVisibleWindowPosition(new int[] { newWindowXPos, newWindowYPos });
 
-    }
-
-    public boolean isPositionInTargetTile(int pixelX, int pixelY) {
-	return pixelX >= getTargetTileX() && pixelX < getTargetTileX() + getTileLength() && pixelY >= getTargetTileY()
-		&& pixelY < getTargetTileY() + getTileLength();
     }
 }

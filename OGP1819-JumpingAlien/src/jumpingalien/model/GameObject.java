@@ -15,6 +15,8 @@ import jumpingalien.util.Sprite;
  * @author Warre Dreesen
  * @author Sander Prenen
  * 
+ * @version 1
+ * 
  * @invar The left most x coordinate of GameObject is a valid coordinate |
  *        isValidXPosition() == true
  * @invar The bottom most y coordinate of GameObject is a valid coordinate |
@@ -108,6 +110,24 @@ public abstract class GameObject {
     public boolean tempObject;
 
     /**
+     * Returns whether the given sprite is valid
+     * 
+     * @param sprite The sprite to check
+     */
+    public boolean isValidSprite(Sprite sprite) {
+        return sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
+        	&& sprite.canHaveAsName(sprite.getName());
+    }
+
+    /**
+     * Returns the current sprite.
+     */
+    @Basic
+    public Sprite getCurrentSprite() {
+        return sprite;
+    }
+
+    /**
      * Sets the current sprite to the given sprite
      * 
      * @param sprite The sprite to set
@@ -118,30 +138,40 @@ public abstract class GameObject {
     protected void setSprite(Sprite sprite) {
 	if (!isValidSprite(sprite))
 	    throw new RuntimeException();
-	if(getCurrentSprite()!= null && (getCurrentSprite().getHeight() != sprite.getHeight() || getCurrentSprite().getWidth() != sprite.getWidth())) {
-		final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), sprite.getWidth(), sprite.getHeight()
-				, 0,
-				getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
-				getSpriteArray());
-			if(getWorld() != null) {
-				if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
-					this.sprite = sprite;
-					setYSize(getCurrentSprite().getHeight());
-					setXSize(getCurrentSprite().getWidth());
-				}
+	if (getCurrentSprite() != null && (getCurrentSprite().getHeight() != sprite.getHeight()
+		|| getCurrentSprite().getWidth() != sprite.getWidth())) {
+	    final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), sprite.getWidth(),
+		    sprite.getHeight(), 0, getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(),
+		    true, getSpriteArray());
+	    if (getWorld() != null) {
+		if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
+		    this.sprite = sprite;
+		    setYSize(getCurrentSprite().getHeight());
+		    setXSize(getCurrentSprite().getWidth());
 		}
-			else {
-				this.sprite = sprite;
-				setYSize(getCurrentSprite().getHeight());
-				setXSize(getCurrentSprite().getWidth());				
-			}
-	}
-	else {
+	    } else {
 		this.sprite = sprite;
 		setYSize(getCurrentSprite().getHeight());
 		setXSize(getCurrentSprite().getWidth());
+	    }
+	} else {
+	    this.sprite = sprite;
+	    setYSize(getCurrentSprite().getHeight());
+	    setXSize(getCurrentSprite().getWidth());
 	}
-	
+
+    }
+
+    /**
+     * A variable to store the current sprite.
+     */
+    protected Sprite sprite;
+
+    /**
+     * Returns the sprite array of a GameObject
+     */
+    public Sprite[] getSpriteArray() {
+	return spriteArray.clone();
     }
 
     /**
@@ -157,39 +187,25 @@ public abstract class GameObject {
     }
 
     /**
-     * Returns the sprite array of a GameObject
-     */
-    public Sprite[] getSpriteArray() {
-	return spriteArray.clone();
-    }
-
-    /**
      * A variable to store all the sprites of a GameObject
      */
     protected Sprite[] spriteArray;
 
     /**
-     * Returns the current sprite.
-     */
-    @Basic
-    public Sprite getCurrentSprite() {
-	return sprite;
-    }
-
-    /**
-     * Returns whether the given sprite is valid
+     * Terminates the GameObject
      * 
-     * @param sprite The sprite to check
+     * @post isTerminated()
+     * @effect setHitpoints(0) && removeWorld()
      */
-    public boolean isValidSprite(Sprite sprite) {
-	return sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
-		&& sprite.canHaveAsName(sprite.getName());
+    public void terminate() {
+        if (!isTerminated()) {
+            isTerminated = true;
+            isDead = true;
+            setHitpoints(0);
+            removeWorld();
+    
+        }
     }
-
-    /**
-     * A variable to store the current sprite.
-     */
-    protected Sprite sprite;
 
     /**
      * Check whether this object is terminated.
@@ -201,6 +217,11 @@ public abstract class GameObject {
     }
 
     /**
+     * A boolean to store if the GameObject is terminated
+     */
+    private boolean isTerminated;
+
+    /**
      * Check whether this object is dead.
      */
     @Basic
@@ -210,20 +231,9 @@ public abstract class GameObject {
     }
 
     /**
-     * Terminates the GameObject
-     * 
-     * @post isTerminated()
-     * @effect setHitpoints(0) && removeWorld()
+     * A boolean to store if the GameObject is dead
      */
-    public void terminate() {
-	if (!isTerminated()) {
-	    isTerminated = true;
-	    isDead = true;
-	    setHitpoints(0);
-	    removeWorld();
-
-	}
-    }
+    protected boolean isDead;
 
     /**
      * Removes the world of the GameObject
@@ -239,14 +249,12 @@ public abstract class GameObject {
     }
 
     /**
-     * A boolean to store if the GameObject is terminated
+     * Returns the y size of a given GameObject in pixels.
      */
-    private boolean isTerminated;
-
-    /**
-     * A boolean to store if the GameObject is dead
-     */
-    protected boolean isDead;
+    @Basic
+    public int getYsize() {
+        return ySize;
+    }
 
     /**
      * Sets the y size of GameObject to the given amount of pixels.
@@ -261,17 +269,17 @@ public abstract class GameObject {
     }
 
     /**
-     * Returns the y size of a given GameObject in pixels.
-     */
-    @Basic
-    public int getYsize() {
-	return ySize;
-    }
-
-    /**
      * A variable to store the y size of a GameObject in pixels.
      */
     private int ySize;
+
+    /**
+     * Returns the x size of a given GameObject in pixels.
+     */
+    @Basic
+    public int getXsize() {
+        return xSize;
+    }
 
     /**
      * Sets the x size of GameObject to the given amount of pixels.
@@ -286,19 +294,6 @@ public abstract class GameObject {
     }
 
     /**
-     * Returns the x size of a given GameObject in pixels.
-     */
-    @Basic
-    public int getXsize() {
-	return xSize;
-    }
-
-    /**
-     * A variable to store the x size of a GameObject in pixels.
-     */
-    private int xSize;
-
-    /**
      * Sets the x position of the bottom left pixel of a given GameObject to the
      * specified x position.
      * 
@@ -309,18 +304,23 @@ public abstract class GameObject {
      * @post if !isPositionInWorld(X_pos) then this.isTerminated
      */
     public void setXPositionActual(double X_pos) {
-	xPosPixel = (int) (X_pos * 100);
-	xPosMeter = X_pos;
-	if (!tempObject) {
-	    if (getWorld() != null && getWorld().getWorldSizeX() < getXPositionPixel()) {
-		setHitpoints(0);
-		terminate();
-	    }
-	    if (!isValidActualXPosition(xPosMeter))
-		terminate();
-	}
-
+        xPosPixel = (int) (X_pos * 100);
+        xPosMeter = X_pos;
+        if (!tempObject) {
+            if (getWorld() != null && getWorld().getWorldSizeX() < getXPositionPixel()) {
+        	setHitpoints(0);
+        	terminate();
+            }
+            if (!isValidActualXPosition(xPosMeter))
+        	terminate();
+        }
+    
     }
+
+    /**
+     * A variable to store the x size of a GameObject in pixels.
+     */
+    private int xSize;
 
     /**
      * Returns whether the given coordinate is on the canvas.
@@ -330,6 +330,40 @@ public abstract class GameObject {
     public boolean isValidPixelXPosition(int X_pos) {
 	return X_pos >= 0 && X_pos <= Double.POSITIVE_INFINITY;
     }
+
+    /**
+     * Returns whether the given coordinate is on the canvas.
+     * 
+     * @param X_pos The coordinate to check in meters.
+     */
+    public boolean isValidActualXPosition(double X_pos) {
+        return X_pos <= Double.POSITIVE_INFINITY && X_pos >= 0;
+    }
+
+    /**
+     * Returns the x position on the canvas in pixels.
+     */
+    @Basic
+    public int getXPositionPixel() {
+        return xPosPixel;
+    }
+
+    /**
+     * Returns the x position on the canvas in meters.
+     */
+    public double getXPositionActual() {
+        return xPosMeter;
+    }
+
+    /**
+     * A variable to store the x position of the GameObject in pixels
+     */
+    protected int xPosPixel;
+
+    /**
+     * A variable to store the x position of the GameObject in meters
+     */
+    protected double xPosMeter;
 
     /**
      * Returns whether a position is a coordinate in the world
@@ -344,18 +378,19 @@ public abstract class GameObject {
     /**
      * Returns whether the given coordinate is on the canvas.
      * 
-     * @param X_pos The coordinate to check in meters.
+     * @param Y_pos The given coordinate to check in meters.
      */
-    public boolean isValidActualXPosition(double X_pos) {
-	return X_pos <= Double.POSITIVE_INFINITY && X_pos >= 0;
+    public boolean isValidActualYPosition(double Y_pos) {
+        return Y_pos <= Double.POSITIVE_INFINITY && Y_pos >= -0.01;
     }
 
     /**
-     * Returns the x position on the canvas in pixels.
+     * Returns whether the given coordinate is on the canvas.
+     * 
+     * @param Y_pos The given coordinate to check in pixels.
      */
-    @Basic
-    public int getXPositionPixel() {
-	return xPosPixel;
+    public boolean isValidPixelYPosition(int Y_pos) {
+        return Y_pos >= 0 && Y_pos <= Double.POSITIVE_INFINITY;
     }
 
     /**
@@ -367,14 +402,19 @@ public abstract class GameObject {
     }
 
     /**
-     * A variable to store the x position of the GameObject in pixels
+     * Returns the y position on the canvas in pixels.
      */
-    protected int xPosPixel;
+    @Basic
+    public int getYPositionPixel() {
+        return yPosPixel;
+    }
 
     /**
-     * A variable to store the x position of the GameObject in meters
+     * Returns the y position on the canvas in meters.
      */
-    protected double xPosMeter;
+    public double getYPositionActual() {
+        return yPosMeter;
+    }
 
     /**
      * Sets the y position of the bottom left pixel of a given GameObject to the
@@ -386,36 +426,18 @@ public abstract class GameObject {
      * @post this.yPosPixel == (int) (Y_pos * 100)
      */
     public void setYPositionActual(double Y_pos) {
-
-	yPosPixel = (int) (Y_pos * 100);
-	yPosMeter = Y_pos;
-	if (!tempObject) {
-	    if (!isValidActualYPosition(yPosMeter)) {
-		terminate();
-		setHitpoints(0);
-	    }
-	    if (getWorld() != null && getWorld().getWorldSizeY() < getYPositionPixel())
-		terminate();
-	}
-
-    }
-
-    /**
-     * Returns whether the given coordinate is on the canvas.
-     * 
-     * @param Y_pos The given coordinate to check in meters.
-     */
-    public boolean isValidActualYPosition(double Y_pos) {
-	return Y_pos <= Double.POSITIVE_INFINITY && Y_pos >= -0.01;
-    }
-
-    /**
-     * Returns whether the given coordinate is on the canvas.
-     * 
-     * @param Y_pos The given coordinate to check in pixels.
-     */
-    public boolean isValidPixelYPosition(int Y_pos) {
-	return Y_pos >= 0 && Y_pos <= Double.POSITIVE_INFINITY;
+    
+        yPosPixel = (int) (Y_pos * 100);
+        yPosMeter = Y_pos;
+        if (!tempObject) {
+            if (!isValidActualYPosition(yPosMeter)) {
+        	terminate();
+        	setHitpoints(0);
+            }
+            if (getWorld() != null && getWorld().getWorldSizeY() < getYPositionPixel())
+        	terminate();
+        }
+    
     }
 
     /**
@@ -423,15 +445,7 @@ public abstract class GameObject {
      */
     @Basic
     public int getMaxYPosition() {
-	return world.getWorldSizeY();
-    }
-
-    /**
-     * Returns the y position on the canvas in pixels.
-     */
-    @Basic
-    public int getYPositionPixel() {
-	return yPosPixel;
+        return world.getWorldSizeY();
     }
 
     /**
@@ -443,6 +457,14 @@ public abstract class GameObject {
      * A variable to store the y position of the GameObject in meters
      */
     protected double yPosMeter;
+
+    /**
+     * Returns the hitpoints
+     */
+    @Basic
+    public int getHitpoints() {
+        return hitpoints;
+    }
 
     /**
      * Sets the hitpoints of the GameObject
@@ -462,28 +484,6 @@ public abstract class GameObject {
 	    this.hitpoints = getMaxHitpoints();
 	else
 	    this.hitpoints = hitpoints;
-    }
-
-    /**
-     * Returns the x position on the canvas in meters.
-     */
-    public double getXPositionActual() {
-	return xPosMeter;
-    }
-
-    /**
-     * Returns the y position on the canvas in meters.
-     */
-    public double getYPositionActual() {
-	return yPosMeter;
-    }
-
-    /**
-     * Returns the hitpoints
-     */
-    @Basic
-    public int getHitpoints() {
-	return hitpoints;
     }
 
     /**
@@ -508,6 +508,13 @@ public abstract class GameObject {
     }
 
     /**
+     * Returns the maximum hitpoints of a GameObject
+     */
+    public int getMaxHitpoints() {
+        return maxHitpoints;
+    }
+
+    /**
      * Sets the maximum hitpoints of a GameObject
      * 
      * @param maxHitpoints The maximum hitpoints
@@ -516,28 +523,6 @@ public abstract class GameObject {
      */
     private void setMaxHitpoints(int maxHitpoints) {
 	this.maxHitpoints = maxHitpoints;
-    }
-
-    /**
-     * Returns the maximum hitpoints of a GameObject
-     */
-    public int getMaxHitpoints() {
-	return maxHitpoints;
-    }
-
-    /**
-     * Sets the orientation of a given GameObject.
-     * 
-     * @param orientation The orientation that needs to be set
-     * 
-     * @pre The entered orientation is valid | isValidOrientation(orientation)
-     * 
-     * @post The orientation of this GameObject is equal to the given orientation. |
-     *       new.getOrientation() == orientation
-     */
-    public void setOrientation(int orientation) {
-	assert isValidOrientation();
-	this.orientation = orientation;
     }
 
     /**
@@ -559,6 +544,21 @@ public abstract class GameObject {
     }
 
     /**
+     * Sets the orientation of a given GameObject.
+     * 
+     * @param orientation The orientation that needs to be set
+     * 
+     * @pre The entered orientation is valid | isValidOrientation(orientation)
+     * 
+     * @post The orientation of this GameObject is equal to the given orientation. |
+     *       new.getOrientation() == orientation
+     */
+    public void setOrientation(int orientation) {
+        assert isValidOrientation();
+        this.orientation = orientation;
+    }
+
+    /**
      * A variable to store the orientation of a GameObject
      */
     protected int orientation;
@@ -577,11 +577,6 @@ public abstract class GameObject {
     public int getHorizontalSpeedPixels() {
 	return (int) (horizontalSpeed * 100);
     }
-
-    /**
-     * A variable to store the horizontal speed of the GameObject
-     */
-    private double horizontalSpeed;
 
     /**
      * Sets the the horizontal speed of GameObject to the given speed.
@@ -626,11 +621,9 @@ public abstract class GameObject {
     }
 
     /**
-     * Initiate the maximum and minimum velocities
+     * A variable to store the horizontal speed of the GameObject
      */
-    protected final double minSpeed;
-    protected final double maxSpeedRunning;
-    protected final double maxSpeedDucking;
+    private double horizontalSpeed;
 
     /**
      * Returns the minimum horizontal speed in meters per second.
@@ -684,20 +677,23 @@ public abstract class GameObject {
     }
 
     /**
-     * Returns whether the given speed is a valid speed
+     * A function that returns the maximum vertical speed of the GameObject in
+     * meters per second
      */
-    protected boolean isValidHorizontalSpeed() {
-	if (getHorizontalSpeedMeters() != 0)
-	    if (Math.abs(getHorizontalSpeedMeters()) < getMinSpeedMeters()
-		    || Math.abs(getHorizontalSpeedMeters()) > getMaxSpeed())
-		return false;
-	return true;
+    @Basic
+    @Immutable
+    public double getMaxVerticalSpeedMeters() {
+        return maxVerticalSpeed;
     }
 
     /**
-     * A variable to store the vertical speed of the GameObject
+     * Returns the vertical speed of a given GameObject in meters per second.
      */
-    protected double verticalSpeed;
+    @Basic
+    @Immutable
+    public double getVerticalSpeedMeters() {
+        return verticalSpeed;
+    }
 
     /**
      * Sets the vertical speed to the given speed
@@ -719,35 +715,41 @@ public abstract class GameObject {
      *       getMaxVerticalSpeedMeters()
      */
     protected void setVerticalSpeedMeters(double verticalSpeedMeters) {
-	if (verticalSpeedMeters <= getMaxVerticalSpeedMeters())
-	    verticalSpeed = verticalSpeedMeters;
-	else
-	    verticalSpeed = getMaxVerticalSpeedMeters();
+        if (verticalSpeedMeters <= getMaxVerticalSpeedMeters())
+            verticalSpeed = verticalSpeedMeters;
+        else
+            verticalSpeed = getMaxVerticalSpeedMeters();
     }
+
+    /**
+     * Initiate the maximum and minimum velocities
+     */
+    protected final double minSpeed;
+
+    protected final double maxSpeedRunning;
+
+    protected final double maxSpeedDucking;
+
+    /**
+     * Returns whether the given speed is a valid speed
+     */
+    protected boolean isValidHorizontalSpeed() {
+	if (getHorizontalSpeedMeters() != 0)
+	    if (Math.abs(getHorizontalSpeedMeters()) < getMinSpeedMeters()
+		    || Math.abs(getHorizontalSpeedMeters()) > getMaxSpeed())
+		return false;
+	return true;
+    }
+
+    /**
+     * A variable to store the vertical speed of the GameObject
+     */
+    protected double verticalSpeed;
 
     /**
      * A variable to store the maximum vertical speed of the GameObject
      */
     protected final static double maxVerticalSpeed = 8.0;
-
-    /**
-     * A function that returns the maximum vertical speed of the GameObject in
-     * meters per second
-     */
-    @Basic
-    @Immutable
-    public double getMaxVerticalSpeedMeters() {
-	return maxVerticalSpeed;
-    }
-
-    /**
-     * Returns the vertical speed of a given GameObject in meters per second.
-     */
-    @Basic
-    @Immutable
-    public double getVerticalSpeedMeters() {
-	return verticalSpeed;
-    }
 
     /**
      * Returns whether the given speed is a valid vertical speed
@@ -762,6 +764,15 @@ public abstract class GameObject {
      * A boolean to store if the GameObject is ducking
      */
     public boolean isDucking;
+
+    /**
+     * Returns the maximum horizontal speed for the given state of the GameObject
+     * depending on the state
+     */
+    public double getMaxSpeed() {
+        setMaxSpeed();
+        return maxSpeed;
+    }
 
     /**
      * Sets the maximum horizontal speed for the given state of GameObject
@@ -785,15 +796,6 @@ public abstract class GameObject {
      * state (ducking or running)
      */
     private double maxSpeed;
-
-    /**
-     * Returns the maximum horizontal speed for the given state of the GameObject
-     * depending on the state
-     */
-    public double getMaxSpeed() {
-	setMaxSpeed();
-	return maxSpeed;
-    }
 
     /**
      * Returns the horizontal acceleration in meters per second squared.
@@ -905,6 +907,14 @@ public abstract class GameObject {
     World world;
 
     /**
+     * Returns the world of the GameObject
+     */
+    @Basic
+    public World getWorld() {
+        return world;
+    }
+
+    /**
      * Sets the world of the GameObject to the given world
      * 
      * @param world The world to set
@@ -914,14 +924,6 @@ public abstract class GameObject {
     public void setWorld(World world) {
 	this.world = world;
 	world.addGameObject(this);
-    }
-
-    /**
-     * Returns the world of the GameObject
-     */
-    @Basic
-    public World getWorld() {
-	return world;
     }
 
     public abstract void advanceTime(double dt, double timeStep);
