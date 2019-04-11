@@ -13,7 +13,11 @@ public class ActionHandler extends AbstractActionHandler {
 
 	@Override
 	public void endJump() {
-		addAlienCommand("endJump", getFacade()::endJump);
+		addAlienCommand("endJump", (alien) -> {
+			if (getFacade().isJumping(alien)) {
+				getFacade().endJump(alien);
+			}
+		});
 	}
 
 	@Override
@@ -28,12 +32,20 @@ public class ActionHandler extends AbstractActionHandler {
 
 	@Override
 	public void endMoveLeft() {
-		addAlienCommand("endMoveLeft", getFacade()::endMove);
+		addAlienCommand("endMoveLeft", (alien) -> {
+			if (getFacade().isMoving(alien)) {
+				getFacade().endMove(alien);
+			}
+		});
 	}
 
 	@Override
 	public void endMoveRight() {
-		addAlienCommand("endMoveRight", getFacade()::endMove);
+		addAlienCommand("endMoveRight", (alien) -> {
+			if (getFacade().isMoving(alien)) {
+				getFacade().endMove(alien);
+			}
+		});
 	}
 
 	@Override
@@ -43,6 +55,10 @@ public class ActionHandler extends AbstractActionHandler {
 
 	@Override
 	public void endDuck() {
-		addAlienCommand("endDuck", getFacade()::endDuck);
+		addAlienCommand("endDuck", (alien) -> {
+			if (getFacade().isDucking(alien)) {
+				getFacade().endDuck(alien);
+			}
+		});
 	}
 }
