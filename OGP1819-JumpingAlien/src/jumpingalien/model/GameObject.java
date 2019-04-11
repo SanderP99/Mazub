@@ -118,10 +118,30 @@ public abstract class GameObject {
     protected void setSprite(Sprite sprite) {
 	if (!isValidSprite(sprite))
 	    throw new RuntimeException();
-
-	this.sprite = sprite;
-	setYSize(getCurrentSprite().getHeight());
-	setXSize(getCurrentSprite().getWidth());
+	if(getCurrentSprite()!= null && (getCurrentSprite().getHeight() != sprite.getHeight() || getCurrentSprite().getWidth() != sprite.getWidth())) {
+		final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), sprite.getWidth(), sprite.getHeight()
+				, 0,
+				getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
+				getSpriteArray());
+			if(getWorld() != null) {
+				if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
+					this.sprite = sprite;
+					setYSize(getCurrentSprite().getHeight());
+					setXSize(getCurrentSprite().getWidth());
+				}
+		}
+			else {
+				this.sprite = sprite;
+				setYSize(getCurrentSprite().getHeight());
+				setXSize(getCurrentSprite().getWidth());				
+			}
+	}
+	else {
+		this.sprite = sprite;
+		setYSize(getCurrentSprite().getHeight());
+		setXSize(getCurrentSprite().getWidth());
+	}
+	
     }
 
     /**

@@ -503,6 +503,21 @@ public class World {
 	}
 	return true;
     }
+    public boolean canPlaceMazubFullCheck(GameObject gameObject, GameObject other) {
+    	if (!(gameObject instanceof Plant)) {
+    	    for (final Object object : getAllObjects())
+    		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
+    			&& object != other)
+    		    return false;  
+    	    }
+    	    for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
+    			    + gameObject.getXsize(); x++)
+    			for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
+    				+ gameObject.getYsize(); y++)
+    			    if (getGeologicalFeature(x, y) == SOLID_GROUND)
+    				return false;
+    	return true;
+        }
 
     private boolean hasPlayer() {
 	return hasPlayer;

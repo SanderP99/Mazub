@@ -568,7 +568,7 @@ public class Mazub extends GameObject {
 	isDucking = false;
 	setMaxSpeed();
 	if (isMoving) {
-	    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
+	    
 	    if (getOrientation() == 1) {
 
 		final int newHeight = getSpriteArray()[8].getHeight();
@@ -578,10 +578,11 @@ public class Mazub extends GameObject {
 			getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
 			getSpriteArray());
 
-		if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+		if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
 		    setSprite(spriteArray[8]);
 		    setYSize(getCurrentSprite().getHeight());
 		    setXSize(getCurrentSprite().getWidth());
+		    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
 		} else
 		    isDucking = true;
 
@@ -598,6 +599,7 @@ public class Mazub extends GameObject {
 		    setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
 		    setYSize(getCurrentSprite().getHeight());
 		    setXSize(getCurrentSprite().getWidth());
+		    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
 		} else
 		    isDucking = true;
 	    }
