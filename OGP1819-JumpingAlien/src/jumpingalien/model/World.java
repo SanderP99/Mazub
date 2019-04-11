@@ -34,8 +34,8 @@ public class World {
      * @param visibleWindowHeight
      * @param geologicalFeatures
      * 
-     * @pre 0 < visibleWindowWidth < worldSizeX
-     * @pre 0 < visibleWindowHeight < worldSizeY
+     * @pre 0 < visibleWindowWidth <= worldSizeX
+     * @pre 0 < visibleWindowHeight <= worldSizeY
      * 
      * @post The visisbleWindowHeigth of this new World is equal to the given
      *       visisbleWindowHeigth. | new.getVisibleWindowHeight() ==
@@ -71,11 +71,25 @@ public class World {
 
     }
 
+    /**
+     * Sets the visible window width to the given width
+     * 
+     * @param visibleWindowWidth The width to set in pixels
+     * 
+     * @post ... | new.visibleWindowWidth == visibleWindowWidth
+     */
     private void setVisibleWindowWidth(int visibleWindowWidth) {
 	World.visibleWindowWidth = visibleWindowWidth;
 
     }
 
+    /**
+     * Sets the visible window height to the given height
+     * 
+     * @param visibleWindowHeight The height to set in pixels
+     * 
+     * @post ... | new.visibleWindowHeight == visibleWindowHeight
+     */
     private void setVisibleWindowHeight(int visibleWindowHeight) {
 	World.visibleWindowHeight = visibleWindowHeight;
 
@@ -105,7 +119,7 @@ public class World {
     private int maxNbOfObjects;
 
     /**
-     * Returns the horizontal worldsize in pixels
+     * Returns the horizontal size of the world in pixels
      */
     @Basic
     public int getWorldSizeX() {
@@ -133,7 +147,7 @@ public class World {
     private int worldSizeX;
 
     /**
-     * Returns the vertical worldsize in pixels
+     * Returns the vertical size of the world in pixels
      */
     @Basic
     public int getWorldSizeY() {
@@ -476,7 +490,7 @@ public class World {
 		    + gameObject.getXsize(); x++) {
 		if (getGeologicalFeature(x, gameObject.getYPositionPixel() + 1) == SOLID_GROUND)
 		    return false;
-		if (getGeologicalFeature(x, gameObject.getYPositionPixel() + gameObject.getYsize() - 1) == SOLID_GROUND)
+		if (getGeologicalFeature(x, gameObject.getYPositionPixel() + gameObject.getYsize()) == SOLID_GROUND)
 		    return false;
 	    }
 	    for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()

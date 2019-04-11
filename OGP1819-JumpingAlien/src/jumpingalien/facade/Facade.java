@@ -339,8 +339,6 @@ public class Facade implements IFacade {
     public void startGame(World world) throws ModelException {
 	if (world.getPlayer() == null)
 	    throw new ModelException("No Mazub");
-	// TODO Auto-generated method stub
-
     }
 
     @Override

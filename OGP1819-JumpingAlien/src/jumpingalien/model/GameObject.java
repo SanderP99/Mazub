@@ -89,8 +89,8 @@ public abstract class GameObject {
 	setYPositionActual((double) pixelBottomY / 100);
 	yPosPixel = pixelBottomY;
 	setSpriteArray(sprites);
-	setHitpoints(hitpoints);
 	setMaxHitpoints(maxHitpoints);
+	setHitpoints(hitpoints);
 	setMaxSpeed();
 	setOrientation(0);
 	setHorizontalSpeedMeters(0);
@@ -438,13 +438,11 @@ public abstract class GameObject {
 	    this.hitpoints = 0;
 	    isDead = true;
 	}
-	if (hitpoints > 500)
-	    this.hitpoints = 500;
+	if (hitpoints > getMaxHitpoints())
+	    this.hitpoints = getMaxHitpoints();
 	else
 	    this.hitpoints = hitpoints;
     }
-
-    // TODO hier max zetten ipv 500
 
     /**
      * Returns the x position on the canvas in meters.
@@ -476,7 +474,7 @@ public abstract class GameObject {
     /**
      * A variable to store the maximum hitpoints
      */
-    private static int maxHitpoints;
+    private int maxHitpoints;
 
     /**
      * Changes the hitpoints of the GameObject
@@ -496,8 +494,8 @@ public abstract class GameObject {
      * 
      * @post new.maxHitpoints == maxHitpoints
      */
-    private static void setMaxHitpoints(int maxHitpoints) {
-	GameObject.maxHitpoints = maxHitpoints;
+    private void setMaxHitpoints(int maxHitpoints) {
+	this.maxHitpoints = maxHitpoints;
     }
 
     /**
@@ -874,7 +872,7 @@ public abstract class GameObject {
 	    return false;
 	if (getXPositionPixel() + getXsize() - 1 < other.getXPositionPixel())
 	    return false;
-	if (getYPositionPixel() + getYsize() - 1 < other.getYPositionPixel())
+	if (getYPositionPixel() + getYsize() < other.getYPositionPixel())
 	    return false;
 	if (other.getYPositionPixel() + other.getYsize() - 1 < getYPositionPixel())
 	    return false;
@@ -916,8 +914,6 @@ public abstract class GameObject {
 	final int yPosition = getYPositionPixel();
 	final int xSize = getXsize();
 	final int ySize = getYsize();
-//	if (getWorld() == null)
-//	    return null;
 	final int tileLength = getWorld().getTileLength();
 
 	final List<int[]> overlappingTiles = new ArrayList<>();

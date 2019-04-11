@@ -620,12 +620,24 @@ public class Mazub extends GameObject {
 	timeSinceLastMove = 0.0;
     }
 
+    /**
+     * A boolean to store if the Mazub is ducking
+     */
     private boolean isDucking;
 
+    /**
+     * A timer to store how long the Mazub has been standing still
+     */
     private double timeSinceLastMove;
 
+    /**
+     * A boolean to store if the Mazub is the player of its world
+     */
     boolean isPlayer;
 
+    /**
+     * Returns whether Mazub is ducking
+     */
     public boolean isDucking() {
 	return isDucking;
     }
