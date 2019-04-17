@@ -21,7 +21,7 @@ public class ImageTile {
 	 *
 	 */
 	public static enum TileType {
-		AIR(0), SOLID(1), WATER(2), MAGMA(3);
+		AIR(0), SOLID(1), WATER(2), MAGMA(3), ICE(4), GAS(5);
 
 		private final int value;
 
@@ -51,6 +51,10 @@ public class ImageTile {
 			return TileType.WATER;
 		} else if (fileName.startsWith("liquidLava")) {
 			return TileType.MAGMA;
+		} else if (fileName.startsWith("snow")) {
+			return TileType.ICE;
+		} else if (fileName.startsWith("gas")) {
+			return TileType.GAS;
 		} else {
 			return TileType.AIR;
 		}

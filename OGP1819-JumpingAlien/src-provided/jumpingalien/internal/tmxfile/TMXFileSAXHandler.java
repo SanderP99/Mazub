@@ -129,9 +129,9 @@ class TMXFileSAXHandler extends DefaultHandler {
 		case "object": {
 			int id = Integer.parseInt(attributes.getValue("id"));
 			long gid = Long.parseLong(attributes.getValue("gid"));
-			int x = Integer.parseInt(attributes.getValue("x"));
+			int x = (int)Double.parseDouble(attributes.getValue("x"));
 			int y = map.getPixelHeight()
-					- Integer.parseInt(attributes.getValue("y"));
+					- (int)Double.parseDouble(attributes.getValue("y"));
 			boolean hflip = (gid & (0x1 << 31)) != 0;
 			boolean vflip = (gid & (0x1 << 30)) != 0;
 

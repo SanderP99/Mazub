@@ -117,6 +117,16 @@ public class GUIUtils {
 		flippedGraphics.dispose();
 		return flippedImage;
 	}
+	
+	public static BufferedImage vflip(BufferedImage image) {
+		BufferedImage flippedImage = new BufferedImage(image.getWidth(),
+				image.getHeight(), image.getType());
+		Graphics2D flippedGraphics = flippedImage.createGraphics();
+		flippedGraphics.scale(1, -1);
+		flippedGraphics.drawImage(image, 0, -image.getHeight(null), null);
+		flippedGraphics.dispose();
+		return flippedImage;
+	}
 
 	public static InputStream openResource(String filename) throws IOException {
 		URL url = toURL(filename);

@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.util.HashMap;
 
 import jumpingalien.internal.gui.AlienGUIUtils;
 import jumpingalien.internal.gui.AlienGameScreen;
@@ -13,7 +14,11 @@ import jumpingalien.internal.gui.sprites.ImageSprite;
 import jumpingalien.internal.game.AlienInfoProvider;
 import jumpingalien.internal.game.ObjectInfoProvider;
 import jumpingalien.model.Mazub;
-import jumpingalien.model.Plant;
+import jumpingalien.model.School;
+import jumpingalien.model.Shark;
+import jumpingalien.model.Skullcab;
+import jumpingalien.model.Slime;
+import jumpingalien.model.Sneezewort;
 
 public final class GameObjectPainter extends
 		AbstractAlienPainter {
@@ -38,6 +43,8 @@ public final class GameObjectPainter extends
 	public void paintInWorld(java.awt.Graphics2D g) {
 		paintMazubDebugInfo(g);
 		paintPlants(g);
+		paintSharks(g);
+		paintSlimes(g);
 	}
 
 	protected void paintMazubDebugInfo(Graphics2D g) {
@@ -59,7 +66,16 @@ public final class GameObjectPainter extends
 	}
 
 	protected void paintPlants(Graphics2D g) {
-		for (Plant plant : objectInfoProvider.getPlants()) {
+		for (Sneezewort plant : objectInfoProvider.getSneezeworts()) {
+			objectInfoProvider.getLocation(plant).ifPresent(
+					xy -> {
+						objectInfoProvider.getCurrentSprite(plant).ifPresent(
+								sprite -> paintSprite(g, sprite, xy));
+						paintDebugInfo(g, plant, xy);
+					});
+
+		}
+		for (Skullcab plant : objectInfoProvider.getSkullcabs()) {
 			objectInfoProvider.getLocation(plant).ifPresent(
 					xy -> {
 						objectInfoProvider.getCurrentSprite(plant).ifPresent(
@@ -69,6 +85,47 @@ public final class GameObjectPainter extends
 
 		}
 	}
+	
+
+	protected void paintSharks(Graphics2D g) {
+		for (Shark shark : objectInfoProvider.getSharks()) {
+			objectInfoProvider.getLocation(shark).ifPresent(
+					xy -> {
+						objectInfoProvider.getCurrentSprite(shark).ifPresent(
+								sprite -> paintSprite(g, sprite, xy));
+						paintDebugInfo(g, shark, xy);
+					});
+		}
+	}
+
+	private final java.util.Map<School, Integer> schoolHueShifts = new HashMap<>();
+
+	private int getHueShift(School school) {
+		return schoolHueShifts.computeIfAbsent(school,
+				s -> schoolHueShifts.size());
+	}
+
+	protected void paintSlimes(Graphics2D g) {
+		for (Slime slime : objectInfoProvider.getSlimes()) {
+			objectInfoProvider
+					.getLocation(slime)
+					.ifPresent(
+							xy -> {
+								objectInfoProvider
+										.getCurrentSprite(slime)
+										.ifPresent(
+												sprite -> objectInfoProvider
+														.getSchool(slime)
+														.ifPresent(
+																school -> paintSprite(
+																		g,
+																		sprite.shiftHue(getHueShift(school)),
+																		xy)));
+								paintDebugInfo(g, slime, xy);
+							});
+		}
+	}
+
 
 	private void paintSprite(Graphics2D g, ImageSprite sprite, int[] xy) {
 		if (getOptions().getDebugShowObjectLocationAndSize()) {

@@ -21,7 +21,7 @@ public class JumpingAlienGUI extends
 
 	@Override
 	protected String getTitle() {
-		return "Jumping Alien (Part 2)";
+		return "Jumping Alien (Part 3)";
 	}
 
 	@Override

@@ -8,7 +8,7 @@
   <property name="targetTileX" value="48"/>
   <property name="targetTileY" value="27"/>
  </properties>
- <tileset firstgid="1" name="Tiles" tilewidth="70" tileheight="146" tilecount="172" columns="0">
+ <tileset firstgid="1" name="Tiles" tilewidth="70" tileheight="146" tilecount="177" columns="0">
   <tile id="0">
    <image width="70" height="70" source="tiles/box.png"/>
   </tile>
@@ -525,8 +525,23 @@
   <tile id="171">
    <image width="70" height="70" source="tiles/window.png"/>
   </tile>
+  <tile id="172">
+   <image width="70" height="70" source="tiles/gas.png"/>
+  </tile>
+  <tile id="173">
+   <image width="70" height="70" source="tiles/gasTop_mid.png"/>
+  </tile>
+  <tile id="174">
+   <image width="70" height="70" source="tiles/gasTop.png"/>
+  </tile>
+  <tile id="175">
+   <image width="70" height="70" source="tiles/gasBottom_mid.png"/>
+  </tile>
+  <tile id="176">
+   <image width="70" height="70" source="tiles/gasBottom.png"/>
+  </tile>
  </tileset>
- <tileset firstgid="173" name="Objects" tilewidth="129" tileheight="71" tilecount="59" columns="0">
+ <tileset firstgid="178" name="Objects" tilewidth="129" tileheight="71" tilecount="59" columns="0">
   <tile id="0">
    <image width="70" height="70" source="items/bomb.png"/>
   </tile>
@@ -705,7 +720,7 @@
    <image width="70" height="70" source="items/weightChained.png"/>
   </tile>
  </tileset>
- <tileset firstgid="232" name="Enemies" tilewidth="75" tileheight="146" tilecount="18" columns="0">
+ <tileset firstgid="237" name="Enemies" tilewidth="75" tileheight="146" tilecount="18" columns="0">
   <tile id="0">
    <image width="51" height="51" source="enemies/blockerBody.png"/>
   </tile>
@@ -761,7 +776,7 @@
    <image width="57" height="31" source="enemies/snailWalk2.png"/>
   </tile>
  </tileset>
- <layer id="1" name="Clouds" width="50" height="30" locked="1">
+ <layer id="1" name="Clouds" width="50" height="30">
   <data>
    <tile/>
    <tile/>
@@ -879,7 +894,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -904,7 +919,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1061,7 +1076,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1165,7 +1180,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1182,7 +1197,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1233,7 +1248,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1242,7 +1257,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1510,7 +1525,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1549,7 +1564,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1571,7 +1586,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1582,7 +1597,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1865,7 +1880,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1892,7 +1907,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1928,7 +1943,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1937,7 +1952,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="188"/>
+   <tile gid="193"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1952,7 +1967,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1970,7 +1985,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1988,7 +2003,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2009,12 +2024,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="186"/>
+   <tile gid="191"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="188"/>
+   <tile gid="193"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2147,7 +2162,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="187"/>
+   <tile gid="192"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2265,7 +2280,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="2" name="DecorationBG" width="50" height="30" locked="1">
+ <layer id="2" name="DecorationBG" width="50" height="30">
   <data>
    <tile/>
    <tile/>
@@ -2415,7 +2430,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="194"/>
+   <tile gid="199"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3342,7 +3357,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="184"/>
+   <tile gid="189"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3572,7 +3587,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="184"/>
+   <tile gid="189"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3769,7 +3784,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="3" name="Terrain" width="50" height="30" locked="1">
+ <layer id="3" name="Terrain" width="50" height="30">
   <data>
    <tile gid="67"/>
    <tile gid="67"/>
@@ -4254,12 +4269,12 @@
    <tile/>
    <tile/>
    <tile gid="65"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="174"/>
+   <tile gid="174"/>
+   <tile gid="174"/>
+   <tile gid="174"/>
+   <tile gid="174"/>
+   <tile gid="174"/>
    <tile gid="65"/>
    <tile/>
    <tile/>
@@ -5274,41 +5289,82 @@
   </data>
  </layer>
  <objectgroup id="4" name="Objects">
-  <object id="24" gid="220" x="71" y="1663" width="54" height="27"/>
-  <object id="25" gid="220" x="284" y="1418" width="54" height="27"/>
-  <object id="26" gid="220" x="358" y="1451" width="54" height="27"/>
-  <object id="27" gid="220" x="429" y="1485" width="54" height="27"/>
-  <object id="28" gid="220" x="501" y="1525" width="54" height="27"/>
-  <object id="29" gid="220" x="565" y="1484" width="54" height="27"/>
-  <object id="30" gid="220" x="642" y="1449" width="54" height="27"/>
-  <object id="31" gid="220" x="714" y="1414" width="54" height="27"/>
-  <object id="32" gid="220" x="1137" y="1161" width="54" height="27"/>
-  <object id="33" gid="220" x="1227" y="1141" width="54" height="27"/>
-  <object id="34" gid="220" x="1335" y="1127" width="54" height="27"/>
-  <object id="35" gid="220" x="2520" y="2030" width="54" height="27"/>
-  <object id="36" gid="220" x="3024" y="2009" width="54" height="27"/>
-  <object id="37" gid="220" x="3083" y="2009" width="54" height="27"/>
-  <object id="38" gid="220" x="3155" y="2007" width="54" height="27"/>
-  <object id="39" gid="220" x="3232" y="2003" width="54" height="27"/>
-  <object id="40" gid="220" x="3316" y="2002" width="54" height="27"/>
-  <object id="41" gid="220" x="3375" y="2002" width="54" height="27"/>
-  <object id="42" gid="220" x="3019" y="1965" width="54" height="27"/>
-  <object id="43" gid="220" x="3084" y="1966" width="54" height="27"/>
-  <object id="44" gid="220" x="3152" y="1966" width="54" height="27"/>
-  <object id="45" gid="220" x="3213" y="1961" width="54" height="27"/>
-  <object id="46" gid="220" x="3292" y="1961" width="54" height="27"/>
-  <object id="47" gid="220" x="3361" y="1956" width="54" height="27"/>
-  <object id="48" gid="220" x="3362" y="1912" width="54" height="27"/>
-  <object id="49" gid="220" x="3284" y="1925" width="54" height="27"/>
-  <object id="50" gid="220" x="3218" y="1923" width="54" height="27"/>
-  <object id="51" gid="220" x="3149" y="1923" width="54" height="27"/>
-  <object id="52" gid="220" x="3085" y="1926" width="54" height="27"/>
-  <object id="53" gid="220" x="3026" y="1925" width="54" height="27"/>
-  <object id="54" gid="220" x="3023" y="1882" width="54" height="27"/>
-  <object id="55" gid="220" x="3087" y="1882" width="54" height="27"/>
-  <object id="56" gid="220" x="3150" y="1886" width="54" height="27"/>
-  <object id="57" gid="220" x="3206" y="1882" width="54" height="27"/>
-  <object id="58" gid="220" x="3273" y="1877" width="54" height="27"/>
-  <object id="59" gid="220" x="3350" y="1874" width="54" height="27"/>
+  <object id="15" gid="241" x="1162" y="1917" width="66" height="42"/>
+  <object id="16" gid="249" x="526" y="1890" width="50" height="28">
+   <properties>
+    <property name="school" value="4"/>
+   </properties>
+  </object>
+  <object id="17" gid="249" x="2410" y="2030" width="50" height="28">
+   <properties>
+    <property name="school" value="4"/>
+   </properties>
+  </object>
+  <object id="18" gid="249" x="2211" y="2030" width="50" height="28"/>
+  <object id="19" gid="249" x="1684" y="1540" width="50" height="28"/>
+  <object id="20" gid="250" x="3060.72" y="476.571" width="51" height="26"/>
+  <object id="21" gid="250" x="871" y="799" width="51" height="26">
+   <properties>
+    <property name="school" value="4"/>
+   </properties>
+  </object>
+  <object id="22" gid="250" x="1249" y="793" width="51" height="26"/>
+  <object id="23" gid="241" x="2982" y="1379" width="66" height="42"/>
+  <object id="24" gid="225" x="71" y="1663" width="54" height="27">
+   <properties>
+    <property name="skullcab" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="25" gid="225" x="284" y="1418" width="54" height="27"/>
+  <object id="26" gid="225" x="358" y="1451" width="54" height="27"/>
+  <object id="27" gid="225" x="429" y="1485" width="54" height="27"/>
+  <object id="28" gid="225" x="501" y="1525" width="54" height="27"/>
+  <object id="29" gid="225" x="565" y="1484" width="54" height="27"/>
+  <object id="30" gid="225" x="642" y="1449" width="54" height="27"/>
+  <object id="31" gid="225" x="714" y="1414" width="54" height="27"/>
+  <object id="32" gid="225" x="1137" y="1161" width="54" height="27">
+   <properties>
+    <property name="skullcab" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="33" gid="225" x="1227" y="1141" width="54" height="27">
+   <properties>
+    <property name="skullcab" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="34" gid="225" x="1335" y="1127" width="54" height="27">
+   <properties>
+    <property name="skullcab" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="35" gid="225" x="2520" y="2030" width="54" height="27">
+   <properties>
+    <property name="skullcab" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="36" gid="225" x="3024" y="2009" width="54" height="27"/>
+  <object id="37" gid="225" x="3083" y="2009" width="54" height="27"/>
+  <object id="38" gid="225" x="3155" y="2007" width="54" height="27"/>
+  <object id="39" gid="225" x="3232" y="2003" width="54" height="27"/>
+  <object id="40" gid="225" x="3308" y="2004" width="54" height="27"/>
+  <object id="41" gid="225" x="3369" y="2004" width="54" height="27"/>
+  <object id="42" gid="225" x="3019" y="1965" width="54" height="27"/>
+  <object id="43" gid="225" x="3084" y="1966" width="54" height="27"/>
+  <object id="44" gid="225" x="3152" y="1966" width="54" height="27"/>
+  <object id="45" gid="225" x="3213" y="1961" width="54" height="27"/>
+  <object id="46" gid="225" x="3292" y="1961" width="54" height="27"/>
+  <object id="47" gid="225" x="3361" y="1956" width="54" height="27"/>
+  <object id="48" gid="225" x="3362" y="1912" width="54" height="27"/>
+  <object id="49" gid="225" x="3284" y="1925" width="54" height="27"/>
+  <object id="50" gid="225" x="3218" y="1923" width="54" height="27"/>
+  <object id="51" gid="225" x="3149" y="1923" width="54" height="27"/>
+  <object id="52" gid="225" x="3085" y="1926" width="54" height="27"/>
+  <object id="53" gid="225" x="3026" y="1925" width="54" height="27"/>
+  <object id="54" gid="225" x="3023" y="1882" width="54" height="27"/>
+  <object id="55" gid="225" x="3087" y="1882" width="54" height="27"/>
+  <object id="56" gid="225" x="3150" y="1886" width="54" height="27"/>
+  <object id="57" gid="225" x="3206" y="1882" width="54" height="27"/>
+  <object id="58" gid="225" x="3273" y="1877" width="54" height="27"/>
+  <object id="59" gid="225" x="3350" y="1874" width="54" height="27"/>
  </objectgroup>
 </map>

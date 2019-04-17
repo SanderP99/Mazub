@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="70" tileheight="70" infinite="0" backgroundcolor="#4e6680" nextlayerid="4" nextobjectid="6">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="70" tileheight="70" infinite="0" backgroundcolor="#4e6680" nextlayerid="4" nextobjectid="10">
  <properties>
-  <property name="initialX" value="70"/>
-  <property name="initialY" value="70"/>
-  <property name="targetTileX" type="int" value="1"/>
+  <property name="initialX" value="210"/>
+  <property name="initialY" value="140"/>
+  <property name="targetTileX" type="int" value="0"/>
   <property name="targetTileY" type="int" value="6"/>
  </properties>
- <tileset firstgid="1" name="Terrain" tilewidth="70" tileheight="146" tilecount="172" columns="0">
+ <tileset firstgid="1" name="Terrain" tilewidth="70" tileheight="146" tilecount="177" columns="0">
   <tile id="0">
    <image width="70" height="70" source="tiles/box.png"/>
   </tile>
@@ -523,8 +523,23 @@
   <tile id="171">
    <image width="70" height="70" source="tiles/window.png"/>
   </tile>
+  <tile id="172">
+   <image width="70" height="70" source="tiles/gas.png"/>
+  </tile>
+  <tile id="173">
+   <image width="70" height="70" source="tiles/gasTop_mid.png"/>
+  </tile>
+  <tile id="174">
+   <image width="70" height="70" source="tiles/gasTop.png"/>
+  </tile>
+  <tile id="175">
+   <image width="70" height="70" source="tiles/gasBottom_mid.png"/>
+  </tile>
+  <tile id="176">
+   <image width="70" height="70" source="tiles/gasBottom.png"/>
+  </tile>
  </tileset>
- <tileset firstgid="173" name="Objects" tilewidth="129" tileheight="71" tilecount="59" columns="0">
+ <tileset firstgid="178" name="Objects" tilewidth="129" tileheight="71" tilecount="59" columns="0">
   <tile id="0">
    <image width="70" height="70" source="items/bomb.png"/>
   </tile>
@@ -703,7 +718,7 @@
    <image width="70" height="70" source="items/weightChained.png"/>
   </tile>
  </tileset>
- <tileset firstgid="232" name="Enemies" tilewidth="75" tileheight="146" tilecount="18" columns="0">
+ <tileset firstgid="237" name="Enemies" tilewidth="75" tileheight="146" tilecount="18" columns="0">
   <tile id="0">
    <image width="51" height="51" source="enemies/blockerBody.png"/>
   </tile>
@@ -759,37 +774,27 @@
    <image width="57" height="31" source="enemies/snailWalk2.png"/>
   </tile>
  </tileset>
- <layer id="1" name="Terrain" width="10" height="10" locked="1">
+ <layer id="1" name="Terrain" width="10" height="10">
   <data>
    <tile gid="21"/>
    <tile gid="21"/>
    <tile gid="21"/>
    <tile gid="21"/>
+   <tile/>
+   <tile gid="21"/>
+   <tile gid="21"/>
    <tile gid="21"/>
    <tile gid="21"/>
    <tile gid="21"/>
    <tile gid="21"/>
-   <tile gid="21"/>
-   <tile gid="21"/>
-   <tile gid="21"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="21"/>
-   <tile gid="21"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="20"/>
+   <tile gid="177"/>
+   <tile gid="177"/>
+   <tile gid="177"/>
    <tile gid="21"/>
    <tile gid="21"/>
    <tile/>
@@ -799,22 +804,22 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
+   <tile gid="21"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="19"/>
+   <tile gid="19"/>
    <tile/>
    <tile gid="21"/>
    <tile gid="21"/>
    <tile gid="25"/>
    <tile/>
    <tile/>
-   <tile gid="36"/>
-   <tile gid="38"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="21"/>
-   <tile gid="21"/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -822,7 +827,17 @@
    <tile/>
    <tile gid="21"/>
    <tile gid="21"/>
+   <tile gid="174"/>
    <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="21"/>
+   <tile gid="21"/>
+   <tile gid="173"/>
    <tile/>
    <tile/>
    <tile/>
@@ -832,21 +847,21 @@
    <tile gid="23"/>
    <tile gid="21"/>
    <tile gid="21"/>
+   <tile gid="173"/>
    <tile/>
    <tile/>
-   <tile gid="19"/>
-   <tile gid="92"/>
-   <tile gid="92"/>
+   <tile/>
+   <tile gid="22"/>
    <tile gid="19"/>
    <tile gid="95"/>
    <tile gid="95"/>
    <tile gid="21"/>
    <tile gid="21"/>
+   <tile gid="177"/>
    <tile/>
-   <tile/>
-   <tile gid="20"/>
-   <tile gid="91"/>
-   <tile gid="91"/>
+   <tile gid="19"/>
+   <tile gid="92"/>
+   <tile gid="92"/>
    <tile gid="20"/>
    <tile gid="94"/>
    <tile gid="94"/>
@@ -895,8 +910,8 @@
    <tile/>
    <tile gid="169"/>
    <tile/>
+   <tile gid="198"/>
    <tile/>
-   <tile gid="194"/>
    <tile/>
    <tile/>
    <tile/>
@@ -967,5 +982,14 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="3" name="Objects"/>
+ <objectgroup id="3" name="Objects">
+  <object id="3" gid="2147483889" x="554" y="618" width="66" height="42"/>
+  <object id="4" gid="249" x="430" y="210" width="50" height="28"/>
+  <object id="6" gid="225" x="280" y="197" width="54" height="27"/>
+  <object id="8" gid="225" x="426" y="365" width="54" height="27">
+   <properties>
+    <property name="skullcab" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

@@ -34,7 +34,7 @@ class FullFacadeTest {
 			mazub_20_45;
 
 	// Variables referencing some predefined plants
-	private static Plant plant_120_10;
+	private static Sneezewort plant_120_10;
 
 	// Variables referencing a proper array of sprites for mazubs and plants.
 	private static Sprite[] mazubSprites;
@@ -87,7 +87,7 @@ class FullFacadeTest {
 		mazub_100_0 = facade.createMazub(100, 0, mazubSprites);
 		mazub_100_1000 = facade.createMazub(100, 1000, mazubSprites);
 		mazub_20_45 = facade.createMazub(20, 45, mazubSprites);
-		plant_120_10 = facade.createPlant(120, 10, plantSprites);
+		plant_120_10 = facade.createSneezewort(120, 10, plantSprites);
 		world_100_200 = facade.createWorld(10, 100, 200, new int[] { 10, 20 }, 20, 10);
 		world_250_400 = facade.createWorld(5, 250, 400, new int[] { 33, 222 }, 25, 40);
 	}
@@ -1150,7 +1150,7 @@ class FullFacadeTest {
 	public void advanceTime_EatingSinglePlant() {
 		maximumScore += 15;
 		facade.addGameObject(mazub_0_1000, world_250_400);
-		plant_120_10 = facade.createPlant(120, 960, plantSprites);
+		plant_120_10 = facade.createSneezewort(120, 960, plantSprites);
 		facade.addGameObject(plant_120_10, world_250_400);
 		// Mazub will reach the plant after 0.2677 seconds.
 		facade.startMoveRight(mazub_0_1000);
@@ -1170,7 +1170,7 @@ class FullFacadeTest {
 	public void advanceTime_EatingDeadPlant() {
 		maximumScore += 15;
 		facade.addGameObject(mazub_0_1000, world_250_400);
-		Plant plant_120_960 = facade.createPlant(120, 960, plantSprites);
+		Sneezewort plant_120_960 = facade.createSneezewort(120, 960, plantSprites);
 		facade.addGameObject(plant_120_960, world_250_400);
 		// The plant dies after 10 seconds of game time, but is still in the world
 		// for 0.6 seconds.
@@ -1197,11 +1197,11 @@ class FullFacadeTest {
 	public void advanceTime_EatingSeveralPlants() {
 		maximumScore += 10;
 		facade.addGameObject(mazub_100_1000, world_250_400);
-		Plant plant1 = facade.createPlant(120, 1010, plantSprites);
+		Sneezewort plant1 = facade.createSneezewort(120, 1010, plantSprites);
 		facade.addGameObject(plant1, world_250_400);
-		Plant plant2 = facade.createPlant(150, 1030, plantSprites);
+		Sneezewort plant2 = facade.createSneezewort(150, 1030, plantSprites);
 		facade.addGameObject(plant2, world_250_400);
-		Plant plant3 = facade.createPlant(190, 1040, plantSprites);
+		Sneezewort plant3 = facade.createSneezewort(190, 1040, plantSprites);
 		facade.addGameObject(plant3, world_250_400);
 		// Time must be advanced for mazub to eat all the plants.
 		assertEquals(100, facade.getHitPoints(mazub_100_1000));
@@ -1220,7 +1220,7 @@ class FullFacadeTest {
 		facade.setGeologicalFeature(world_250_400, 140, 995, SOLID_GROUND);
 		facade.addGameObject(mazub_100_1000, world_250_400);
 		for (int i = 1; i <= 10; i++)
-			facade.addGameObject(facade.createPlant(100 + i * 8, 1000+i * 4, plantSprites),
+			facade.addGameObject(facade.createSneezewort(100 + i * 8, 1000+i * 4, plantSprites),
 					world_250_400);
 		// Time must be advanced for mazub to eat all the plants.
 		facade.advanceTime(mazub_100_1000, 0.01);
@@ -1399,14 +1399,14 @@ class FullFacadeTest {
 		}
 	}
 
-	/*******************
-	 * Tests for Plant *
-	 *******************/
+	/************************
+	 * Tests for Sneezewort *
+	 ************************/
 
 	@Test
-	void createPlant_LegalCase() throws Exception {
+	void createSneezewort_LegalCase() throws Exception {
 		maximumScore += 8;
-		Plant newPlant = facade.createPlant(10, 6, plantSprites);
+		Sneezewort newPlant = facade.createSneezewort(10, 6, plantSprites);
 		assertArrayEquals(new int[] { 10, 6 }, facade.getPixelPosition(newPlant));
 		assertArrayEquals(new double[] { 0.1, 0.06 }, facade.getActualPosition(newPlant),
 				HIGH_PRECISION);
@@ -1422,17 +1422,17 @@ class FullFacadeTest {
 	}
 
 	@Test
-	void createPlant_IllegalSprites() throws Exception {
+	void createSneezewort_IllegalSprites() throws Exception {
 		if (facade.isTeamSolution()) {
 			maximumScore += 4;
 			// Array of sprites must be effective.
 			assertThrows(ModelException.class,
-					() -> facade.createPlant(5, 10, (Sprite[]) null));
+					() -> facade.createSneezewort(5, 10, (Sprite[]) null));
 			// Array of sprites must have exactly 2 elements.
-			assertThrows(ModelException.class, () -> facade.createPlant(5, 10,
+			assertThrows(ModelException.class, () -> facade.createSneezewort(5, 10,
 					new Sprite[] { new Sprite("a", 1, 2) }));
 			assertThrows(ModelException.class,
-					() -> facade.createPlant(5, 10, new Sprite[] { new Sprite("a", 1, 2),
+					() -> facade.createSneezewort(5, 10, new Sprite[] { new Sprite("a", 1, 2),
 							new Sprite("b", 2, 3), new Sprite("c", 3, 4) }));
 			// Array of sprites must have effective elements.
 			assertThrows(ModelException.class,
@@ -1513,7 +1513,7 @@ class FullFacadeTest {
 	@Test
 	void advanceTimePlant_PlantLeavingWorld() throws Exception {
 		maximumScore += 8;
-		Plant thePlant = facade.createPlant(15, 20, plantSprites);
+		Sneezewort thePlant = facade.createSneezewort(15, 20, plantSprites);
 		facade.addGameObject(thePlant, world_250_400);
 		// The plant will leave its world after 0.3 seconds
 		facade.advanceTime(thePlant, 0.15);
@@ -1764,7 +1764,7 @@ class FullFacadeTest {
 	void addGameObject_PlantOnImpassableTerrain() throws Exception {
 		maximumScore += 8;
 		facade.setGeologicalFeature(world_100_200, 220, 330, SOLID_GROUND);
-		Plant newPlant = facade.createPlant(210, 320, plantSprites);
+		Sneezewort newPlant = facade.createSneezewort(210, 320, plantSprites);
 		facade.addGameObject(newPlant, world_100_200);
 		assertTrue(facade.hasAsGameObject(newPlant, world_100_200));
 		assertEquals(world_100_200, facade.getWorld(newPlant));
@@ -1836,7 +1836,7 @@ class FullFacadeTest {
 		for (int i = 0; i <= 3; i++) {
 			facade.addGameObject(facade.createMazub((i + 1) * 100, i * 50, mazubSprites),
 					bigWorld);
-			facade.addGameObject(facade.createPlant(i * 50, (i + 2) * 50, plantSprites),
+			facade.addGameObject(facade.createSneezewort(i * 50, (i + 2) * 50, plantSprites),
 					bigWorld);
 		}
 		assertEquals(facade.getMazub(bigWorld), mazub_0_0);
@@ -1905,7 +1905,7 @@ class FullFacadeTest {
 		facade.addGameObject(mazub1, world_100_200);
 		Mazub mazub2 = facade.createMazub(600, 150, mazubSprites);
 		facade.addGameObject(mazub2, world_100_200);
-		Set<Object> allGameObjects = facade.getAllGameObjects(world_100_200);
+		Set<? extends Object> allGameObjects = facade.getAllGameObjects(world_100_200);
 		allGameObjects.add(null);
 		assertEquals(2, facade.getAllGameObjects(world_100_200).size());
 		allGameObjects.remove(mazub1);
@@ -2019,8 +2019,8 @@ class FullFacadeTest {
 		facade.setGeologicalFeature(world_250_400, 100, 995, SOLID_GROUND);
 		facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
 		Mazub jumpingMazub = facade.createMazub(200, 1075, mazubSprites);
-		Plant plant1 = facade.createPlant(55, 1380, plantSprites);
-		Plant plant2 = facade.createPlant(210, 1010, plantSprites);
+		Sneezewort plant1 = facade.createSneezewort(55, 1380, plantSprites);
+		Sneezewort plant2 = facade.createSneezewort(210, 1010, plantSprites);
 		facade.setGeologicalFeature(world_250_400, 200, 1070, SOLID_GROUND);
 		facade.setGeologicalFeature(world_250_400, 15, 1315, MAGMA);
 		facade.setGeologicalFeature(world_250_400, 95, 1020, WATER);

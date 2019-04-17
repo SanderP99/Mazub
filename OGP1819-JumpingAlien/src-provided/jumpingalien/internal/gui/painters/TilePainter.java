@@ -39,7 +39,7 @@ public class TilePainter extends AbstractAlienPainter {
 		Optional<int[][]> tileCoordinatesToDrawOpt;
 		if (getOptions().getDebugShowEntireWorld()) {
 			tileCoordinatesToDrawOpt = worldInfoProvider.getTilesIn(0, 0,
-					worldSize[0], worldSize[1]);
+					worldSize[0] - 1, worldSize[1] - 1);
 		} else {
 			Optional<int[]> visibleWindowOpt = worldInfoProvider
 					.getVisibleWindow();
