@@ -2,13 +2,13 @@ package jumpingalien.internal.game;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import jumpingalien.facade.IFacade;
-import jumpingalien.internal.Resources;
 import jumpingalien.internal.game.AlienInfoProvider;
 import jumpingalien.internal.game.IActionHandler;
 import jumpingalien.internal.game.JumpingAlienGameOptions;
@@ -16,7 +16,11 @@ import jumpingalien.internal.game.WorldInfoProvider;
 import jumpingalien.internal.gui.sprites.ImageSprite;
 import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.model.Mazub;
-import jumpingalien.model.Plant;
+import jumpingalien.model.School;
+import jumpingalien.model.Shark;
+import jumpingalien.model.Skullcab;
+import jumpingalien.model.Slime;
+import jumpingalien.model.Sneezewort;
 import jumpingalien.model.World;
 import jumpingalien.internal.tmxfile.TMXFileReader;
 import jumpingalien.internal.tmxfile.data.ImageTile;
@@ -183,14 +187,50 @@ public class JumpingAlienGame extends Game {
 	
 	private void addObject(MapObject obj) {
 		switch (obj.getTile().getOSIndependentFilename()) {
-		case Resources.PLANT_LEFT_FILENAME:
-			getFacade().addGameObject(
-					getFacade().createPlant(
+		case JumpingAlienSprites.PLANT_LEFT_FILENAME:
+			Object gameObject;
+			if (obj.getBooleanAttribute("skullcab").orElse(false)) {
+				gameObject = getFacade().createSkullcab(
+						obj.getX(),
+						obj.getY(),
+						new Sprite[] { JumpingAlienSprites.PLANT_SPRITE_UP,
+								JumpingAlienSprites.PLANT_SPRITE_DOWN });
+			} else {
+				gameObject = getFacade().createSneezewort(
 							obj.getX(),
 							obj.getY(),
-							new Sprite[] { Resources.PLANT_SPRITE_LEFT,
-									Resources.PLANT_SPRITE_RIGHT }),
-					getWorld());
+							new Sprite[] { JumpingAlienSprites.PLANT_SPRITE_LEFT,
+									JumpingAlienSprites.PLANT_SPRITE_RIGHT });
+			}
+			if (gameObject != null)
+				getFacade().addGameObject(gameObject, getWorld());
+			break;
+		case JumpingAlienSprites.SHARK_LEFT_FILENAME:
+		case JumpingAlienSprites.SHARK_LEFT2_FILENAME:
+		case JumpingAlienSprites.SHARK_DEAD_FILENAME:
+			Shark shark = getFacade().createShark(
+					obj.getX(),
+					obj.getY(),
+					new Sprite[] { JumpingAlienSprites.SHARK_SPRITE_REST,
+							JumpingAlienSprites.SHARK_SPRITE_LEFT,
+							JumpingAlienSprites.SHARK_SPRITE_RIGHT });
+			if (shark != null)
+				getFacade().addGameObject(shark, getWorld());
+			break;
+		case JumpingAlienSprites.SLIME_LEFT_FILENAME:
+		case JumpingAlienSprites.SLIME_LEFT2_FILENAME:
+		case JumpingAlienSprites.SLIME_DEAD_FILENAME:
+			int schoolNb = obj.getIntAttribute("school").orElse(0);
+			School school = getSlimeSchool(schoolNb);
+			Slime slime = getFacade().createSlime(
+					nextSlimeId++,
+					obj.getX(),
+					obj.getY(),
+					school,
+					new Sprite[] { JumpingAlienSprites.SLIME_SPRITE_LEFT,
+							JumpingAlienSprites.SLIME_SPRITE_RIGHT });
+			if (slime != null)
+				getFacade().addGameObject(slime, getWorld());
 			break;
 		default:
 			System.out
@@ -199,6 +239,15 @@ public class JumpingAlienGame extends Game {
 			break;
 		}
 	}
+	
+	private long nextSlimeId = 1;
+	
+	private java.util.Map<Integer, School> schools = new HashMap<Integer, School>();
+
+	private School getSlimeSchool(int nb) {
+		return schools.computeIfAbsent(nb, i -> getFacade().createSchool(getWorld()));
+	}
+
 	
 	public Map getMap() {
 		return map;
@@ -395,7 +444,7 @@ public class JumpingAlienGame extends Game {
 					int[] pos = getFacade().getVisibleWindowPosition(getWorld());
 					int[] size = getFacade().getVisibleWindowDimension(getWorld());
 					// left, bottom, right, top
-					return new int[] { pos[0], pos[1], pos[0] + size[0], pos[1] + size[1] };
+					return new int[] { pos[0], pos[1], pos[0] + size[0] - 1, pos[1] + size[1] - 1 };
 				});
 			}
 
@@ -403,9 +452,9 @@ public class JumpingAlienGame extends Game {
 			public Optional<int[][]> getTilesIn(int pixelLeft, int pixelBottom,
 					int pixelRight, int pixelTop) {
 				int startTileX = pixelLeft / tileSize;
-				int endTileX = pixelRight / tileSize + 1;
+				int endTileX = pixelRight / tileSize;
 				int startTileY = pixelBottom / tileSize;
-				int endTileY = pixelTop / tileSize + 1;
+				int endTileY = pixelTop / tileSize;
 				
 				int ntiles = (endTileX - startTileX + 1) * (endTileY - startTileY + 1);
 				int[][] result = new int[ntiles][];
@@ -461,20 +510,75 @@ public class JumpingAlienGame extends Game {
 		return new ObjectInfoProvider() {
 
 			@Override
-			public Collection<Plant> getPlants() {
-				return getFacade().getAllGameObjects(getWorld()).stream().filter(Plant.class::isInstance).map(Plant.class::cast).collect(Collectors.toSet());
+			public Collection<Sneezewort> getSneezeworts() {
+				return getFacade().getAllGameObjects(getWorld()).stream().filter(Sneezewort.class::isInstance).map(Sneezewort.class::cast).collect(Collectors.toSet());
 			}
 
 			@Override
-			public Optional<int[]> getLocation(Plant plant) {
+			public Optional<int[]> getLocation(Sneezewort plant) {
 				return Optional.of(getFacade().getPixelPosition(plant));
 			}
 
 			@Override
-			public Optional<ImageSprite> getCurrentSprite(Plant plant) {
+			public Optional<ImageSprite> getCurrentSprite(Sneezewort plant) {
 				return Optional.of((ImageSprite) getFacade().getCurrentSprite(
 						plant));
 			}
+			
+			@Override
+			public Collection<Skullcab> getSkullcabs() {
+				return getFacade().getAllGameObjects(getWorld()).stream().filter(Skullcab.class::isInstance).map(Skullcab.class::cast).collect(Collectors.toSet());
+			}
+			
+			@Override
+			public Optional<int[]> getLocation(Skullcab plant) {
+				return Optional.of(getFacade().getPixelPosition(plant));
+			}
+			
+			@Override
+			public Optional<ImageSprite> getCurrentSprite(Skullcab plant) {
+				return Optional.of((ImageSprite) getFacade().getCurrentSprite(
+						plant));
+			}
+			
+
+			@Override
+			public Collection<Slime> getSlimes() {
+				return getFacade().getAllGameObjects(getWorld()).stream().filter(Slime.class::isInstance).map(Slime.class::cast).collect(Collectors.toSet());
+			}
+
+			@Override
+			public Optional<int[]> getLocation(Slime slime) {
+				return Optional.of(getFacade().getPixelPosition(slime));
+			}
+
+			@Override
+			public Collection<Shark> getSharks() {
+				return getFacade().getAllGameObjects(getWorld()).stream().filter(Shark.class::isInstance).map(Shark.class::cast).collect(Collectors.toSet());
+			}
+
+			@Override
+			public Optional<int[]> getLocation(Shark shark) {
+				return Optional.of(getFacade().getPixelPosition(shark));
+			}
+
+			@Override
+			public Optional<ImageSprite> getCurrentSprite(Shark shark) {
+				return Optional.of((ImageSprite) getFacade().getCurrentSprite(
+						shark));
+			}
+
+			@Override
+			public Optional<ImageSprite> getCurrentSprite(Slime slime) {
+				return Optional.of((ImageSprite) getFacade().getCurrentSprite(
+						slime));
+			}
+
+			@Override
+			public Optional<School> getSchool(Slime slime) {
+				return catchErrorGet(() -> getFacade().getSchool(slime));
+			}
+
 
 		};
 	}

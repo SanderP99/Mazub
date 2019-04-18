@@ -16,6 +16,11 @@ public class ImageSprite extends Sprite {
 				.loadImage(fileName)));
 	}
 
+	public static ImageSprite createVFlippedSprite(String fileName) {
+		return new ImageSprite(fileName, GUIUtils.vflip(GUIUtils
+				.loadImage(fileName)));
+	}
+	
 	public static ImageSprite createSprite(String name, BufferedImage image) {
 		return new ImageSprite(name, image);
 	}

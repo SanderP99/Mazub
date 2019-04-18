@@ -5,8 +5,8 @@ import java.awt.Graphics2D;
 import jumpingalien.internal.gui.AlienGameScreen;
 import jumpingalien.internal.gui.painters.AbstractAlienPainter;
 import jumpingalien.internal.gui.sprites.ImageSprite;
+import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.internal.game.AlienInfoProvider;
-import jumpingalien.internal.Resources;
 
 public class HealthPainter extends AbstractAlienPainter {
 
@@ -36,31 +36,31 @@ public class HealthPainter extends AbstractAlienPainter {
 				count += 1;
 				int digit = health % 10;
 				health = health / 10;
-				ImageSprite image = Resources.NUMBER_SPRITES[digit];
+				ImageSprite image = JumpingAlienSprites.NUMBER_SPRITES[digit];
 				g.drawImage(image.getImage(), getScreenWidth() - H_MARGIN
 						- count * WIDTH, V_MARGIN, null);
 			}
 		} else {
 			count += 1;
-			ImageSprite image = Resources.NUMBER_SPRITES[0];
+			ImageSprite image = JumpingAlienSprites.NUMBER_SPRITES[0];
 			g.drawImage(image.getImage(), getScreenWidth() - H_MARGIN - count
 					* WIDTH, V_MARGIN, null);
 		}
 
 		if (origHealth >= 66) {
-			g.drawImage(Resources.HEALTH_FULL.getImage(), getScreenWidth()
+			g.drawImage(JumpingAlienSprites.HEALTH_FULL.getImage(), getScreenWidth()
 					- H_MARGIN - count * WIDTH
-					- Resources.HEALTH_FULL.getImage().getWidth(), V_MARGIN,
+					- JumpingAlienSprites.HEALTH_FULL.getImage().getWidth(), V_MARGIN,
 					null);
 		} else if (origHealth >= 33) {
-			g.drawImage(Resources.HEALTH_HALF.getImage(), getScreenWidth()
+			g.drawImage(JumpingAlienSprites.HEALTH_HALF.getImage(), getScreenWidth()
 					- H_MARGIN - count * WIDTH
-					- Resources.HEALTH_HALF.getImage().getWidth(), V_MARGIN,
+					- JumpingAlienSprites.HEALTH_HALF.getImage().getWidth(), V_MARGIN,
 					null);
 		} else {
-			g.drawImage(Resources.HEALTH_EMPTY.getImage(), getScreenWidth()
+			g.drawImage(JumpingAlienSprites.HEALTH_EMPTY.getImage(), getScreenWidth()
 					- H_MARGIN - count * WIDTH
-					- Resources.HEALTH_EMPTY.getImage().getWidth(), V_MARGIN,
+					- JumpingAlienSprites.HEALTH_EMPTY.getImage().getWidth(), V_MARGIN,
 					null);
 		}
 	};

@@ -20,7 +20,7 @@ public class JumpingAlienOptions implements JumpingAlienGameOptions, JumpingAlie
 	/**
 	 * Print debug info on the screen (default: true).
 	 */
-	private boolean debugShowInfo = true;
+	private boolean debugShowInfo = false;
 
 	/**
 	 * Draw axes through world origin on screen (default: false).

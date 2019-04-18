@@ -67,4 +67,11 @@ public class MapObject {
 		}
 		return Optional.empty();
 	}
+
+	public Optional<Boolean> getBooleanAttribute(String name) {
+		if (attributes.containsKey(name)) {
+			return Optional.of(Boolean.parseBoolean(attributes.get(name)));
+		}
+		return Optional.empty();
+	}
 }

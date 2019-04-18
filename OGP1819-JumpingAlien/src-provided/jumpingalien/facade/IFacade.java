@@ -1,8 +1,8 @@
 package jumpingalien.facade;
 
+import java.util.Collection;
 import java.util.Set;
 import jumpingalien.model.*;
-import jumpingalien.internal.Resources;
 import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.ShouldNotImplementException;
@@ -27,6 +27,11 @@ import jumpingalien.util.Sprite;
  * <li>a class <code>Mazub</code> for representing Mazub the alien</li>
  * <li>a class <code>World</code> for representing the game world</li>
  * <li>a class <code>Plant</code> for representing a plant</li>
+ * <li>a class <code>Sneezewort</code> for representing Sneezewort</li>
+ * <li>a class <code>Skullcab</code> for representing Skullcab</li>
+ * <li>a class <code>Shark</code> for representing a shark enemy</li>
+ * <li>a class <code>Slime</code> for representing a slime enemy</li>
+ * <li>a class <code>School</code> for representing a slime school</li>
  * </ul>
  * You may, of course, add additional classes as you see fit.
  * 
@@ -247,7 +252,8 @@ public interface IFacade {
 
 	/**
 	 * Return the geological feature of the tile in the given world at the given pixel position.
-	 *   The function returns 0 for AIR, 1 for SOLID GROUND, 2 for WATER and 3 for MAGMA.
+	 *   The function returns 0 for AIR, 1 for SOLID GROUND, 2 for WATER and 3 for MAGMA,
+	 *   4 for ICE and 5 for GAS.
 	 *   Throws ModelException if there is no tile at the given position.
 	 *   This method must return its result in (nearly) constant time.
 	 */
@@ -294,7 +300,7 @@ public interface IFacade {
 	/**
 	 * Return a collection of all the game objects in the given world.
 	 */
-	Set<Object> getAllGameObjects(World world) throws ModelException;
+	Set<? extends Object> getAllGameObjects(World world) throws ModelException;
 	
 	/**
 	 * Return the mazub under control of the end user in the given world.
@@ -352,13 +358,6 @@ public interface IFacade {
 	 ***********************/
 	
 	/**
-	 * Create an instance of Plant with given pixel position and given sprites.
-	 *   The actual position of the new plant will correspond with the coordinates
-	 *   of the left-bottom corner of the left-bottom pixel occupied by the new plant.
-	 */
-	Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException;
-	
-	/**
 	 * Terminate the given game object.
 	 */
 	void terminateGameObject(Object gameObject) throws ModelException;
@@ -413,6 +412,11 @@ public interface IFacade {
 	double[] getVelocity(Object gameObject) throws ModelException;
 
 	/**
+	 * Return the current acceleration of the given game object.
+	 */
+	double[] getAcceleration(Object gameObject) throws ModelException;
+	
+	/**
 	 * Return the world in which the given game object is positioned.
 	 *   Returns null if the object is not positioned in a world.
 	 */
@@ -438,8 +442,12 @@ public interface IFacade {
 		if (!isTeamSolution()) {
 			if (gameObject instanceof Mazub) {
 				return JumpingAlienSprites.DEFAULT_MAZUB_SPRITE;
-			} else {
-				return Resources.PLANT_SPRITE_LEFT.resizeTo(40, 30);
+			} else if (gameObject instanceof Sneezewort || gameObject instanceof Skullcab) {
+				return JumpingAlienSprites.DEFAULT_PLANT_SPRITE; 
+			} else if (gameObject instanceof Slime) {
+				return JumpingAlienSprites.DEFAULT_SLIME_SPRITE;
+			} else if (gameObject instanceof Shark) {
+				return JumpingAlienSprites.DEFAULT_SHARK_SPRITE;
 			}
 		}
 		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
@@ -450,5 +458,75 @@ public interface IFacade {
 	 */
 	void advanceTime(Object gameObject, double dt) throws ModelException;
 	
+	
+
+	/**
+	 * Create an instance of Sneezewort with given pixel position and given sprites.
+	 */
+	Sneezewort createSneezewort(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException;
+
+	/**
+	 * Create an instance of Skullcab with given pixel position and given sprites.
+	 */
+	Skullcab createSkullcab(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException;
+
+	/**
+	 * Create an instance of Slime with given identification, givenpixel position,
+	 * belonging to the given school and with given sprites.
+	 */
+	Slime createSlime(long id, int pixelLeftX, int pixelBottomY, School school, Sprite... sprites) throws ModelException;
+
+	/**
+	 * Return the identification of the given slime.
+	 */
+	long getIdentification(Slime slime) throws ModelException;
+
+	/**
+	 * Create an instance of School belonging to the given world and with no slimes yet.
+	 */
+	School createSchool(World world) throws ModelException;
+	
+	/**
+	 * Return a boolean indicating whether the given slime belongs to the given school.
+	 */
+	boolean hasAsSlime(School school, Slime slime) throws ModelException;
+	
+	/**
+	 * Return all the slimes belonging to the given school.
+	 */
+	Collection<? extends Slime> getAllSlimes(School school);
+	
+	/**
+	 * Add the given slime to the given school.
+	 */
+	void addAsSlime(School school, Slime slime) throws ModelException;
+	
+	/**
+	 * Remove the given slime from the given school.
+	 */
+	void removeAsSlime(School school, Slime slime) throws ModelException;
+	
+	/**
+	 * Have the given slime switch from its old school to the given school.
+	 */
+	void switchSchool(School newSchool, Slime slime) throws ModelException;
+	
+	/**
+	 * Return the school to which the given slime belongs.
+	 */
+	School getSchool(Slime slime) throws ModelException;
+	
+	/**
+	 * Create an instance of Shark with given pixel position and given sprites.
+	 * 
+	 * This method must only be implemented by teams of 2 students. Students working on
+	 * their own may stick to the default implementation. 
+	 */
+	default Shark createShark(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+		if (isTeamSolution()) {
+			return null;
+		}
+		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
+	}	
 
 }
