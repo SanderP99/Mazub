@@ -20,6 +20,7 @@ import jumpingalien.facade.Facade;
 import jumpingalien.facade.IFacade;
 import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.model.Mazub;
+import jumpingalien.model.Sneezewort;
 import jumpingalien.model.World;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.Sprite;

@@ -1,11 +1,16 @@
 package jumpingalien.facade;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Mazub;
-import jumpingalien.model.Plant;
+import jumpingalien.model.School;
+import jumpingalien.model.Shark;
+import jumpingalien.model.Skullcab;
+import jumpingalien.model.Slime;
+import jumpingalien.model.Sneezewort;
 import jumpingalien.model.World;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.Sprite;
@@ -378,18 +383,18 @@ public class Facade implements IFacade {
 
     }
 
-    @Override
-    public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-	if (sprites == null)
-	    throw new ModelException("The sprites are not valid");
-	if (sprites.length != 2)
-	    throw new ModelException("The sprites are not valid");
-	for (final Sprite sprite : sprites)
-	    if (sprite == null)
-		throw new ModelException("The sprites are not valid");
-	return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0, 0.5,
-		0.5, 0.5, 0, 0, sprites);
-    }
+//    @Override
+//    public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+//	if (sprites == null)
+//	    throw new ModelException("The sprites are not valid");
+//	if (sprites.length != 2)
+//	    throw new ModelException("The sprites are not valid");
+//	for (final Sprite sprite : sprites)
+//	    if (sprite == null)
+//		throw new ModelException("The sprites are not valid");
+//	return new Plant(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0, 0.5,
+//		0.5, 0.5, 0, 0, sprites);
+//    }
 
     @Override
     public void terminateGameObject(Object gameObject) throws ModelException {
@@ -469,6 +474,85 @@ public class Facade implements IFacade {
 		    ((GameObject) gameObject).getWorld().getTimeStep((GameObject) gameObject, dt));
 	else
 	    ((GameObject) gameObject).advanceTime(dt, 0.002);
+    }
+
+    @Override
+    public double[] getAcceleration(Object gameObject) throws ModelException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public Sneezewort createSneezewort(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public Skullcab createSkullcab(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public Slime createSlime(long id, int pixelLeftX, int pixelBottomY, School school, Sprite... sprites)
+	    throws ModelException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public long getIdentification(Slime slime) throws ModelException {
+	// TODO Auto-generated method stub
+	return 0;
+    }
+
+    @Override
+    public School createSchool(World world) throws ModelException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public boolean hasAsSlime(School school, Slime slime) throws ModelException {
+	// TODO Auto-generated method stub
+	return false;
+    }
+
+    @Override
+    public Collection<? extends Slime> getAllSlimes(School school) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public void addAsSlime(School school, Slime slime) throws ModelException {
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void removeAsSlime(School school, Slime slime) throws ModelException {
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void switchSchool(School newSchool, Slime slime) throws ModelException {
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public School getSchool(Slime slime) throws ModelException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public Shark createShark(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+	// TODO
+	return null;
     }
 
 }
