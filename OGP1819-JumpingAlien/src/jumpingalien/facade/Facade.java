@@ -511,6 +511,12 @@ public class Facade implements IFacade {
     @Override
     public Slime createSlime(long id, int pixelLeftX, int pixelBottomY, School school, Sprite... sprites)
 	    throws ModelException {
+	if (sprites == null)
+	    throw new ModelException("The sprites are not valid");
+	for (final Sprite sprite : sprites)
+	    if (sprite == null)
+		throw new ModelException("The sprites are not valid");
+
 	return new Slime(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100, 2000, 2.5, 2.5,
 		0.0, 0.0, 0.7, -10.0, false, id, school, sprites);
     }
@@ -563,6 +569,11 @@ public class Facade implements IFacade {
 
     @Override
     public Shark createShark(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
+	if (sprites == null)
+	    throw new ModelException("The sprites are not valid");
+	for (final Sprite sprite : sprites)
+	    if (sprite == null)
+		throw new ModelException("The sprites are not valid");
 	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100, 100, 10, 10, 0,
 		2, 1.5, -10.0, false, sprites);
     }

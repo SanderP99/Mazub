@@ -33,6 +33,10 @@ public class Slime extends School {
 	return school;
     }
 
+    public void removeSchool() {
+	// TODO
+    }
+
     @Override
     public void advanceTime(double dt, double timeStep) {
 	// TODO Auto-generated method stub

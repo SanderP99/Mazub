@@ -59,7 +59,7 @@ public class World {
      * 
      * @effect The visibleWindowPosition of this new World is set to (0,0). |
      *         this.setVisibleWindowPosition(new int[] {0, 0})
-     */
+     */ // TODO postcondities!
     public World(int nbTilesX, int nbTilesY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth,
 	    int visibleWindowHeight, int maxNbOfObjects, int... geologicalFeatures) throws RuntimeException {
 	setTileLength(tileLength);
@@ -76,7 +76,19 @@ public class World {
 	setVisibleWindowPosition(new int[] { 0, 0 });
 	initializeGeologicalFeatures(nbTilesX, nbTilesY, geologicalFeatures);
 	setMaxNbOfObjects(maxNbOfObjects);
+	setMaxNbOfSchools(10);
 
+    }
+
+    private int maxNbOfSchools;
+
+    private void setMaxNbOfSchools(int i) {
+	maxNbOfSchools = i;
+
+    }
+
+    public int getMaxNbOfSchools() {
+	return maxNbOfSchools;
     }
 
     /**
