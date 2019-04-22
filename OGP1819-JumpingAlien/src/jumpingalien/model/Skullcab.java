@@ -14,7 +14,6 @@ public class Skullcab extends Plant {
 	setVerticalSpeedMeters(Math.abs(verticalSpeed));
 	setOrientation(1);
 	setSecondsToLive(secondsToLive);
-	setSprite(sprites[1]);
 	setBoundaries();
     }
 
@@ -41,7 +40,7 @@ public class Skullcab extends Plant {
 			    setYPositionActual(actualPosY);
 
 			    setOrientation(1);
-			    setSprite(getSpriteArray()[1]);
+			    setSprite(getSpriteArray()[0]);
 			    dt -= timeStep;
 			    setSecondsToLive(getSecondsToLive() - timeStep);
 			} else {
@@ -57,7 +56,7 @@ public class Skullcab extends Plant {
 			setYPositionActual(actualPosY);
 
 			setOrientation(-1);
-			setSprite(getSpriteArray()[0]);
+			setSprite(getSpriteArray()[1]);
 			dt -= timeStep;
 			setSecondsToLive(getSecondsToLive() - timeStep);
 
