@@ -443,8 +443,18 @@ public class World {
      * @param geologicalFeature The geological feature to set
      */
     private boolean isValidGeologicalFeature(int geologicalFeature) {
-	return geologicalFeature == AIR || geologicalFeature == SOLID_GROUND || geologicalFeature == WATER
-		|| geologicalFeature == MAGMA || geologicalFeature == GAS || geologicalFeature == ICE;
+//	return geologicalFeature == AIR || geologicalFeature == SOLID_GROUND || geologicalFeature == WATER
+//		|| geologicalFeature == MAGMA || geologicalFeature == GAS || geologicalFeature == ICE;
+
+	for (final PassableTerrain feature : PassableTerrain.values())
+	    if (feature.getValue() == geologicalFeature)
+		return true;
+
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    if (feature.getValue() == geologicalFeature)
+		return true;
+
+	return false;
     }
 
     /**
@@ -461,15 +471,16 @@ public class World {
 	if (!isValidPixelXPosition(pixelX))
 	    pixelX = 0;
 
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + AIR))
-	    return AIR;
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + SOLID_GROUND))
-	    return SOLID_GROUND;
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + WATER))
-	    return WATER;
-	if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + MAGMA))
-	    return MAGMA;
-	return AIR;
+	for (final PassableTerrain feature : PassableTerrain.values())
+	    if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + feature.getValue()))
+		return feature.getValue();
+
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    if (tiles.contains(pixelX / getTileLength() + " " + pixelY / getTileLength() + " " + feature.getValue()))
+		return feature.getValue();
+
+	return PassableTerrain.AIR.getValue();
+
     }
 
     /**
@@ -481,26 +492,21 @@ public class World {
      * @effect getGeologicalFeature(tile_cord[0], tile_cord[1])
      */
     public int getGeologicalFeatureTile(int[] tile_cord) {
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + AIR))
-	    return AIR;
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + SOLID_GROUND))
-	    return SOLID_GROUND;
+	for (final PassableTerrain feature : PassableTerrain.values())
+	    if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + feature.getValue()))
+		return feature.getValue();
 
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + WATER))
-	    return WATER;
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + MAGMA))
-	    return MAGMA;
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + GAS))
-	    return GAS;
-	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + ICE))
-	    return ICE;
-	return AIR;
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + feature.getValue()))
+		return feature.getValue();
+
+	return PassableTerrain.AIR.getValue();
 
     }
 
     public void setGeologicalFeature(int pixelX, int pixelY, int geologicalFeature) {
 	if (!isValidGeologicalFeature(geologicalFeature))
-	    geologicalFeature = AIR;
+	    geologicalFeature = PassableTerrain.AIR.getValue();
 	if (isValidPixelYPosition(pixelY) && isValidPixelXPosition(pixelX)) {
 	    tiles.remove(pixelX / getTileLength() + " " + pixelY / getTileLength() + " "
 		    + getGeologicalFeature(pixelX, pixelY));
@@ -546,35 +552,6 @@ public class World {
     }
 
     /**
-     * A variable to store the value of air
-     */
-    public final static int AIR = 0;
-
-    /**
-     * A variable to store the value of solid ground
-     */
-    public final static int SOLID_GROUND = 1;
-    /**
-     * A variable to store the value of water
-     */
-    public final static int WATER = 2;
-
-    /**
-     * A variable to store the value of magma
-     */
-    public final static int MAGMA = 3;
-
-    /**
-     * A variable to store the value of gas
-     */
-    public final static int GAS = 4;
-
-    /**
-     * A variable to store the value of ice
-     */
-    public final static int ICE = 5;
-
-    /**
      * A set to store the tiles and the geological feature
      */
     public HashSet<String> tiles;
@@ -609,8 +586,9 @@ public class World {
 		    + gameObject.getXsize(); x++)
 		for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
 			+ gameObject.getYsize(); y++)
-		    if (getGeologicalFeature(x, y) == SOLID_GROUND || getGeologicalFeature(x, y) == ICE)
-			return false;
+		    for (final ImpassableTerrain feature : ImpassableTerrain.values())
+			if (getGeologicalFeature(x, y) == feature.getValue())
+			    return false;
 	}
 	return true;
     }
@@ -622,19 +600,23 @@ public class World {
 			&& object != other)
 		    return false;
 
-	    for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
-		    + gameObject.getXsize(); x++) {
-		if (getGeologicalFeature(x, gameObject.getYPositionPixel() + 1) == SOLID_GROUND)
-		    return false;
-		if (getGeologicalFeature(x, gameObject.getYPositionPixel() + gameObject.getYsize()) == SOLID_GROUND)
-		    return false;
-	    }
-	    for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
-		    + gameObject.getYsize(); y++) {
-		if (getGeologicalFeature(gameObject.getXPositionPixel(), y) == SOLID_GROUND)
-		    return false;
-		if (getGeologicalFeature(gameObject.getXPositionPixel() + gameObject.getXsize() - 1, y) == SOLID_GROUND)
-		    return false;
+	    for (final ImpassableTerrain feature : ImpassableTerrain.values()) {
+		for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
+			+ gameObject.getXsize(); x++) {
+		    if (getGeologicalFeature(x, gameObject.getYPositionPixel() + 1) == feature.getValue())
+			return false;
+		    if (getGeologicalFeature(x, gameObject.getYPositionPixel() + gameObject.getYsize()) == feature
+			    .getValue())
+			return false;
+		}
+		for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
+			+ gameObject.getYsize(); y++) {
+		    if (getGeologicalFeature(gameObject.getXPositionPixel(), y) == feature.getValue())
+			return false;
+		    if (getGeologicalFeature(gameObject.getXPositionPixel() + gameObject.getXsize() - 1, y) == feature
+			    .getValue())
+			return false;
+		}
 	    }
 	}
 	return true;
@@ -646,11 +628,13 @@ public class World {
 		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
 			&& object != other)
 		    return false;
-	for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel() + gameObject.getXsize(); x++)
-	    for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
-		    + gameObject.getYsize(); y++)
-		if (getGeologicalFeature(x, y) == SOLID_GROUND || getGeologicalFeature(x, y) == ICE)
-		    return false;
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
+		    + gameObject.getXsize(); x++)
+		for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
+			+ gameObject.getYsize(); y++)
+		    if (getGeologicalFeature(x, y) == feature.getValue())
+			return false;
 	return true;
     }
 
@@ -720,9 +704,12 @@ public class World {
 	if (!canPlaceObject(gameObject))
 	    throw new RuntimeException();
 
-	if (getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == SOLID_GROUND
-		&& getGeologicalFeature(gameObject.getXPositionPixel() + 1, gameObject.getYPositionPixel() + 1) != AIR)
-	    throw new RuntimeException();
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    if (getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == feature
+		    .getValue()
+		    && getGeologicalFeature(gameObject.getXPositionPixel() + 1,
+			    gameObject.getYPositionPixel() + 1) != PassableTerrain.AIR.getValue())
+		throw new RuntimeException();
 
 	if (!hasPlayer() && gameObject instanceof Mazub)
 	    setPlayer(gameObject);

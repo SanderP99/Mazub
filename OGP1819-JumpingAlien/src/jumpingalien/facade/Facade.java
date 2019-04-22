@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import jumpingalien.model.GameObject;
+import jumpingalien.model.ImpassableTerrain;
 import jumpingalien.model.Mazub;
 import jumpingalien.model.School;
 import jumpingalien.model.Shark;
@@ -57,9 +58,10 @@ public class Facade implements IFacade {
 	    throw new ModelException("Only 2  coordinates allowed");
 	if (newPosition[0] != newPosition[0] || newPosition[1] != newPosition[1])
 	    throw new ModelException("NaN as position argument");
-	if (alien.getWorld() != null && alien.getWorld().getGeologicalFeature((int) (newPosition[0] * 100),
-		(int) (newPosition[1] * 100)) == World.SOLID_GROUND)
-	    throw new ModelException("New position on impassable terrain");
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    if (alien.getWorld() != null && alien.getWorld().getGeologicalFeature((int) (newPosition[0] * 100),
+		    (int) (newPosition[1] * 100)) == feature.getValue())
+		throw new ModelException("New position on impassable terrain");
 	if (getWorld(alien) != null && !getWorld(alien).canPlaceObject(alien))
 	    throw new ModelException("Can't place new alien");
 	if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1]))
@@ -69,10 +71,13 @@ public class Facade implements IFacade {
 	    alien.terminate();
 
 	if (alien.getWorld() != null)
-	    for (double x = newPosition[0]; x < newPosition[0] + (double) alien.getXsize() / 100; x += 0.01)
-		for (double y = newPosition[1] + 0.01; y < newPosition[0] + (double) alien.getYsize() / 100; y += 0.01)
-		    if (alien.getWorld().getGeologicalFeature((int) (x * 100), (int) (y * 100)) == World.SOLID_GROUND)
-			throw new ModelException("Can't place here");
+	    for (final ImpassableTerrain feature : ImpassableTerrain.values())
+		for (double x = newPosition[0]; x < newPosition[0] + (double) alien.getXsize() / 100; x += 0.01)
+		    for (double y = newPosition[1] + 0.01; y < newPosition[0]
+			    + (double) alien.getYsize() / 100; y += 0.01)
+			if (alien.getWorld().getGeologicalFeature((int) (x * 100), (int) (y * 100)) == feature
+				.getValue())
+			    throw new ModelException("Can't place here");
 
 	alien.setXPositionActual(newPosition[0]);
 	alien.setYPositionActual(newPosition[1]);
@@ -420,9 +425,10 @@ public class Facade implements IFacade {
 
     @Override
     public void changeActualPosition(Object gameObject, double[] newPosition) throws ModelException {
-	if (getGeologicalFeature(getWorld(gameObject), (int) (newPosition[0] * 100),
-		(int) (newPosition[1] * 100)) == World.SOLID_GROUND)
-	    throw new ModelException("The new position is in impassable terrain");
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    if (getGeologicalFeature(getWorld(gameObject), (int) (newPosition[0] * 100),
+		    (int) (newPosition[1] * 100)) == feature.getValue())
+		throw new ModelException("The new position is in impassable terrain");
 	((GameObject) gameObject).setXPositionActual(newPosition[0]);
 	((GameObject) gameObject).setYPositionActual(newPosition[1]);
 

@@ -269,9 +269,10 @@ public class Mazub extends GameObject {
     private void fall() {
 	if (getYPositionActual() > 0)
 	    setVerticalAcceleration(maxVerticalAcceleration);
-	for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
-	    if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == World.SOLID_GROUND)
-		setVerticalAcceleration(0);
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
+		if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())
+		    setVerticalAcceleration(0);
 	if (getYPositionActual() < 0 && getVerticalSpeedMeters() < 0)
 	    setVerticalAcceleration(0);
     }
@@ -288,21 +289,21 @@ public class Mazub extends GameObject {
      * @post The horizontal acceleration is 0 | new.horizontalAcceleration == 0
      */
     public void startDuck() {
-        setSprite(spriteArray[1]);
-        if (getHorizontalSpeedMeters() != 0) {
-            setHorizontalSpeedMeters(getMaxSpeedDuckingMeters() * getOrientation());
-            if (getOrientation() > 0)
-        	setSprite(spriteArray[6]);
-    
-            else if (getOrientation() < 0)
-        	setSprite(spriteArray[7]);
-        }
-    
-        setYSize(getCurrentSprite().getHeight());
-        setXSize(getCurrentSprite().getWidth());
-        setHorizontalAcceleration(0.0);
-        isDucking = true;
-    
+	setSprite(spriteArray[1]);
+	if (getHorizontalSpeedMeters() != 0) {
+	    setHorizontalSpeedMeters(getMaxSpeedDuckingMeters() * getOrientation());
+	    if (getOrientation() > 0)
+		setSprite(spriteArray[6]);
+
+	    else if (getOrientation() < 0)
+		setSprite(spriteArray[7]);
+	}
+
+	setYSize(getCurrentSprite().getHeight());
+	setXSize(getCurrentSprite().getWidth());
+	setHorizontalAcceleration(0.0);
+	isDucking = true;
+
     }
 
     /**
@@ -311,68 +312,68 @@ public class Mazub extends GameObject {
      * @post Mazub is not ducking if possible | !isDucking
      */
     public void endDuck() {
-        isDucking = false;
-        setMaxSpeed();
-        if (isMoving) {
-    
-            if (getOrientation() == 1) {
-    
-        	final int newHeight = getSpriteArray()[8].getHeight();
-        	final int newWidth = getSpriteArray()[8].getWidth();
-    
-        	final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth, newHeight, 0,
-        		getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
-        		getSpriteArray());
-    
-        	if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
-        	    setSprite(spriteArray[8]);
-        	    setYSize(getCurrentSprite().getHeight());
-        	    setXSize(getCurrentSprite().getWidth());
-        	    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
-        	} else
-        	    isDucking = true;
-    
-            } else {
-    
-        	final int newHeight = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getHeight();
-        	final int newWidth = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getWidth();
-    
-        	final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth, newHeight, 0,
-        		getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
-        		getSpriteArray());
-    
-        	if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
-        	    setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
-        	    setYSize(getCurrentSprite().getHeight());
-        	    setXSize(getCurrentSprite().getWidth());
-        	    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
-        	} else
-        	    isDucking = true;
-            }
-            setTimeBeforeSpriteChange(frameRate);
-        } else {
-            final int newHeight = getSpriteArray()[0].getHeight();
-            final int newWidth = getSpriteArray()[0].getWidth();
-    
-            final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth, newHeight, 0,
-        	    getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
-        	    getSpriteArray());
-    
-            if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
-        	setSprite(spriteArray[0]);
-        	setYSize(getCurrentSprite().getHeight());
-        	setXSize(getCurrentSprite().getWidth());
-            } else
-        	isDucking = true;
-        }
-        timeSinceLastMove = 0.0;
+	isDucking = false;
+	setMaxSpeed();
+	if (isMoving) {
+
+	    if (getOrientation() == 1) {
+
+		final int newHeight = getSpriteArray()[8].getHeight();
+		final int newWidth = getSpriteArray()[8].getWidth();
+
+		final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth, newHeight, 0,
+			getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
+			getSpriteArray());
+
+		if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
+		    setSprite(spriteArray[8]);
+		    setYSize(getCurrentSprite().getHeight());
+		    setXSize(getCurrentSprite().getWidth());
+		    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
+		} else
+		    isDucking = true;
+
+	    } else {
+
+		final int newHeight = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getHeight();
+		final int newWidth = getSpriteArray()[9 + getSpriteLoopSize(getSpriteArray())].getWidth();
+
+		final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth, newHeight, 0,
+			getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
+			getSpriteArray());
+
+		if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+		    setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
+		    setYSize(getCurrentSprite().getHeight());
+		    setXSize(getCurrentSprite().getWidth());
+		    setHorizontalAcceleration(maxHorizontalAcceleration * getOrientation());
+		} else
+		    isDucking = true;
+	    }
+	    setTimeBeforeSpriteChange(frameRate);
+	} else {
+	    final int newHeight = getSpriteArray()[0].getHeight();
+	    final int newWidth = getSpriteArray()[0].getWidth();
+
+	    final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), newWidth, newHeight, 0,
+		    getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
+		    getSpriteArray());
+
+	    if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+		setSprite(spriteArray[0]);
+		setYSize(getCurrentSprite().getHeight());
+		setXSize(getCurrentSprite().getWidth());
+	    } else
+		isDucking = true;
+	}
+	timeSinceLastMove = 0.0;
     }
 
     /**
      * Returns whether Mazub is ducking
      */
     public boolean isDucking() {
-        return isDucking;
+	return isDucking;
     }
 
     /**
@@ -501,109 +502,109 @@ public class Mazub extends GameObject {
      *       0.5*getVerticalAcceleration()*dt*dt > getMaxYPosition()
      */
     private void updatePosition(double dt) {
-        final double newPosX = getXPositionActual() + getHorizontalSpeedMeters() * dt
-        	+ 0.5 * getHorizontalAcceleration() * dt * dt;
-        final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
-        	+ 0.5 * getVerticalAcceleration() * dt * dt;
-        final double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration() * dt;
-        final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
-        final int xSize = getXsize();
-        final int ySize = getYsize();
-    
-        if (getWorld() != null) {
-            final Mazub newMazub = new Mazub(newPosX, newPosY, xSize, ySize, newSpeedX, getMinSpeedMeters(),
-        	    getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true, getCurrentSprite());
-            if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
-        	setXPositionActual(newPosX);
-        	setYPositionActual(newPosY);
-        	setHorizontalSpeedMeters(newSpeedX);
-        	setVerticalSpeedMeters(newSpeedY);
-            } else {
-        	setHorizontalSpeedMeters(0);
-        	setVerticalSpeedMeters(0);
-        	setHorizontalAcceleration(0);
-    
-        	if (getOrientation() == -1 && !isDucking())
-        	    setSprite(getSpriteArray()[3]);
-        	else if (getOrientation() == 0 && !isDucking())
-        	    setSprite(getSpriteArray()[0]);
-        	else if (!isDucking())
-        	    setSprite(getSpriteArray()[2]);
-        	else if (getOrientation() == -1)
-        	    setSprite(getSpriteArray()[7]);
-        	else if (getOrientation() == 1)
-        	    setSprite(getSpriteArray()[6]);
-        	else
-        	    setSprite(getSpriteArray()[1]);
-    
-        	isMoving = false;
-        	setHorizontalSpeedMeters(0);
-        	setVerticalSpeedMeters(0);
-        	setHorizontalAcceleration(0);
-    
-            }
-    
-            if (isStandingOnSolidGround() && !isJumping)
-        	setVerticalAcceleration(0);
-            else
-        	fall();
-    
-            List<int[]> tiles = new ArrayList<int[]>();
-            tiles = getAllOverlappingTiles();
-            collidesWithMagma = false;
-            collidesWithWater = false;
-            for (final int[] tile : tiles) {
-        	if (getWorld().getGeologicalFeatureTile(tile) == World.MAGMA)
-        	    collidesWithMagma = true;
-        	if (getWorld().getGeologicalFeatureTile(tile) == World.WATER)
-        	    collidesWithWater = true;
-            }
-    
-            if (collidesWithWater)
-        	timeInWater += dt;
-            else
-        	timeInWater = 0;
-    
-            if (timeInWater >= 0.1940) {
-        	timeInWater -= 0.2;
-        	if (!collidesWithMagma)
-        	    changeHitPoints(-2);
-            }
-            if (collidesWithMagma) {
-        	if (timeInMagma == 0) {
-        	    changeHitPoints(-50);
-        	    timeInMagma += dt;
-        	} else
-        	    timeInMagma += dt;
-        	if (timeInMagma >= 0.2) {
-        	    changeHitPoints(-50);
-        	    timeInMagma -= 0.2;
-        	}
-            } else
-        	timeInMagma = 0;
-            if (getHitpoints() == 0)
-        	isDead = true;
-    
-            for (final Object object : getWorld().getAllObjects())
-        	if (collidesWith((GameObject) object) && object instanceof Plant && getHitpoints() != getMaxHitpoints()
-        		&& !((GameObject) object).isDead()) {
-        	    changeHitPoints(50);
-        	    ((GameObject) object).terminate();
-        	} else if (collidesWith((GameObject) object) && object instanceof Plant
-        		&& ((GameObject) object).isDead()) {
-        	    changeHitPoints(-20);
-        	    ((GameObject) object).terminate();
-        	}
-        } else {
-            setXPositionActual(newPosX);
-            setYPositionActual(newPosY);
-            setHorizontalSpeedMeters(newSpeedX);
-            setVerticalSpeedMeters(newSpeedY);
-        }
+	final double newPosX = getXPositionActual() + getHorizontalSpeedMeters() * dt
+		+ 0.5 * getHorizontalAcceleration() * dt * dt;
+	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
+		+ 0.5 * getVerticalAcceleration() * dt * dt;
+	final double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration() * dt;
+	final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
+	final int xSize = getXsize();
+	final int ySize = getYsize();
+
+	if (getWorld() != null) {
+	    final Mazub newMazub = new Mazub(newPosX, newPosY, xSize, ySize, newSpeedX, getMinSpeedMeters(),
+		    getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true, getCurrentSprite());
+	    if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+		setXPositionActual(newPosX);
+		setYPositionActual(newPosY);
+		setHorizontalSpeedMeters(newSpeedX);
+		setVerticalSpeedMeters(newSpeedY);
+	    } else {
+		setHorizontalSpeedMeters(0);
+		setVerticalSpeedMeters(0);
+		setHorizontalAcceleration(0);
+
+		if (getOrientation() == -1 && !isDucking())
+		    setSprite(getSpriteArray()[3]);
+		else if (getOrientation() == 0 && !isDucking())
+		    setSprite(getSpriteArray()[0]);
+		else if (!isDucking())
+		    setSprite(getSpriteArray()[2]);
+		else if (getOrientation() == -1)
+		    setSprite(getSpriteArray()[7]);
+		else if (getOrientation() == 1)
+		    setSprite(getSpriteArray()[6]);
+		else
+		    setSprite(getSpriteArray()[1]);
+
+		isMoving = false;
+		setHorizontalSpeedMeters(0);
+		setVerticalSpeedMeters(0);
+		setHorizontalAcceleration(0);
+
+	    }
+
+	    if (isStandingOnSolidGround() && !isJumping)
+		setVerticalAcceleration(0);
+	    else
+		fall();
+
+	    List<int[]> tiles = new ArrayList<int[]>();
+	    tiles = getAllOverlappingTiles();
+	    collidesWithMagma = false;
+	    collidesWithWater = false;
+	    for (final int[] tile : tiles) {
+		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.MAGMA.getValue())
+		    collidesWithMagma = true;
+		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
+		    collidesWithWater = true;
+	    }
+
+	    if (collidesWithWater)
+		timeInWater += dt;
+	    else
+		timeInWater = 0;
+
+	    if (timeInWater >= 0.1940) {
+		timeInWater -= 0.2;
+		if (!collidesWithMagma)
+		    changeHitPoints(-2);
+	    }
+	    if (collidesWithMagma) {
+		if (timeInMagma == 0) {
+		    changeHitPoints(-50);
+		    timeInMagma += dt;
+		} else
+		    timeInMagma += dt;
+		if (timeInMagma >= 0.2) {
+		    changeHitPoints(-50);
+		    timeInMagma -= 0.2;
+		}
+	    } else
+		timeInMagma = 0;
+	    if (getHitpoints() == 0)
+		isDead = true;
+
+	    for (final Object object : getWorld().getAllObjects())
+		if (collidesWith((GameObject) object) && object instanceof Plant && getHitpoints() != getMaxHitpoints()
+			&& !((GameObject) object).isDead()) {
+		    changeHitPoints(50);
+		    ((GameObject) object).terminate();
+		} else if (collidesWith((GameObject) object) && object instanceof Plant
+			&& ((GameObject) object).isDead()) {
+		    changeHitPoints(-20);
+		    ((GameObject) object).terminate();
+		}
+	} else {
+	    setXPositionActual(newPosX);
+	    setYPositionActual(newPosY);
+	    setHorizontalSpeedMeters(newSpeedX);
+	    setVerticalSpeedMeters(newSpeedY);
+	}
     }
 
     private double getTimeBeforeSpriteChange() {
-        return timeBeforeSpriteChange;
+	return timeBeforeSpriteChange;
     }
 
     private void setTimeBeforeSpriteChange(double d) {

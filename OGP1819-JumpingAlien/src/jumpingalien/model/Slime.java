@@ -15,8 +15,8 @@ public class Slime extends School {
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
 	this.id = id;
-	setSchool(school);
-	setOrientation(1);
+//	setSchool(school);
+//	setOrientation(1);
     }
 
     private void setSchool(School school) {

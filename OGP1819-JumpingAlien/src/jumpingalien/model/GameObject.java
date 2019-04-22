@@ -115,8 +115,8 @@ public abstract class GameObject {
      * @param sprite The sprite to check
      */
     public boolean isValidSprite(Sprite sprite) {
-        return sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
-        	&& sprite.canHaveAsName(sprite.getName());
+	return sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
+		&& sprite.canHaveAsName(sprite.getName());
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class GameObject {
      */
     @Basic
     public Sprite getCurrentSprite() {
-        return sprite;
+	return sprite;
     }
 
     /**
@@ -198,13 +198,13 @@ public abstract class GameObject {
      * @effect setHitpoints(0) && removeWorld()
      */
     public void terminate() {
-        if (!isTerminated()) {
-            isTerminated = true;
-            isDead = true;
-            setHitpoints(0);
-            removeWorld();
-    
-        }
+	if (!isTerminated()) {
+	    isTerminated = true;
+	    isDead = true;
+	    setHitpoints(0);
+	    removeWorld();
+
+	}
     }
 
     /**
@@ -253,7 +253,7 @@ public abstract class GameObject {
      */
     @Basic
     public int getYsize() {
-        return ySize;
+	return ySize;
     }
 
     /**
@@ -278,7 +278,7 @@ public abstract class GameObject {
      */
     @Basic
     public int getXsize() {
-        return xSize;
+	return xSize;
     }
 
     /**
@@ -304,17 +304,17 @@ public abstract class GameObject {
      * @post if !isPositionInWorld(X_pos) then this.isTerminated
      */
     public void setXPositionActual(double X_pos) {
-        xPosPixel = (int) (X_pos * 100);
-        xPosMeter = X_pos;
-        if (!tempObject) {
-            if (getWorld() != null && getWorld().getWorldSizeX() < getXPositionPixel()) {
-        	setHitpoints(0);
-        	terminate();
-            }
-            if (!isValidActualXPosition(xPosMeter))
-        	terminate();
-        }
-    
+	xPosPixel = (int) (X_pos * 100);
+	xPosMeter = X_pos;
+	if (!tempObject) {
+	    if (getWorld() != null && getWorld().getWorldSizeX() < getXPositionPixel()) {
+		setHitpoints(0);
+		terminate();
+	    }
+	    if (!isValidActualXPosition(xPosMeter))
+		terminate();
+	}
+
     }
 
     /**
@@ -337,7 +337,7 @@ public abstract class GameObject {
      * @param X_pos The coordinate to check in meters.
      */
     public boolean isValidActualXPosition(double X_pos) {
-        return X_pos <= Double.POSITIVE_INFINITY && X_pos >= 0;
+	return X_pos <= Double.POSITIVE_INFINITY && X_pos >= 0;
     }
 
     /**
@@ -345,14 +345,14 @@ public abstract class GameObject {
      */
     @Basic
     public int getXPositionPixel() {
-        return xPosPixel;
+	return xPosPixel;
     }
 
     /**
      * Returns the x position on the canvas in meters.
      */
     public double getXPositionActual() {
-        return xPosMeter;
+	return xPosMeter;
     }
 
     /**
@@ -381,7 +381,7 @@ public abstract class GameObject {
      * @param Y_pos The given coordinate to check in meters.
      */
     public boolean isValidActualYPosition(double Y_pos) {
-        return Y_pos <= Double.POSITIVE_INFINITY && Y_pos >= -0.01;
+	return Y_pos <= Double.POSITIVE_INFINITY && Y_pos >= -0.01;
     }
 
     /**
@@ -390,7 +390,7 @@ public abstract class GameObject {
      * @param Y_pos The given coordinate to check in pixels.
      */
     public boolean isValidPixelYPosition(int Y_pos) {
-        return Y_pos >= 0 && Y_pos <= Double.POSITIVE_INFINITY;
+	return Y_pos >= 0 && Y_pos <= Double.POSITIVE_INFINITY;
     }
 
     /**
@@ -406,14 +406,14 @@ public abstract class GameObject {
      */
     @Basic
     public int getYPositionPixel() {
-        return yPosPixel;
+	return yPosPixel;
     }
 
     /**
      * Returns the y position on the canvas in meters.
      */
     public double getYPositionActual() {
-        return yPosMeter;
+	return yPosMeter;
     }
 
     /**
@@ -426,18 +426,18 @@ public abstract class GameObject {
      * @post this.yPosPixel == (int) (Y_pos * 100)
      */
     public void setYPositionActual(double Y_pos) {
-    
-        yPosPixel = (int) (Y_pos * 100);
-        yPosMeter = Y_pos;
-        if (!tempObject) {
-            if (!isValidActualYPosition(yPosMeter)) {
-        	terminate();
-        	setHitpoints(0);
-            }
-            if (getWorld() != null && getWorld().getWorldSizeY() < getYPositionPixel())
-        	terminate();
-        }
-    
+
+	yPosPixel = (int) (Y_pos * 100);
+	yPosMeter = Y_pos;
+	if (!tempObject) {
+	    if (!isValidActualYPosition(yPosMeter)) {
+		terminate();
+		setHitpoints(0);
+	    }
+	    if (getWorld() != null && getWorld().getWorldSizeY() < getYPositionPixel())
+		terminate();
+	}
+
     }
 
     /**
@@ -445,7 +445,7 @@ public abstract class GameObject {
      */
     @Basic
     public int getMaxYPosition() {
-        return world.getWorldSizeY();
+	return world.getWorldSizeY();
     }
 
     /**
@@ -463,7 +463,7 @@ public abstract class GameObject {
      */
     @Basic
     public int getHitpoints() {
-        return hitpoints;
+	return hitpoints;
     }
 
     /**
@@ -511,7 +511,7 @@ public abstract class GameObject {
      * Returns the maximum hitpoints of a GameObject
      */
     public int getMaxHitpoints() {
-        return maxHitpoints;
+	return maxHitpoints;
     }
 
     /**
@@ -554,8 +554,8 @@ public abstract class GameObject {
      *       new.getOrientation() == orientation
      */
     public void setOrientation(int orientation) {
-        assert isValidOrientation();
-        this.orientation = orientation;
+	assert isValidOrientation();
+	this.orientation = orientation;
     }
 
     /**
@@ -683,7 +683,7 @@ public abstract class GameObject {
     @Basic
     @Immutable
     public double getMaxVerticalSpeedMeters() {
-        return maxVerticalSpeed;
+	return maxVerticalSpeed;
     }
 
     /**
@@ -692,7 +692,7 @@ public abstract class GameObject {
     @Basic
     @Immutable
     public double getVerticalSpeedMeters() {
-        return verticalSpeed;
+	return verticalSpeed;
     }
 
     /**
@@ -715,10 +715,10 @@ public abstract class GameObject {
      *       getMaxVerticalSpeedMeters()
      */
     protected void setVerticalSpeedMeters(double verticalSpeedMeters) {
-        if (verticalSpeedMeters <= getMaxVerticalSpeedMeters())
-            verticalSpeed = verticalSpeedMeters;
-        else
-            verticalSpeed = getMaxVerticalSpeedMeters();
+	if (verticalSpeedMeters <= getMaxVerticalSpeedMeters())
+	    verticalSpeed = verticalSpeedMeters;
+	else
+	    verticalSpeed = getMaxVerticalSpeedMeters();
     }
 
     /**
@@ -770,8 +770,8 @@ public abstract class GameObject {
      * depending on the state
      */
     public double getMaxSpeed() {
-        setMaxSpeed();
-        return maxSpeed;
+	setMaxSpeed();
+	return maxSpeed;
     }
 
     /**
@@ -911,7 +911,7 @@ public abstract class GameObject {
      */
     @Basic
     public World getWorld() {
-        return world;
+	return world;
     }
 
     /**
@@ -954,12 +954,13 @@ public abstract class GameObject {
      * Returns whether the GameObject is standing on the ground
      */
     public boolean isStandingOnSolidGround() {
-	for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++) {
-	    if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == World.SOLID_GROUND)
-		return true;
-	    if (getWorld().getGeologicalFeature(x, getYPositionPixel() - 1) == World.SOLID_GROUND)
-		return true;
-	}
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++) {
+		if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())
+		    return true;
+		if (getWorld().getGeologicalFeature(x, getYPositionPixel() - 1) == feature.getValue())
+		    return true;
+	    }
 	final Mazub newMazub = new Mazub(getXPositionPixel(), getYPositionPixel(), 1, 1, getHorizontalSpeedMeters(), 1,
 		3, 1, true, getCurrentSprite());
 	if (!getWorld().canPlaceMazubAdvanceTime(newMazub, this))
