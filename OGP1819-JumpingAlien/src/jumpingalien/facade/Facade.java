@@ -478,20 +478,34 @@ public class Facade implements IFacade {
 
     @Override
     public double[] getAcceleration(Object gameObject) throws ModelException {
-	// TODO Auto-generated method stub
-	return null;
+	return new double[] { ((GameObject) gameObject).getHorizontalAcceleration(),
+		((GameObject) gameObject).getVerticalAcceleration() };
     }
 
     @Override
     public Sneezewort createSneezewort(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-	// TODO Auto-generated method stub
-	return null;
+	if (sprites == null)
+	    throw new ModelException("The sprites are not valid");
+	if (sprites.length != 2)
+	    throw new ModelException("The sprites are not valid");
+	for (final Sprite sprite : sprites)
+	    if (sprite == null)
+		throw new ModelException("The sprites are not valid");
+	return new Sneezewort(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0,
+		0.5, 0.5, 0.5, 0, 0, sprites);
     }
 
     @Override
     public Skullcab createSkullcab(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-	// TODO Auto-generated method stub
-	return null;
+	if (sprites == null)
+	    throw new ModelException("The sprites are not valid");
+	if (sprites.length != 2)
+	    throw new ModelException("The sprites are not valid");
+	for (final Sprite sprite : sprites)
+	    if (sprite == null)
+		throw new ModelException("The sprites are not valid");
+	return new Skullcab(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 3, 12.0, 0.5,
+		0.5, 0.5, 0, 0, sprites);
     }
 
     @Override

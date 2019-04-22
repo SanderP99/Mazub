@@ -432,7 +432,7 @@ public class World {
      */
     private boolean isValidGeologicalFeature(int geologicalFeature) {
 	return geologicalFeature == AIR || geologicalFeature == SOLID_GROUND || geologicalFeature == WATER
-		|| geologicalFeature == MAGMA;
+		|| geologicalFeature == MAGMA || geologicalFeature == GAS || geologicalFeature == ICE;
     }
 
     /**
@@ -478,6 +478,10 @@ public class World {
 	    return WATER;
 	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + MAGMA))
 	    return MAGMA;
+	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + GAS))
+	    return GAS;
+	if (tiles.contains(tile_cord[0] + " " + tile_cord[1] + " " + ICE))
+	    return ICE;
 	return AIR;
 
     }
@@ -549,6 +553,16 @@ public class World {
     public final static int MAGMA = 3;
 
     /**
+     * A variable to store the value of gas
+     */
+    public final static int GAS = 4;
+
+    /**
+     * A variable to store the value of ice
+     */
+    public final static int ICE = 5;
+
+    /**
      * A set to store the tiles and the geological feature
      */
     public HashSet<String> tiles;
@@ -583,7 +597,7 @@ public class World {
 		    + gameObject.getXsize(); x++)
 		for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
 			+ gameObject.getYsize(); y++)
-		    if (getGeologicalFeature(x, y) == SOLID_GROUND)
+		    if (getGeologicalFeature(x, y) == SOLID_GROUND || getGeologicalFeature(x, y) == ICE)
 			return false;
 	}
 	return true;
@@ -623,7 +637,7 @@ public class World {
 	for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel() + gameObject.getXsize(); x++)
 	    for (int y = gameObject.getYPositionPixel() + 1; y < gameObject.getYPositionPixel()
 		    + gameObject.getYsize(); y++)
-		if (getGeologicalFeature(x, y) == SOLID_GROUND)
+		if (getGeologicalFeature(x, y) == SOLID_GROUND || getGeologicalFeature(x, y) == ICE)
 		    return false;
 	return true;
     }
