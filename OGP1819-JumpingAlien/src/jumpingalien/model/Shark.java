@@ -4,14 +4,13 @@ import jumpingalien.util.Sprite;
 
 public class Shark extends GameObject {
 
-    Shark(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
+    public Shark(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
 	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, boolean tempObject,
 	    Sprite[] sprites) {
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
-	// TODO Auto-generated constructor stub
     }
 
     @Override

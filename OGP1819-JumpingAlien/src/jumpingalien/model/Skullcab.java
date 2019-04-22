@@ -24,6 +24,9 @@ public class Skullcab extends Plant {
 
     }
 
+    /**
+     * A list to store the boundaries in which the plant will move
+     */
     int[] boundaries;
 
     @Override

@@ -15,11 +15,6 @@ import jumpingalien.util.Sprite;
 public abstract class Plant extends GameObject {
 
     /**
-     * A list to store the boundaries in which the plant will move
-     */
-    private int[] boundaries;
-
-    /**
      * Create a plant
      * 
      * @param positionLeftX             The left-most pixel of the plant

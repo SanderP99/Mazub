@@ -511,14 +511,13 @@ public class Facade implements IFacade {
     @Override
     public Slime createSlime(long id, int pixelLeftX, int pixelBottomY, School school, Sprite... sprites)
 	    throws ModelException {
-	// TODO Auto-generated method stub
-	return null;
+	return new Slime(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100, 2000, 2.5, 2.5,
+		0.0, 0.0, 0.7, -10.0, false, id, school, sprites);
     }
 
     @Override
     public long getIdentification(Slime slime) throws ModelException {
-	// TODO Auto-generated method stub
-	return 0;
+	return slime.getIdentification();
     }
 
     @Override
@@ -559,14 +558,13 @@ public class Facade implements IFacade {
 
     @Override
     public School getSchool(Slime slime) throws ModelException {
-	// TODO Auto-generated method stub
-	return null;
+	return slime.getSchool();
     }
 
     @Override
     public Shark createShark(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-	// TODO
-	return null;
+	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100, 100, 10, 10, 0,
+		2, 1.5, -10.0, false, sprites);
     }
 
 }

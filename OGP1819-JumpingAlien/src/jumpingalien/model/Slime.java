@@ -4,14 +4,33 @@ import jumpingalien.util.Sprite;
 
 public class Slime extends School {
 
-    Slime(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
+    private final long id;
+    private School school;
+
+    public Slime(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
 	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, boolean tempObject,
-	    Sprite[] sprites) {
+	    long id, School school, Sprite[] sprites) {
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
-	// TODO Auto-generated constructor stub
+	this.id = id;
+	setSchool(school);
+	setOrientation(1);
+    }
+
+    private void setSchool(School school) {
+	this.school = school;
+	school.addSlime(this);
+
+    }
+
+    public long getIdentification() {
+	return id;
+    }
+
+    public School getSchool() {
+	return school;
     }
 
     @Override
