@@ -14,13 +14,14 @@ public class Skullcab extends Plant {
 	setVerticalSpeedMeters(Math.abs(verticalSpeed));
 	setOrientation(1);
 	setSecondsToLive(secondsToLive);
+	setSprite(sprites[1]);
 	setBoundaries();
     }
 
     @Override
     public void setBoundaries() {
 	boundaries = new int[] { getYPositionPixel(),
-		(int) (getYPositionPixel() - 0.5 * (int) (100 * Math.abs(getVerticalSpeedMeters()))) };
+		(int) (getYPositionPixel() + 0.5 * (int) (100 * Math.abs(getVerticalSpeedMeters()))) };
 
     }
 
@@ -53,7 +54,7 @@ public class Skullcab extends Plant {
 			final double newPosY = getYPositionActual() + Math.abs(getVerticalSpeedMeters()) * timeStep;
 			final double actualPosY = (double) getBoundaries()[1] / 100
 				- Math.abs(newPosY - (double) getBoundaries()[1] / 100);
-			setXPositionActual(actualPosY);
+			setYPositionActual(actualPosY);
 
 			setOrientation(-1);
 			setSprite(getSpriteArray()[0]);
@@ -104,5 +105,13 @@ public class Skullcab extends Plant {
 	    terminate();
 	}
 
+    }
+
+    /**
+     * Returns the boundaries in which the plant will move.
+     */
+    @Override
+    public int[] getBoundaries() {
+	return boundaries;
     }
 }

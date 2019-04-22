@@ -111,4 +111,12 @@ public class Sneezewort extends Plant {
 	}
 
     }
+
+    /**
+     * Returns the boundaries in which the plant will move.
+     */
+    @Override
+    public int[] getBoundaries() {
+	return boundaries;
+    }
 }

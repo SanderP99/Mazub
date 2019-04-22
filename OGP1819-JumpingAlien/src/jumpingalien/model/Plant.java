@@ -61,10 +61,6 @@ public abstract class Plant extends GameObject {
 		maxHorizontalSpeedDucking, minHorizontalSpeed, 0, horizontalAcceleration, verticalAcceleration, false,
 		sprites);
 
-	setHorizontalSpeedMeters(-1 * Math.abs(horizontalSpeed));
-	setOrientation(-1);
-	setSecondsToLive(secondsToLive);
-	setBoundaries();
     }
 
     /**
@@ -94,9 +90,7 @@ public abstract class Plant extends GameObject {
     /**
      * Returns the boundaries in which the plant will move.
      */
-    public int[] getBoundaries() {
-	return boundaries;
-    }
+    public abstract int[] getBoundaries();
 
     public abstract void setBoundaries();
 
