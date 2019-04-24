@@ -24,7 +24,7 @@ public class Slime extends GameObject {
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
 	this.id = id;
-	setSchool(school);
+	// setSchool(school);
 	setOrientation(1);
     }
 

@@ -43,7 +43,7 @@ public class School extends GameObject {
     }
 
     public void addSlime(Slime slime) {
-	// TODO Auto-generated method stub
+	getWorld().addGameObject(slime);
 
     }
 

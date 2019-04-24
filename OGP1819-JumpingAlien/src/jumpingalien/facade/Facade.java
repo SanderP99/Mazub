@@ -534,7 +534,8 @@ public class Facade implements IFacade {
 
     @Override
     public School createSchool(World world) throws ModelException {
-	return new School(world);
+//	return new School(world);
+	return null;
     }
 
     @Override
