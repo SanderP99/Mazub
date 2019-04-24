@@ -647,10 +647,6 @@ public class World {
     public Set<Object> getAllObjects() {
 	final HashSet<Object> allObjects = new HashSet<Object>(objects.size());
 
-//	for (final GameObject object : objects) {
-//	    final Object gameObjectAsObject = object;
-//	    allObjects.add(gameObjectAsObject);
-//	}
 	objects.stream().map((object) -> ((Object) object)).forEach((object) -> allObjects.add(object));
 
 	return allObjects;
