@@ -664,9 +664,9 @@ public class World {
     }
 
     /**
-     * Adds a gameobject to the world
+     * Adds a gameObject to the world
      * 
-     * @param gameObject The gameobject to add
+     * @param gameObject The gameObject to add
      * 
      * @throws RuntimeException ... | getAllObjects().size() - 1 ==
      *                          getMaxNbOfObjects()
@@ -681,7 +681,8 @@ public class World {
      * @throws RuntimeException ... | !canPlaceObject(gameObject)
      * @throws RuntimeException ... |
      *                          getGeologicalFeature(gameObject.getXPositionPixel(),
-     *                          gameObject.getYPositionPixel()) == SOLID_GROUND &&
+     *                          gameObject.getYPositionPixel()) == ImpassableTerrain
+     *                          &&
      *                          getGeologicalFeature(gameObject.getXPositionPixel()
      *                          + 1, gameObject.getYPositionPixel() + 1) != AIR
      * 
@@ -705,11 +706,12 @@ public class World {
 	if (!canPlaceObject(gameObject))
 	    throw new RuntimeException();
 
-	for (final ImpassableTerrain feature : ImpassableTerrain.values())
-	    if (getGeologicalFeature(gameObject.getXPositionPixel(), gameObject.getYPositionPixel()) == feature
-		    .getValue()
-		    && getGeologicalFeature(gameObject.getXPositionPixel() + 1,
-			    gameObject.getYPositionPixel() + 1) != PassableTerrain.AIR.getValue())
+	for (final ImpassableTerrain impassableFeature : ImpassableTerrain.values())
+
+	    if (getGeologicalFeature(gameObject.getXPositionPixel(),
+		    gameObject.getYPositionPixel()) == impassableFeature.getValue()
+		    && !PassableTerrain.contains(getGeologicalFeature(gameObject.getXPositionPixel() + 1,
+			    gameObject.getYPositionPixel() + 1)))
 		throw new RuntimeException();
 
 	if (!hasPlayer() && gameObject instanceof Mazub)

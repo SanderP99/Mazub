@@ -14,4 +14,11 @@ public enum PassableTerrain {
 	return value;
     }
 
+    public static boolean contains(int i) {
+	for (final PassableTerrain feature : PassableTerrain.values())
+	    if (feature.getValue() == i)
+		return true;
+	return false;
+    }
+
 }
