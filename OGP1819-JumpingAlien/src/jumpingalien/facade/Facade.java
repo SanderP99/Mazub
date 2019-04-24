@@ -83,7 +83,7 @@ public class Facade implements IFacade {
 	alien.setYPositionActual(newPosition[1]);
 
 	if (alien.getWorld() != null)
-	    if (!alien.isStandingOnSolidGround())
+	    if (!alien.isStandingOnImpassableTerrain())
 		alien.setVerticalAcceleration(-10.0);
 
     }
@@ -534,8 +534,7 @@ public class Facade implements IFacade {
 
     @Override
     public School createSchool(World world) throws ModelException {
-	// TODO Auto-generated method stub
-	return null;
+	return new School(world);
     }
 
     @Override

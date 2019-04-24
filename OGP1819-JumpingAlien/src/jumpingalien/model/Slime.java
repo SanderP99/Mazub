@@ -2,7 +2,16 @@ package jumpingalien.model;
 
 import jumpingalien.util.Sprite;
 
-public class Slime extends School {
+/**
+ * A class that implements a slime
+ * 
+ * @author Warre Dreesen
+ * @author Sander Prenen
+ * 
+ * @version 1
+ *
+ */
+public class Slime extends GameObject {
 
     private final long id;
     private School school;
@@ -15,8 +24,8 @@ public class Slime extends School {
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
 	this.id = id;
-//	setSchool(school);
-//	setOrientation(1);
+	setSchool(school);
+	setOrientation(1);
     }
 
     private void setSchool(School school) {
@@ -34,7 +43,8 @@ public class Slime extends School {
     }
 
     public void removeSchool() {
-	// TODO
+	getSchool().removeSlime(this);
+	school = null;
     }
 
     @Override

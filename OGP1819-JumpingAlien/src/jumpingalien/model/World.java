@@ -13,7 +13,8 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @author Warre Dreesen
  * @author Sander Prenen
  * 
- * @version 1
+ * @version 2
+ * 
  *
  * @invar Each World can have its visibleWindowWidth as visibleWindowWidth. |
  *        canHaveAsVisibleWindowWidth(this.getVisibleWindowWidth())
@@ -77,6 +78,7 @@ public class World {
 	initializeGeologicalFeatures(nbTilesX, nbTilesY, geologicalFeatures);
 	setMaxNbOfObjects(maxNbOfObjects);
 	setMaxNbOfSchools(10);
+	setNbOfSchools(0);
 
     }
 
@@ -846,6 +848,17 @@ public class World {
 
 	}
 	setVisibleWindowPosition(new int[] { newWindowXPos, newWindowYPos });
+
+    }
+
+    private int nbOfSchools;
+
+    public int getNbOfSchools() {
+	return nbOfSchools;
+    }
+
+    public void setNbOfSchools(int i) {
+	nbOfSchools = i;
 
     }
 }

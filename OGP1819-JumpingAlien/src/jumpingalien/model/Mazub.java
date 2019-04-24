@@ -13,7 +13,7 @@ import jumpingalien.util.Sprite;
  * @author Warre Dreesen
  * @author Sander Prenen
  * 
- * @version 2
+ * @version 3
  */
 public class Mazub extends GameObject {
 
@@ -544,7 +544,7 @@ public class Mazub extends GameObject {
 
 	    }
 
-	    if (isStandingOnSolidGround() && !isJumping)
+	    if (isStandingOnImpassableTerrain() && !isJumping)
 		setVerticalAcceleration(0);
 	    else
 		fall();
@@ -565,7 +565,7 @@ public class Mazub extends GameObject {
 	    else
 		timeInWater = 0;
 
-	    if (timeInWater >= 0.1940) {
+	    if (timeInWater >= 0.2) {
 		timeInWater -= 0.2;
 		if (!collidesWithMagma)
 		    changeHitPoints(-2);

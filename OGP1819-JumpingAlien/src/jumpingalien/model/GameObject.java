@@ -15,7 +15,7 @@ import jumpingalien.util.Sprite;
  * @author Warre Dreesen
  * @author Sander Prenen
  * 
- * @version 1
+ * @version 2
  * 
  * @invar The left most x coordinate of GameObject is a valid coordinate |
  *        isValidXPosition() == true
@@ -102,6 +102,17 @@ public abstract class GameObject {
 	setHorizontalAcceleration(0);
 	setVerticalAcceleration(0);
 	setSprite(sprites[0]);
+    }
+
+    public GameObject(World world) {
+	if (world.getNbOfSchools() < world.getMaxNbOfSchools()) {
+	    setWorld(world);
+	    getWorld().setNbOfSchools(world.getNbOfSchools() + 1);
+	}
+
+	minSpeed = 0;
+	maxSpeedRunning = 0;
+	maxSpeedDucking = 0;
     }
 
     /**
@@ -953,7 +964,7 @@ public abstract class GameObject {
     /**
      * Returns whether the GameObject is standing on the ground
      */
-    public boolean isStandingOnSolidGround() {
+    public boolean isStandingOnImpassableTerrain() {
 	for (final ImpassableTerrain feature : ImpassableTerrain.values())
 	    for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++) {
 		if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())

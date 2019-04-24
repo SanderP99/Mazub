@@ -1,28 +1,54 @@
 package jumpingalien.model;
 
-import jumpingalien.util.Sprite;
+import java.util.Collection;
 
+/**
+ * A class that implements a school of slimes
+ * 
+ * @author Warre Dreesen
+ * @author Sander Prenen
+ * 
+ * @version 1
+ *
+ */
 public class School extends GameObject {
 
-    School(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
-	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
-	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, boolean tempObject,
-	    Sprite[] sprites) {
-	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
-		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
-		verticalAcceleration, tempObject, sprites);
+    private final long minID;
+    private final long maxID;
 
+    public School(World world) {
+	super(world);
+	maxID = 0;
+	minID = 0;
+
+    }
+
+    public long getMinID() {
+	return minID;
+    }
+
+    public long getMaxID() {
+	return maxID;
     }
 
     @Override
     public void advanceTime(double dt, double timeStep) {
-	// TODO Auto-generated method stub
+	for (final Slime slime : getAllSlimes())
+	    slime.advanceTime(dt, timeStep);
+    }
 
+    private Collection<Slime> getAllSlimes() {
+	// TODO Auto-generated method stub
+	return null;
     }
 
     public void addSlime(Slime slime) {
 	// TODO Auto-generated method stub
 
+    }
+
+    public void removeSlime(Slime slime) {
+	// TODO
     }
 
 }
