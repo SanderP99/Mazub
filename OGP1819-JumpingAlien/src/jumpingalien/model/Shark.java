@@ -11,6 +11,7 @@ public class Shark extends GameObject {
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
+	setSprite(getSpriteArray()[0]);
     }
 
     @Override

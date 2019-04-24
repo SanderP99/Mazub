@@ -541,8 +541,8 @@ public abstract class GameObject {
      * 
      * @param orientation The orientation to check
      */
-    public boolean isValidOrientation() {
-	return getOrientation() == -1 || getOrientation() == 0 || getOrientation() == 1;
+    public boolean isValidOrientation(int orientation) {
+	return orientation == -1 || orientation == 0 || orientation == 1;
 
     }
 
@@ -565,7 +565,7 @@ public abstract class GameObject {
      *       new.getOrientation() == orientation
      */
     public void setOrientation(int orientation) {
-	assert isValidOrientation();
+	assert isValidOrientation(orientation);
 	this.orientation = orientation;
     }
 
