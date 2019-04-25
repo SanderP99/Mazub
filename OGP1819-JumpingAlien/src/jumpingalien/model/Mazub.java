@@ -49,6 +49,7 @@ public class Mazub extends GameObject {
 	isDucking = false;
 	timeInWater = 0;
 	timeInMagma = 0;
+	timeInGas = 0;
 	timeSinceDeath = 0;
 	setTimeBeforeSpriteChange(frameRate);
     }
@@ -80,6 +81,7 @@ public class Mazub extends GameObject {
 	isDucking = false;
 	timeInWater = 0;
 	timeInMagma = 0;
+	timeInGas = 0;
 	timeSinceDeath = 0;
 	setTimeBeforeSpriteChange(frameRate);
     }
@@ -383,8 +385,10 @@ public class Mazub extends GameObject {
 
     private boolean collidesWithMagma;
     private boolean collidesWithWater;
+    private boolean collidesWithGas;
     private double timeInWater;
     private double timeInMagma;
+    private double timeInGas;
 
     private int getNextSpriteIndex() {
 	int indexCurrentSprite = 0;
@@ -553,11 +557,14 @@ public class Mazub extends GameObject {
 	    tiles = getAllOverlappingTiles();
 	    collidesWithMagma = false;
 	    collidesWithWater = false;
+	    collidesWithGas = false;
 	    for (final int[] tile : tiles) {
 		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.MAGMA.getValue())
 		    collidesWithMagma = true;
 		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
 		    collidesWithWater = true;
+		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.GAS.getValue())
+		    collidesWithGas = true;
 	    }
 
 	    if (collidesWithWater)
@@ -582,6 +589,20 @@ public class Mazub extends GameObject {
 		}
 	    } else
 		timeInMagma = 0;
+	    if (collidesWithGas) {
+		if (timeInGas == 0) {
+		    if (!collidesWithMagma) {
+			changeHitPoints(-4);
+			timeInGas += dt;
+		    }
+		} else
+		    timeInGas += dt;
+		if (timeInGas >= 0.2) {
+		    if (!collidesWithMagma)
+			changeHitPoints(-4);
+		    timeInGas -= 0.2;
+		}
+	    }
 	    if (getHitpoints() == 0)
 		isDead = true;
 
@@ -607,8 +628,8 @@ public class Mazub extends GameObject {
 	return timeBeforeSpriteChange;
     }
 
-    private void setTimeBeforeSpriteChange(double d) {
-	timeBeforeSpriteChange = d;
+    private void setTimeBeforeSpriteChange(double time) {
+	timeBeforeSpriteChange = time;
 
     }
 
