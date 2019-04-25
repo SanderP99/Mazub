@@ -534,31 +534,28 @@ public class Facade implements IFacade {
 
     @Override
     public School createSchool(World world) throws ModelException {
-//	return new School(world);
-	return null;
+	return new School(world);
     }
 
     @Override
     public boolean hasAsSlime(School school, Slime slime) throws ModelException {
-	// TODO Auto-generated method stub
-	return false;
+	return school.hasSlime(slime);
     }
 
     @Override
     public Collection<? extends Slime> getAllSlimes(School school) {
-	// TODO Auto-generated method stub
-	return null;
+	return school.getAllSlimes();
     }
 
     @Override
     public void addAsSlime(School school, Slime slime) throws ModelException {
-	// TODO Auto-generated method stub
+	school.addSlime(slime);
 
     }
 
     @Override
     public void removeAsSlime(School school, Slime slime) throws ModelException {
-	// TODO Auto-generated method stub
+	school.removeSlime(slime);
 
     }
 

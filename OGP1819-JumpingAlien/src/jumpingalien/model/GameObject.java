@@ -157,20 +157,22 @@ public abstract class GameObject {
 	    if (getWorld() != null) {
 		if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
 		    this.sprite = sprite;
-		    setYSize(getCurrentSprite().getHeight());
-		    setXSize(getCurrentSprite().getWidth());
+		    setSizes();
 		}
 	    } else {
 		this.sprite = sprite;
-		setYSize(getCurrentSprite().getHeight());
-		setXSize(getCurrentSprite().getWidth());
+		setSizes();
 	    }
 	} else {
 	    this.sprite = sprite;
-	    setYSize(getCurrentSprite().getHeight());
-	    setXSize(getCurrentSprite().getWidth());
+	    setSizes();
 	}
 
+    }
+
+    private void setSizes() {
+	setYSize(getCurrentSprite().getHeight());
+	setXSize(getCurrentSprite().getWidth());
     }
 
     /**
@@ -972,8 +974,8 @@ public abstract class GameObject {
 		if (getWorld().getGeologicalFeature(x, getYPositionPixel() - 1) == feature.getValue())
 		    return true;
 	    }
-	final Mazub newMazub = new Mazub(getXPositionPixel(), getYPositionPixel(), 1, 1, getHorizontalSpeedMeters(), 1,
-		3, 1, true, getCurrentSprite());
+	final Mazub newMazub = new Mazub(getXPositionPixel(), getYPositionPixel() - 1, 1, 1, getHorizontalSpeedMeters(),
+		1, 3, 1, true, getCurrentSprite());
 	if (!getWorld().canPlaceMazubAdvanceTime(newMazub, this))
 	    return true;
 	return false;

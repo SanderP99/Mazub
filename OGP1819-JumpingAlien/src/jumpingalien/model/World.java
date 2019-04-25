@@ -645,7 +645,7 @@ public class World {
      */
     @Basic
     public Set<Object> getAllObjects() {
-	final HashSet<Object> allObjects = new HashSet<Object>(objects.size());
+	final HashSet<Object> allObjects = new HashSet<Object>();
 
 	objects.stream().map((object) -> ((Object) object)).forEach((object) -> allObjects.add(object));
 
@@ -787,11 +787,11 @@ public class World {
 
     public void advanceWorldTime(double dt) throws RuntimeException {
 	if (dt < 0)
-	    throw new RuntimeException();
+	    throw new IllegalArgumentException();
 	if (dt > 0.2)
-	    throw new RuntimeException();
+	    throw new IllegalArgumentException();
 	if (dt != dt)
-	    throw new RuntimeException();
+	    throw new IllegalArgumentException();
 
 	for (final Object object : getAllObjects()) {
 	    final double timeStep = getTimeStep((GameObject) object, dt);

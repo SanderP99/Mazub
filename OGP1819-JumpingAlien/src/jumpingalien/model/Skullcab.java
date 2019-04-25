@@ -29,6 +29,16 @@ public class Skullcab extends Plant {
      */
     int[] boundaries;
 
+    private double timeInContactWithMazub;
+
+    public double getTimeInContactWithMazub() {
+	return timeInContactWithMazub;
+    }
+
+    private void setTimeInContactWithMazub(double time) {
+	timeInContactWithMazub = time;
+    }
+
     @Override
     public void advanceTime(double dt, double timeStep) {
 	if (!isDead()) {
@@ -41,6 +51,7 @@ public class Skullcab extends Plant {
 			    final double actualPosY = (double) getBoundaries()[0] / 100
 				    + Math.abs(newPosY - (double) getBoundaries()[0] / 100);
 			    setYPositionActual(actualPosY);
+			    checkCollision(timeStep);
 
 			    setOrientation(1);
 			    setSprite(getSpriteArray()[0]);
@@ -50,6 +61,7 @@ public class Skullcab extends Plant {
 			    dt -= timeStep;
 			    setSecondsToLive(getSecondsToLive() - timeStep);
 			    setYPositionActual(getYPositionActual() - Math.abs(getVerticalSpeedMeters()) * timeStep);
+			    checkCollision(timeStep);
 			}
 		    } else if (getYPositionActual()
 			    + Math.abs(getVerticalSpeedMeters()) * timeStep > (double) getBoundaries()[1] / 100) {
@@ -57,6 +69,7 @@ public class Skullcab extends Plant {
 			final double actualPosY = (double) getBoundaries()[1] / 100
 				- Math.abs(newPosY - (double) getBoundaries()[1] / 100);
 			setYPositionActual(actualPosY);
+			checkCollision(timeStep);
 
 			setOrientation(-1);
 			setSprite(getSpriteArray()[1]);
@@ -66,10 +79,13 @@ public class Skullcab extends Plant {
 		    } else {
 			dt -= timeStep;
 			setSecondsToLive(getSecondsToLive() - timeStep);
-			if (getOrientation() == 1)
+			if (getOrientation() == 1) {
 			    setYPositionActual(getYPositionActual() + Math.abs(getVerticalSpeedMeters()) * timeStep);
-			else
+			    checkCollision(timeStep);
+			} else {
 			    setYPositionActual(getYPositionActual() - Math.abs(getVerticalSpeedMeters()) * timeStep);
+			    checkCollision(timeStep);
+			}
 		    }
 
 		} else {
@@ -86,13 +102,12 @@ public class Skullcab extends Plant {
 
 	    setSecondsToLive(getSecondsToLive() - dt);
 
-	    if (getWorld() != null)
-		for (final Object object : getWorld().getAllObjects())
-		    if (collidesWith((GameObject) object) && object instanceof Mazub
-			    && ((GameObject) object).getHitpoints() != ((GameObject) object).getMaxHitpoints()) {
-			terminate();
-			((GameObject) object).changeHitPoints(50);
-		    }
+//	    if (getWorld() != null)
+//		if (collidesWith(getWorld().getPlayer())
+//			&& getWorld().getPlayer().getHitpoints() != getWorld().getPlayer().getMaxHitpoints()) {
+//		    terminate();
+//		    getWorld().getPlayer().changeHitPoints(50);
+//		}
 	} else if (getTimeSinceDeath() < 0.6) {
 	    if (dt < 0.599 - getTimeSinceDeath())
 		setTimeSinceDeath(dt + getTimeSinceDeath());
@@ -107,6 +122,18 @@ public class Skullcab extends Plant {
 	    terminate();
 	}
 
+    }
+
+    private void checkCollision(double timeStep) {
+	if (getWorld() != null)
+	if (collidesWith(getWorld().getPlayer()))
+	    if (getTimeInContactWithMazub() == 0)
+		setTimeInContactWithMazub(timeStep);
+	    else if (getTimeInContactWithMazub() >= 0.6) {
+		setTimeInContactWithMazub(getTimeInContactWithMazub() - 0.6);
+		changeHitPoints(-1);
+		getWorld().getPlayer().changeHitPoints(50);
+	    }
     }
 
     /**

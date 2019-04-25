@@ -11,10 +11,10 @@ import jumpingalien.util.Sprite;
  * @version 1
  *
  */
-public class Slime extends GameObject {
+public class Slime extends GameObject implements Comparable<Slime> {
 
     private final long id;
-    private School school;
+    School school;
 
     public Slime(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
@@ -24,13 +24,13 @@ public class Slime extends GameObject {
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
 	this.id = id;
-	// setSchool(school);
+	setSchool(school);
 	setOrientation(1);
     }
 
-    private void setSchool(School school) {
-	this.school = school;
+    void setSchool(School school) {
 	school.addSlime(this);
+	this.school = school;
 
     }
 
@@ -45,6 +45,11 @@ public class Slime extends GameObject {
     public void removeSchool() {
 	getSchool().removeSlime(this);
 	school = null;
+    }
+
+    @Override
+    public int compareTo(Slime other) {
+	return Long.compare(getIdentification(), other.getIdentification());
     }
 
     @Override

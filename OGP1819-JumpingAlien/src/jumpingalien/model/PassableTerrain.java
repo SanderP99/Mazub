@@ -1,22 +1,59 @@
 package jumpingalien.model;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
+import be.kuleuven.cs.som.annotate.Value;
+
+/**
+ * An enumeration introducing different types of passable terrain.
+ * 
+ * @author Warre Dreesen
+ * @author Sander Prenen
+ * 
+ * @version 1
+ *
+ */
+@Value
 public enum PassableTerrain {
 
     AIR(0), WATER(2), MAGMA(3), GAS(5);
 
-    private int value;
+    /**
+     * Variable storing the integer for this feature
+     */
+    private final int value;
 
+    /**
+     * Initialize the feature with the given integer
+     * 
+     * @param i The integer for the new feature
+     * 
+     * @post ... | new.getValue() == i
+     */
+    @Raw
     PassableTerrain(int i) {
 	value = i;
     }
 
+    /**
+     * Return the value for this feature
+     */
+    @Basic
+    @Raw
+    @Immutable
     public int getValue() {
 	return value;
     }
 
-    public static boolean contains(int i) {
+    /**
+     * Checks whether the given geological feature is a passable feature
+     * 
+     * @param geologicalFeature The feature to check
+     */
+    public static boolean contains(int geologicalFeature) {
 	for (final PassableTerrain feature : PassableTerrain.values())
-	    if (feature.getValue() == i)
+	    if (feature.getValue() == geologicalFeature)
 		return true;
 	return false;
     }
