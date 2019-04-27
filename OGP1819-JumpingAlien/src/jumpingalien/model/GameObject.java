@@ -104,17 +104,6 @@ public abstract class GameObject {
 	setSprite(sprites[0]);
     }
 
-    public GameObject(World world) {
-	if (world.getNbOfSchools() < world.getMaxNbOfSchools()) {
-	    setWorld(world);
-	    getWorld().setNbOfSchools(world.getNbOfSchools() + 1);
-	}
-
-	minSpeed = 0;
-	maxSpeedRunning = 0;
-	maxSpeedDucking = 0;
-    }
-
     /**
      * A boolean to store if a created object is temporary
      */
@@ -830,6 +819,7 @@ public abstract class GameObject {
     protected void setHorizontalAcceleration(double horizontalAcceleration) {
 	if (Math.abs(horizontalAcceleration) == 0 || Math.abs(horizontalAcceleration) == maxHorizontalAcceleration)
 	    this.horizontalAcceleration = horizontalAcceleration;
+	this.horizontalAcceleration = horizontalAcceleration;
     }
 
     /**
@@ -976,8 +966,25 @@ public abstract class GameObject {
 	    }
 	final Mazub newMazub = new Mazub(getXPositionPixel(), getYPositionPixel() - 1, 1, 1, getHorizontalSpeedMeters(),
 		1, 3, 1, true, getCurrentSprite());
-	if (!getWorld().canPlaceMazubAdvanceTime(newMazub, this))
+	if (!getWorld().canPlaceGameObjectAdvanceTime(newMazub, this))
 	    return true;
 	return false;
+    }
+
+    /**
+     * Makes a Mazub fall
+     * 
+     * @post The new acceleration is equal to the given maximum vertical
+     *       acceleration. | new.VerticalAcceleration == maxVerticalAcceleration
+     */
+    protected void fall() {
+	if (getYPositionActual() > 0)
+	    setVerticalAcceleration(maxVerticalAcceleration);
+	for (final ImpassableTerrain feature : ImpassableTerrain.values())
+	    for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
+		if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())
+		    setVerticalAcceleration(0);
+	if (getYPositionActual() < 0 && getVerticalSpeedMeters() < 0)
+	    setVerticalAcceleration(0);
     }
 }

@@ -561,7 +561,7 @@ public class World {
     /**
      * A set to store all the objects in the world
      */
-    private final HashSet<GameObject> objects = new HashSet<GameObject>();
+    final HashSet<GameObject> objects = new HashSet<GameObject>();
 
     /**
      * A variable to store the playable Mazub of this world
@@ -595,12 +595,14 @@ public class World {
 	return true;
     }
 
-    public boolean canPlaceMazubAdvanceTime(GameObject gameObject, GameObject other) {
+    public boolean canPlaceGameObjectAdvanceTime(GameObject gameObject, GameObject other) {
 	if (!(gameObject instanceof Plant)) {
 	    for (final Object object : getAllObjects())
 		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
 			&& object != other)
 		    return false;
+
+	    gameObject.terminate();
 
 	    for (final ImpassableTerrain feature : ImpassableTerrain.values()) {
 		for (int x = gameObject.getXPositionPixel(); x < gameObject.getXPositionPixel()
@@ -700,8 +702,9 @@ public class World {
 	    throw new RuntimeException();
 	if (gameObject.getYPositionPixel() >= getWorldSizeY() || gameObject.getYPositionActual() < 0)
 	    throw new RuntimeException();
-	if (gameObject.getWorld() != null)
-	    throw new RuntimeException();
+	if (gameObject instanceof Slime)
+	    if (gameObject.getWorld() != null)
+		throw new RuntimeException();
 
 	if (!canPlaceObject(gameObject))
 	    throw new RuntimeException();
@@ -797,6 +800,10 @@ public class World {
 	    final double timeStep = getTimeStep((GameObject) object, dt);
 	    ((GameObject) object).advanceTime(dt, timeStep);
 	}
+
+	for (final School school : allSchools)
+	    school.advanceTime(dt);
+
 	advanceVisibleWindow();
     }
 
@@ -854,12 +861,20 @@ public class World {
 
     private int nbOfSchools;
 
+    private final Set<School> allSchools = new HashSet<>();
+
     public int getNbOfSchools() {
 	return nbOfSchools;
     }
 
     public void setNbOfSchools(int i) {
 	nbOfSchools = i;
+    }
 
+    void addSchool(School school) {
+	if (getNbOfSchools() == getMaxNbOfSchools() - 1)
+	    throw new RuntimeException();
+	allSchools.add(school);
+	setNbOfSchools(allSchools.size());
     }
 }

@@ -25,11 +25,12 @@ public class School {
 
     public School(World world) {
 	this.world = world;
+	getWorld().addSchool(this);
 	maxID = Long.MIN_VALUE;
 	minID = Long.MAX_VALUE;
 	minIDSlime = null;
 	maxIDSlime = null;
-	slimes = new TreeSet<Slime>();
+	slimes = new TreeSet<>();
     }
 
     public long getMinID() {
@@ -40,9 +41,13 @@ public class School {
 	return maxID;
     }
 
-    public void advanceTime(double dt, double timeStep) {
-	for (final Slime slime : getAllSlimes())
+    public void advanceTime(double dt) {
+	for (final Slime slime : getAllSlimes()) {
+	    double timeStep = getWorld().getTimeStep(slime, dt);
+	    if (timeStep == Double.POSITIVE_INFINITY)
+		timeStep = 0.002;
 	    slime.advanceTime(dt, timeStep);
+	}
     }
 
     public Collection<Slime> getAllSlimes() {
@@ -67,6 +72,8 @@ public class School {
 	}
 	slimes.add(slime);
 	slime.school = this;
+//	if (slime.getWorld() == null)
+//	    getWorld().addGameObject(slime);
 
     }
 
@@ -96,7 +103,7 @@ public class School {
 	maxID = identification;
     }
 
-    private World getWorld() {
+    World getWorld() {
 	return world;
     }
 

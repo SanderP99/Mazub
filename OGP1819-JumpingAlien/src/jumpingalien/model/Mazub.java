@@ -263,23 +263,6 @@ public class Mazub extends GameObject {
     public boolean isJumping;
 
     /**
-     * Makes a Mazub fall
-     * 
-     * @post The new acceleration is equal to the given maximum vertical
-     *       acceleration. | new.VerticalAcceleration == maxVerticalAcceleration
-     */
-    private void fall() {
-	if (getYPositionActual() > 0)
-	    setVerticalAcceleration(maxVerticalAcceleration);
-	for (final ImpassableTerrain feature : ImpassableTerrain.values())
-	    for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
-		if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())
-		    setVerticalAcceleration(0);
-	if (getYPositionActual() < 0 && getVerticalSpeedMeters() < 0)
-	    setVerticalAcceleration(0);
-    }
-
-    /**
      * A boolean to store if Mazub is falling
      */
     public boolean isFalling;
@@ -344,7 +327,7 @@ public class Mazub extends GameObject {
 			getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
 			getSpriteArray());
 
-		if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+		if (getWorld().canPlaceGameObjectAdvanceTime(newMazub, this)) {
 		    setSprite(spriteArray[9 + getSpriteLoopSize(getSpriteArray())]);
 		    setYSize(getCurrentSprite().getHeight());
 		    setXSize(getCurrentSprite().getWidth());
@@ -361,7 +344,7 @@ public class Mazub extends GameObject {
 		    getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true,
 		    getSpriteArray());
 
-	    if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+	    if (getWorld().canPlaceGameObjectAdvanceTime(newMazub, this)) {
 		setSprite(spriteArray[0]);
 		setYSize(getCurrentSprite().getHeight());
 		setXSize(getCurrentSprite().getWidth());
@@ -518,7 +501,7 @@ public class Mazub extends GameObject {
 	if (getWorld() != null) {
 	    final Mazub newMazub = new Mazub(newPosX, newPosY, xSize, ySize, newSpeedX, getMinSpeedMeters(),
 		    getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(), true, getCurrentSprite());
-	    if (getWorld().canPlaceMazubAdvanceTime(newMazub, this)) {
+	    if (getWorld().canPlaceGameObjectAdvanceTime(newMazub, this)) {
 		setXPositionActual(newPosX);
 		setYPositionActual(newPosY);
 		setHorizontalSpeedMeters(newSpeedX);
