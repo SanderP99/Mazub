@@ -450,8 +450,10 @@ public class Mazub extends GameObject {
 	    terminate();
 	}
 
-	if (timeSinceLastMove > 1)
+	if (timeSinceLastMove > 1) {
 	    setSprite(getSpriteArray()[0]);
+	    setOrientation(0);
+	}
 	tempObject = false;
 	if (getWorld() != null)
 	    if (!isPositionInWorld(getXPositionPixel(), getYPositionPixel()))

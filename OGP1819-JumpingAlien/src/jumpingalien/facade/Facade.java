@@ -521,6 +521,8 @@ public class Facade implements IFacade {
 
     @Override
     public School createSchool(World world) throws ModelException {
+	if (world.getMaxNbOfSchools() == world.getNbOfSchools())
+	    throw new ModelException("Maximum number of schools reached");
 	return new School(world);
     }
 

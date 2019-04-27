@@ -702,9 +702,8 @@ public class World {
 	    throw new RuntimeException();
 	if (gameObject.getYPositionPixel() >= getWorldSizeY() || gameObject.getYPositionActual() < 0)
 	    throw new RuntimeException();
-	if (gameObject instanceof Slime)
-	    if (gameObject.getWorld() != null)
-		throw new RuntimeException();
+	if (gameObject.getWorld() != null)
+	    throw new RuntimeException();
 
 	if (!canPlaceObject(gameObject))
 	    throw new RuntimeException();
@@ -797,12 +796,11 @@ public class World {
 	    throw new IllegalArgumentException();
 
 	for (final Object object : getAllObjects()) {
-	    final double timeStep = getTimeStep((GameObject) object, dt);
+	    double timeStep = getTimeStep((GameObject) object, dt);
+	    if (timeStep == Double.POSITIVE_INFINITY)
+		timeStep = 0.002;
 	    ((GameObject) object).advanceTime(dt, timeStep);
 	}
-
-	for (final School school : allSchools)
-	    school.advanceTime(dt);
 
 	advanceVisibleWindow();
     }
@@ -875,6 +873,11 @@ public class World {
 	if (getNbOfSchools() == getMaxNbOfSchools() - 1)
 	    throw new RuntimeException();
 	allSchools.add(school);
+	setNbOfSchools(allSchools.size());
+    }
+
+    void removeSchool(School school) {
+	allSchools.remove(school);
 	setNbOfSchools(allSchools.size());
     }
 }
