@@ -18,14 +18,17 @@ public class School {
 
     private long minID;
     private long maxID;
-    private World world;
+    private World world = null;
     private TreeSet<Slime> slimes;
     private Slime minIDSlime;
     private Slime maxIDSlime;
+    private boolean isTerminated;
 
     public School(World world) {
-	this.world = world;
-	getWorld().addSchool(this);
+	if (world != null) {
+	    this.world = world;
+	    getWorld().addSchool(this);
+	}
 	maxID = Long.MIN_VALUE;
 	minID = Long.MAX_VALUE;
 	minIDSlime = null;
@@ -91,24 +94,31 @@ public class School {
 	maxID = identification;
     }
 
-    World getWorld() {
+    public World getWorld() {
 	return world;
     }
 
     public void removeSlime(Slime slime) {
 	slimes.remove(slime);
 
-	if (slime.getIdentification() == getMinID()) {
-	    minID = getMaxID();
-	    for (final Slime slimy : getAllSlimes())
-		if (slime.getIdentification() < getMinID())
-		    setMinID(slimy.getIdentification());
-	}
-	if (slime.getIdentification() == getMaxID()) {
-	    maxID = getMinID();
-	    for (final Slime slimy : getAllSlimes())
-		if (slime.getIdentification() < getMaxID())
-		    setMaxID(slimy.getIdentification());
+	if (slimes.size() != 0) {
+	    if (slime.getIdentification() == getMinID()) {
+		minID = getMaxID();
+		for (final Slime slimy : getAllSlimes())
+		    if (slime.getIdentification() < getMinID())
+			setMinID(slimy.getIdentification());
+	    }
+	    if (slime.getIdentification() == getMaxID()) {
+		maxID = getMinID();
+		for (final Slime slimy : getAllSlimes())
+		    if (slime.getIdentification() < getMaxID())
+			setMaxID(slimy.getIdentification());
+	    }
+	} else {
+	    setMaxID(0);
+	    setMaxIDSlime(null);
+	    setMinID(0);
+	    setMinIDSlime(null);
 	}
 	slime.school = null;
     }
@@ -121,12 +131,26 @@ public class School {
 	return false;
     }
 
-    private void terminate() {
-	if (slimes.size() != 0)
-	    throw new RuntimeException();
+    public void terminate() {
+//	if (slimes.size() != 0)
+//	    throw new RuntimeException();
+	isTerminated = true;
+	for (final Slime slime : getAllSlimes())
+	    slime.terminate();
 	slimes = null;
 	getWorld().removeSchool(this);
 	world = null;
 
+    }
+
+    public boolean hasSlimeWithID(long id) {
+	for (final Slime slime : getAllSlimes())
+	    if (slime.getIdentification() == id)
+		return true;
+	return false;
+    }
+
+    public boolean isTerminated() {
+	return isTerminated;
     }
 }

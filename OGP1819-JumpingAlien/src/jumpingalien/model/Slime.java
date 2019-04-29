@@ -1,5 +1,7 @@
 package jumpingalien.model;
 
+import java.util.HashSet;
+
 import jumpingalien.util.Sprite;
 
 /**
@@ -27,12 +29,23 @@ public class Slime extends GameObject implements Comparable<Slime> {
 	setSchool(school);
 	setOrientation(1);
 	setHorizontalAcceleration(0.7);
+	addID(id);
+    }
+
+    private void addID(long id2) {
+	GameObject.allIDs.add(id2);
+
     }
 
     void setSchool(School school) {
-	school.addSlime(this);
-	this.school = school;
-//	setWorld(this.school.getWorld());
+//	for (final Slime slime : school.getAllSlimes())
+//	    slime.changeHitPoints(-1);
+
+	if (school != null) {
+	    school.addSlime(this);
+	    this.school = school;
+	}
+
     }
 
     public long getIdentification() {
@@ -44,7 +57,13 @@ public class Slime extends GameObject implements Comparable<Slime> {
     }
 
     public void removeSchool() {
-	getSchool().removeSlime(this);
+//	final School oldSchool = getSchool();
+	if (getSchool() != null)
+	    getSchool().removeSlime(this);
+
+//	for (final Slime slime : oldSchool.getAllSlimes())
+//	    slime.changeHitPoints(1);
+
 	school = null;
     }
 
@@ -161,5 +180,26 @@ public class Slime extends GameObject implements Comparable<Slime> {
 	    if (collidesWith((GameObject) object) && object instanceof Slime && this != object)
 		return false;
 	return true;
+    }
+
+    public static void cleanAllIds() {
+	GameObject.allIDs = new HashSet<Long>();
+    }
+
+    public void switchSchool(School newSchool) {
+	final School oldSchool = getSchool();
+	removeSchool();
+
+	for (final Slime slime : oldSchool.getAllSlimes())
+	    slime.changeHitPoints(1);
+
+	changeHitPoints(-oldSchool.getAllSlimes().size());
+
+	for (final Slime slime : newSchool.getAllSlimes())
+	    slime.changeHitPoints(-1);
+
+	changeHitPoints(newSchool.getAllSlimes().size());
+
+	setSchool(newSchool);
     }
 }

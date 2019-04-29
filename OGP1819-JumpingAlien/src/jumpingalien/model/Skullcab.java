@@ -125,15 +125,15 @@ public class Skullcab extends Plant {
     }
 
     private void checkCollision(double timeStep) {
-	if (getWorld() != null)
-	if (collidesWith(getWorld().getPlayer()))
-	    if (getTimeInContactWithMazub() == 0)
-		setTimeInContactWithMazub(timeStep);
-	    else if (getTimeInContactWithMazub() >= 0.6) {
-		setTimeInContactWithMazub(getTimeInContactWithMazub() - 0.6);
-		changeHitPoints(-1);
-		getWorld().getPlayer().changeHitPoints(50);
-	    }
+	if (getWorld() != null && getWorld().getPlayer() != null)
+	    if (collidesWith(getWorld().getPlayer()))
+		if (getTimeInContactWithMazub() == 0)
+		    setTimeInContactWithMazub(timeStep);
+		else if (getTimeInContactWithMazub() >= 0.6) {
+		    setTimeInContactWithMazub(getTimeInContactWithMazub() - 0.6);
+		    changeHitPoints(-1);
+		    getWorld().getPlayer().changeHitPoints(50);
+		}
     }
 
     /**

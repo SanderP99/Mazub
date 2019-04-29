@@ -63,6 +63,7 @@ public class World {
      */ // TODO postcondities!
     public World(int nbTilesX, int nbTilesY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth,
 	    int visibleWindowHeight, int maxNbOfObjects, int... geologicalFeatures) throws RuntimeException {
+
 	setTileLength(tileLength);
 	setWorldSizeX(nbTilesX * getTileLength());
 	setWorldSizeY(nbTilesY * getTileLength());
@@ -78,7 +79,6 @@ public class World {
 	initializeGeologicalFeatures(nbTilesX, nbTilesY, geologicalFeatures);
 	setMaxNbOfObjects(maxNbOfObjects);
 	setMaxNbOfSchools(10);
-	setNbOfSchools(0);
 
     }
 
@@ -432,6 +432,11 @@ public class World {
     public void terminate() {
 	if (!isTerminated())
 	    isTerminated = true;
+	for (final Object object : getAllObjects())
+	    ((GameObject) object).terminate();
+
+	for (final School school : getAllSchools())
+	    school.terminate();
     }
 
     /**
@@ -573,6 +578,8 @@ public class World {
      */
     private boolean hasPlayer;
 
+    public boolean hasStarted;
+
     /**
      * Returns whether the object can be placed in the world
      * 
@@ -694,7 +701,7 @@ public class World {
      * @post ... | new.gameObject.world == this
      */
     public void addGameObject(GameObject gameObject) throws RuntimeException {
-	if (getAllObjects().size() - 1 == getMaxNbOfObjects())
+	if (getAllObjects().size() == getMaxNbOfObjects() && !(gameObject instanceof Mazub))
 	    throw new RuntimeException();
 	if (!gameObject.isValidGameObject())
 	    throw new RuntimeException();
@@ -703,6 +710,8 @@ public class World {
 	if (gameObject.getYPositionPixel() >= getWorldSizeY() || gameObject.getYPositionActual() < 0)
 	    throw new RuntimeException();
 	if (gameObject.getWorld() != null)
+	    throw new RuntimeException();
+	if (gameIsActive())
 	    throw new RuntimeException();
 
 	if (!canPlaceObject(gameObject))
@@ -721,6 +730,12 @@ public class World {
 
 	objects.add(gameObject);
 	gameObject.world = this;
+    }
+
+    private boolean gameIsActive() {
+	if (hasStarted)
+	    return true;
+	return false;
     }
 
     /**
@@ -746,7 +761,7 @@ public class World {
     /**
      * Returns whether the world has a playable Mazub
      */
-    private boolean hasPlayer() {
+    public boolean hasPlayer() {
 	return hasPlayer;
     }
 
@@ -857,27 +872,25 @@ public class World {
 
     }
 
-    private int nbOfSchools;
+    private final int nbOfSchools = 0;
 
     private final Set<School> allSchools = new HashSet<>();
 
     public int getNbOfSchools() {
-	return nbOfSchools;
-    }
-
-    public void setNbOfSchools(int i) {
-	nbOfSchools = i;
+	return allSchools.size();
     }
 
     void addSchool(School school) {
-	if (getNbOfSchools() == getMaxNbOfSchools() - 1)
+	if (getNbOfSchools() == getMaxNbOfSchools())
 	    throw new RuntimeException();
 	allSchools.add(school);
-	setNbOfSchools(allSchools.size());
     }
 
     void removeSchool(School school) {
 	allSchools.remove(school);
-	setNbOfSchools(allSchools.size());
+    }
+
+    public Set<School> getAllSchools() {
+	return allSchools;
     }
 }

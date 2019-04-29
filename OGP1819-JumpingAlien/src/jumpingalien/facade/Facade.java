@@ -32,6 +32,8 @@ public class Facade implements IFacade {
 	for (final Sprite sprite2 : sprites)
 	    if (sprite2 == null)
 		throw new ModelException("The sprites are not valid");
+	if (pixelLeftX < 0 || pixelBottomY < 0)
+	    throw new ModelException("Mazub not in universe");
 	final Sprite sprite = sprites[0];
 	final Mazub mazub = new Mazub(pixelLeftX, pixelBottomY, sprite.getWidth(), sprite.getHeight(), 0.0, 1.0, 3.0,
 		1.0, false, sprites);
@@ -248,6 +250,8 @@ public class Facade implements IFacade {
     public World createWorld(int tileSize, int nbTilesX, int nbTilesY, int[] targetTileCoordinate,
 	    int visibleWindowWidth, int visibleWindowHeight, int... geologicalFeatures) throws ModelException {
 	try {
+	    if (targetTileCoordinate.length != 2)
+		throw new ModelException("Target tile not valid");
 	    final World world = new World(nbTilesX, nbTilesY, tileSize, targetTileCoordinate[0],
 		    targetTileCoordinate[1], visibleWindowWidth, visibleWindowHeight, 100, geologicalFeatures);
 	    return world;
@@ -317,6 +321,8 @@ public class Facade implements IFacade {
 		throw new ModelException("The object is not valid");
 	    if (world.isTerminated())
 		throw new ModelException("The world is terminated");
+	    if (world.hasPlayer() && object instanceof Mazub)
+		throw new ModelException("The world already has a Mazub");
 	    world.addGameObject((GameObject) object);
 	} catch (final Exception e) {
 	    throw new ModelException("Too many objects");
@@ -349,6 +355,7 @@ public class Facade implements IFacade {
     public void startGame(World world) throws ModelException {
 	if (world.getPlayer() == null)
 	    throw new ModelException("No Mazub");
+	world.hasStarted = true;
     }
 
     @Override
@@ -440,6 +447,8 @@ public class Facade implements IFacade {
 
     @Override
     public World getWorld(Object object) throws ModelException {
+	if (object instanceof School)
+	    return ((School) object).getWorld();
 	return ((GameObject) object).getWorld();
     }
 
@@ -509,6 +518,13 @@ public class Facade implements IFacade {
 	for (final Sprite sprite : sprites)
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
+	if (sprites.length != 2)
+	    throw new ModelException("The amount of sprites is not valid");
+	if (id < 0)
+	    throw new ModelException("ID is not valid");
+
+	if (GameObject.hasSlimeWithID(id))
+	    throw new ModelException("ID is already in use");
 
 	return new Slime(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100,
 		Integer.MAX_VALUE, 2.5, 2.5, 0.0, 0.0, 0.7, -10.0, false, id, school, sprites);
@@ -521,8 +537,9 @@ public class Facade implements IFacade {
 
     @Override
     public School createSchool(World world) throws ModelException {
-	if (world.getMaxNbOfSchools() == world.getNbOfSchools())
-	    throw new ModelException("Maximum number of schools reached");
+	if (world != null)
+	    if (world.getMaxNbOfSchools() == world.getNbOfSchools())
+		throw new ModelException("Maximum number of schools reached");
 	return new School(world);
     }
 
@@ -538,20 +555,31 @@ public class Facade implements IFacade {
 
     @Override
     public void addAsSlime(School school, Slime slime) throws ModelException {
+	if (slime.getSchool() != null)
+	    throw new ModelException("Slime already in school");
+	if (slime.isTerminated())
+	    throw new ModelException("Slime is terminated");
+	if (school.isTerminated())
+	    throw new ModelException("School is terminated");
 	school.addSlime(slime);
 
     }
 
     @Override
     public void removeAsSlime(School school, Slime slime) throws ModelException {
+	if (slime.getSchool() != school)
+	    throw new ModelException("Slime not in school");
 	school.removeSlime(slime);
 
     }
 
     @Override
     public void switchSchool(School newSchool, Slime slime) throws ModelException {
-	// TODO Auto-generated method stub
+	if (slime.getSchool() == null || slime.getSchool() == newSchool || newSchool == null || slime.isTerminated()
+		|| newSchool.isTerminated())
+	    throw new ModelException("School not valid");
 
+	slime.switchSchool(newSchool);
     }
 
     @Override
@@ -568,6 +596,16 @@ public class Facade implements IFacade {
 		throw new ModelException("The sprites are not valid");
 	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100, 100, 10, 10, 0,
 		2, 1.5, -10.0, false, sprites);
+    }
+
+    @Override
+    public Set<School> getAllSchools(World world) throws ModelException {
+	return world.getAllSchools();
+    }
+
+    @Override
+    public void terminateSchool(School school) throws ModelException {
+	school.terminate();
     }
 
 }

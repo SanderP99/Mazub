@@ -1,7 +1,9 @@
 package jumpingalien.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
@@ -32,6 +34,8 @@ import jumpingalien.util.Sprite;
  *        getSpriteArray()) | isValidSprie(sprite) == true
  */
 public abstract class GameObject {
+
+    protected static Set<Long> allIDs = new HashSet<Long>();
 
     /**
      * Creates a new GameObject
@@ -205,6 +209,8 @@ public abstract class GameObject {
 	    isDead = true;
 	    setHitpoints(0);
 	    removeWorld();
+	    if (this instanceof Slime)
+		((Slime) this).removeSchool();
 
 	}
     }
@@ -481,8 +487,7 @@ public abstract class GameObject {
 	if (hitpoints <= 0) {
 	    this.hitpoints = 0;
 	    isDead = true;
-	}
-	if (hitpoints > getMaxHitpoints())
+	} else if (hitpoints > getMaxHitpoints())
 	    this.hitpoints = getMaxHitpoints();
 	else
 	    this.hitpoints = hitpoints;
@@ -986,5 +991,15 @@ public abstract class GameObject {
 		    setVerticalAcceleration(0);
 	if (getYPositionActual() < 0 && getVerticalSpeedMeters() < 0)
 	    setVerticalAcceleration(0);
+    }
+
+    public static boolean hasSlimeWithID(long id) {
+	if (getAllIDs().contains(id))
+	    return true;
+	return false;
+    }
+
+    private static Set<Long> getAllIDs() {
+	return allIDs;
     }
 }
