@@ -1310,6 +1310,7 @@ class FullFacadeTest {
 	    facade.advanceTime(mazub_0_1000, 0.16);
 	    timetoReachSneezewort -= 0.15;
 	}
+
 	assertEquals(100, facade.getHitPoints(mazub_0_1000));
 	assertTrue(facade.getActualPosition(mazub_0_1000)[1] > 9.0 + sneezeWortHeight / 100.0);
 	assertFalse(facade.isTerminatedGameObject(theSneezewort));
@@ -2680,6 +2681,7 @@ class FullFacadeTest {
 	facade.startGame(theWorld);
 	facade.startMoveRight(theMazub);
 	facade.startJump(theMazub);
+
 	for (int nbSteps = 0; nbSteps < 2; nbSteps++) {
 	    final int windowLeft = facade.getVisibleWindowPosition(theWorld)[0];
 	    final int windowRight = facade.getVisibleWindowPosition(theWorld)[0] + windowWidth;
@@ -2696,6 +2698,7 @@ class FullFacadeTest {
 		assertEquals(mazubPixelPositionX - 100, windowLeft);
 		assertEquals(mazubPixelPositionY - 50, windowBottom);
 	    }
+
 	    // After 0.01 seconds, mazub will have moved to the right and up.
 	    facade.advanceWorldTime(theWorld, 0.01);
 	}

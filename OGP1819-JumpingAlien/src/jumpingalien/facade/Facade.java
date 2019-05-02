@@ -389,7 +389,7 @@ public class Facade implements IFacade {
 	try {
 	    world.advanceWorldTime(dt);
 
-	} catch (final Exception e) {
+	} catch (final IllegalArgumentException e) {
 	    throw new ModelException("dt is not valid");
 	}
 
@@ -419,10 +419,11 @@ public class Facade implements IFacade {
 
     @Override
     public void changeActualPosition(Object gameObject, double[] newPosition) throws ModelException {
-	for (final ImpassableTerrain feature : ImpassableTerrain.values())
-	    if (getGeologicalFeature(getWorld(gameObject), (int) (newPosition[0] * 100),
-		    (int) (newPosition[1] * 100)) == feature.getValue())
-		throw new ModelException("The new position is in impassable terrain");
+	if (getWorld(gameObject) != null)
+	    for (final ImpassableTerrain feature : ImpassableTerrain.values())
+		if (getGeologicalFeature(getWorld(gameObject), (int) (newPosition[0] * 100),
+			(int) (newPosition[1] * 100)) == feature.getValue())
+		    throw new ModelException("The new position is in impassable terrain");
 	((GameObject) gameObject).setXPositionActual(newPosition[0]);
 	((GameObject) gameObject).setYPositionActual(newPosition[1]);
 

@@ -718,7 +718,6 @@ public class World {
 	    throw new RuntimeException();
 
 	for (final ImpassableTerrain impassableFeature : ImpassableTerrain.values())
-
 	    if (getGeologicalFeature(gameObject.getXPositionPixel(),
 		    gameObject.getYPositionPixel()) == impassableFeature.getValue()
 		    && !PassableTerrain.contains(getGeologicalFeature(gameObject.getXPositionPixel() + 1,
@@ -778,6 +777,8 @@ public class World {
      * 
      * @param gameObject The gameObject to set as player
      * 
+     * @effect advanceVisibleWindow()
+     * 
      * @post ... | new.player == gameObject
      * @post ... | new.hasPlayer == true
      * @post ... | new.gameObject.isPlayer == true
@@ -786,6 +787,7 @@ public class World {
 	player = gameObject;
 	((Mazub) gameObject).isPlayer = true;
 	hasPlayer = true;
+	advanceVisibleWindow();
     }
 
     /**

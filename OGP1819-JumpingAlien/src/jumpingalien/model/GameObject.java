@@ -896,7 +896,7 @@ public abstract class GameObject {
      *         other.getYPositionPixel()) && !(other.getYPositionPixel() +
      *         (other.getYsize() - 1) < this.getYPositionPixel())
      */
-    protected boolean collidesWith(GameObject other) {
+    public boolean collidesWith(GameObject other) {
 
 	if (other.getXPositionPixel() + other.getXsize() - 1 < getXPositionPixel())
 	    return false;
@@ -962,6 +962,9 @@ public abstract class GameObject {
      * Returns whether the GameObject is standing on the ground
      */
     public boolean isStandingOnImpassableTerrain() {
+	if (getWorld() == null)
+	    return false;
+
 	for (final ImpassableTerrain feature : ImpassableTerrain.values())
 	    for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++) {
 		if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())
@@ -969,10 +972,7 @@ public abstract class GameObject {
 		if (getWorld().getGeologicalFeature(x, getYPositionPixel() - 1) == feature.getValue())
 		    return true;
 	    }
-	final Mazub newMazub = new Mazub(getXPositionPixel(), getYPositionPixel() - 1, 1, 1, getHorizontalSpeedMeters(),
-		1, 3, 1, true, getCurrentSprite());
-	if (!getWorld().canPlaceGameObjectAdvanceTime(newMazub, this))
-	    return true;
+
 	return false;
     }
 
@@ -983,12 +983,13 @@ public abstract class GameObject {
      *       acceleration. | new.VerticalAcceleration == maxVerticalAcceleration
      */
     protected void fall() {
-	if (getYPositionActual() > 0)
+	if (getYPositionActual() > 0 || getWorld() == null)
 	    setVerticalAcceleration(maxVerticalAcceleration);
-	for (final ImpassableTerrain feature : ImpassableTerrain.values())
-	    for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
-		if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())
-		    setVerticalAcceleration(0);
+	if (getWorld() != null)
+	    for (final ImpassableTerrain feature : ImpassableTerrain.values())
+		for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)
+		    if (getWorld().getGeologicalFeature(x, getYPositionPixel()) == feature.getValue())
+			setVerticalAcceleration(0);
 	if (getYPositionActual() < 0 && getVerticalSpeedMeters() < 0)
 	    setVerticalAcceleration(0);
     }

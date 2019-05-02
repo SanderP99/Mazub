@@ -563,6 +563,8 @@ public class Mazub extends GameObject {
 		    changeHitPoints(-2);
 	    }
 	    if (collidesWithMagma) {
+		timeInWater = 0;
+		timeInGas = 0;
 		if (timeInMagma == 0) {
 		    changeHitPoints(-50);
 		    timeInMagma += dt;
@@ -575,6 +577,7 @@ public class Mazub extends GameObject {
 	    } else
 		timeInMagma = 0;
 	    if (collidesWithGas) {
+		timeInWater = 0;
 		if (timeInGas == 0) {
 		    if (!collidesWithMagma) {
 			changeHitPoints(-4);
@@ -592,14 +595,20 @@ public class Mazub extends GameObject {
 		isDead = true;
 
 	    for (final Object object : getWorld().getAllObjects())
-		if (collidesWith((GameObject) object) && object instanceof Plant && getHitpoints() != getMaxHitpoints()
-			&& !((GameObject) object).isDead()) {
+		if (collidesWith((GameObject) object) && object instanceof Sneezewort
+			&& getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()) {
 		    changeHitPoints(50);
 		    ((GameObject) object).terminate();
 		} else if (collidesWith((GameObject) object) && object instanceof Plant
 			&& ((GameObject) object).isDead()) {
 		    changeHitPoints(-20);
 		    ((GameObject) object).terminate();
+		} else if (collidesWith((GameObject) object) && object instanceof Skullcab
+			&& getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()
+			&& ((Skullcab) object).getTimeSinceContactWithMazub() >= 0.6) {
+		    changeHitPoints(50);
+		    ((GameObject) object).changeHitPoints(-1);
+		    ((Skullcab) object).setTimeSinceContactWithMazub(0.0);
 		}
 	} else {
 	    setXPositionActual(newPosX);

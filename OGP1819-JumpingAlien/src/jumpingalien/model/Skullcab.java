@@ -29,14 +29,14 @@ public class Skullcab extends Plant {
      */
     int[] boundaries;
 
-    private double timeInContactWithMazub;
+    private double timeSinceContactWithMazub = 0.6;
 
-    public double getTimeInContactWithMazub() {
-	return timeInContactWithMazub;
+    public double getTimeSinceContactWithMazub() {
+	return timeSinceContactWithMazub;
     }
 
-    private void setTimeInContactWithMazub(double time) {
-	timeInContactWithMazub = time;
+    void setTimeSinceContactWithMazub(double time) {
+	timeSinceContactWithMazub = time;
     }
 
     @Override
@@ -52,6 +52,7 @@ public class Skullcab extends Plant {
 				    + Math.abs(newPosY - (double) getBoundaries()[0] / 100);
 			    setYPositionActual(actualPosY);
 			    checkCollision(timeStep);
+			    setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
 
 			    setOrientation(1);
 			    setSprite(getSpriteArray()[0]);
@@ -62,6 +63,8 @@ public class Skullcab extends Plant {
 			    setSecondsToLive(getSecondsToLive() - timeStep);
 			    setYPositionActual(getYPositionActual() - Math.abs(getVerticalSpeedMeters()) * timeStep);
 			    checkCollision(timeStep);
+			    setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
+
 			}
 		    } else if (getYPositionActual()
 			    + Math.abs(getVerticalSpeedMeters()) * timeStep > (double) getBoundaries()[1] / 100) {
@@ -70,6 +73,7 @@ public class Skullcab extends Plant {
 				- Math.abs(newPosY - (double) getBoundaries()[1] / 100);
 			setYPositionActual(actualPosY);
 			checkCollision(timeStep);
+			setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
 
 			setOrientation(-1);
 			setSprite(getSpriteArray()[1]);
@@ -82,9 +86,13 @@ public class Skullcab extends Plant {
 			if (getOrientation() == 1) {
 			    setYPositionActual(getYPositionActual() + Math.abs(getVerticalSpeedMeters()) * timeStep);
 			    checkCollision(timeStep);
+			    setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
+
 			} else {
 			    setYPositionActual(getYPositionActual() - Math.abs(getVerticalSpeedMeters()) * timeStep);
 			    checkCollision(timeStep);
+			    setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
+
 			}
 		    }
 
@@ -102,12 +110,22 @@ public class Skullcab extends Plant {
 
 	    setSecondsToLive(getSecondsToLive() - dt);
 
-//	    if (getWorld() != null)
-//		if (collidesWith(getWorld().getPlayer())
-//			&& getWorld().getPlayer().getHitpoints() != getWorld().getPlayer().getMaxHitpoints()) {
-//		    terminate();
-//		    getWorld().getPlayer().changeHitPoints(50);
-//		}
+//	    if (getTimeSinceContactWithMazub() >= 0.6) {
+//		changeHitPoints(-1);
+//		getWorld().getPlayer().changeHitPoints(50);
+//		setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() - 0.6);
+//	    }
+	    if (getWorld() != null && getWorld().getPlayer() != null)
+		if (collidesWith(getWorld().getPlayer())
+			&& getWorld().getPlayer().getHitpoints() != getWorld().getPlayer().getMaxHitpoints()
+			&& getTimeSinceContactWithMazub() >= 0.6) {
+		    changeHitPoints(-1);
+		    getWorld().getPlayer().changeHitPoints(50);
+		    setTimeSinceContactWithMazub(0.0);
+		}
+//		else
+//		    setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + dt);
+
 	} else if (getTimeSinceDeath() < 0.6) {
 	    if (dt < 0.599 - getTimeSinceDeath())
 		setTimeSinceDeath(dt + getTimeSinceDeath());
@@ -117,8 +135,12 @@ public class Skullcab extends Plant {
 		terminate();
 	    }
 
-	} else {
-	    getWorld().removeObject(this);
+	} else if (dt < 0.599 - getTimeSinceDeath())
+	    setTimeSinceDeath(dt + getTimeSinceDeath());
+	else {
+	    setTimeSinceDeath(dt + getTimeSinceDeath());
+	    if (getWorld() != null)
+		getWorld().removeObject(this);
 	    terminate();
 	}
 
@@ -127,10 +149,10 @@ public class Skullcab extends Plant {
     private void checkCollision(double timeStep) {
 	if (getWorld() != null && getWorld().getPlayer() != null)
 	    if (collidesWith(getWorld().getPlayer()))
-		if (getTimeInContactWithMazub() == 0)
-		    setTimeInContactWithMazub(timeStep);
-		else if (getTimeInContactWithMazub() >= 0.6) {
-		    setTimeInContactWithMazub(getTimeInContactWithMazub() - 0.6);
+		if (getTimeSinceContactWithMazub() == 0)
+		    setTimeSinceContactWithMazub(timeStep);
+		else if (getTimeSinceContactWithMazub() >= 0.6) {
+		    setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() - 0.6);
 		    changeHitPoints(-1);
 		    getWorld().getPlayer().changeHitPoints(50);
 		}

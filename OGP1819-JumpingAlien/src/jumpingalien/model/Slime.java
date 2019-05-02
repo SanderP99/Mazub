@@ -1,6 +1,8 @@
 package jumpingalien.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import jumpingalien.util.Sprite;
 
@@ -17,6 +19,11 @@ public class Slime extends GameObject implements Comparable<Slime> {
 
     private final long id;
     School school;
+    private boolean collidesWithMagma;
+    private boolean collidesWithWater;
+    private boolean collidesWithGas;
+    private int timeInWater;
+    private int timeInGas;
 
     public Slime(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
@@ -125,35 +132,76 @@ public class Slime extends GameObject implements Comparable<Slime> {
 	final int ySize = getYsize();
 
 	if (getWorld() != null) {
-	    final Slime newSlime = new Slime((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 100, 100, 0.0,
-		    0.0, 0.0, 0.0, 2.5, 0.7, true, getIdentification(), getSchool(), getSpriteArray());
-	    if (getWorld().canPlaceGameObjectAdvanceTime(newSlime, this)) {
-		setXPositionActual(newPosX);
-		setYPositionActual(newPosY);
-		setHorizontalSpeedMeters(newSpeedX);
-		setVerticalSpeedMeters(newSpeedY);
+	    List<int[]> tiles = new ArrayList<int[]>();
+	    tiles = getAllOverlappingTiles();
+	    collidesWithMagma = false;
+	    collidesWithWater = false;
+	    collidesWithGas = false;
+	    for (final int[] tile : tiles) {
+		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.MAGMA.getValue())
+		    collidesWithMagma = true;
+		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
+		    collidesWithWater = true;
+		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.GAS.getValue())
+		    collidesWithGas = true;
+	    }
 
-	    } else {
-		setHorizontalSpeedMeters(0);
-		setVerticalSpeedMeters(0);
+	    if (getWorld() != null) {
+		final Slime newSlime = new Slime((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 100, 100,
+			0.0, 0.0, 0.0, 0.0, 2.5, 0.7, true, getIdentification(), getSchool(), getSpriteArray());
+		if (getWorld().canPlaceGameObjectAdvanceTime(newSlime, this)) {
+		    setXPositionActual(newPosX);
+		    setYPositionActual(newPosY);
+		    setHorizontalSpeedMeters(newSpeedX);
+		    setVerticalSpeedMeters(newSpeedY);
+
+		} else {
+		    setHorizontalSpeedMeters(0);
+		    setVerticalSpeedMeters(0);
 //		setOrientation(-1 * getOrientation());
-		setHorizontalAcceleration(0);
+		    setHorizontalAcceleration(0);
 
 //		setHorizontalAcceleration(-0.7);
 //		setSprite(getSpriteArray()[2]);
+		}
+
+//		for (final Object object : getWorld().getAllObjects())
+//		    if (((GameObject) object).collidesWith(newSlime) && object != newSlime) {
+//			setOrientation(getOrientation() * -1);
+//			setHorizontalAcceleration(0.7 * getOrientation());
+//		    }
+
+		if (collidesWithMagma) {
+		    setHitpoints(0);
+		    isDead = true;
+		}
+		if (collidesWithGas) {
+		    timeInWater = 0;
+		    if (timeInGas >= 0.3) {
+			if (!collidesWithMagma) {
+			    changeHitPoints(2);
+			    timeInGas -= 0.3;
+			}
+		    } else
+			timeInGas += dt;
+		    if (timeInGas >= 0.3) {
+			if (!collidesWithMagma)
+			    changeHitPoints(2);
+			timeInGas -= 0.2;
+		    }
+		}
+
+		if (isStandingOnImpassableTerrain()) {
+		    setVerticalAcceleration(0);
+		    setHorizontalAcceleration(getOrientation() * 0.7);
+		} else
+		    fall();
 	    }
-
-//	    for (final Object object : getWorld().getAllObjects())
-//		if (((GameObject) object).collidesWith(newSlime)) {
-//		    setOrientation(getOrientation() * -1);
-//		    setHorizontalAcceleration(0.7 * getOrientation());
-//		}
-
-	    if (isStandingOnImpassableTerrain()) {
-		setVerticalAcceleration(0);
-		setHorizontalAcceleration(0.7);
-	    } else
-		fall();
+	} else {
+	    setXPositionActual(newPosX);
+	    setYPositionActual(newPosX);
+	    setHorizontalSpeedMeters(newSpeedX);
+	    setVerticalSpeedMeters(newSpeedY);
 	}
     }
 
