@@ -26,7 +26,6 @@ import jumpingalien.util.Sprite;
  * <ul>
  * <li>a class <code>Mazub</code> for representing Mazub the alien</li>
  * <li>a class <code>World</code> for representing the game world</li>
- * <li>a class <code>Plant</code> for representing a plant</li>
  * <li>a class <code>Sneezewort</code> for representing Sneezewort</li>
  * <li>a class <code>Skullcab</code> for representing Skullcab</li>
  * <li>a class <code>Shark</code> for representing a shark enemy</li>
@@ -87,6 +86,12 @@ public interface IFacade {
 	 * team of two students or the effort of an individual student. 
 	 */
 	boolean isTeamSolution();
+	
+	/**
+	 * Return a boolean indicating whether the code at stake is the effort of an
+	 * late team split (split after May 5). In that case, the code must include sharks.
+	 */
+	boolean isLateTeamSplit();
 
 	/**
 	 * Create an instance of Mazub with given pixel position and given sprites.
@@ -352,6 +357,11 @@ public interface IFacade {
 	 * Advance the time for the world and all its objects by the given amount.
 	 */
 	void advanceWorldTime(World world, double dt);
+	
+	/**
+	 * Return a set of all schools in the given world.
+	 */
+	Set<School> getAllSchools(World world) throws ModelException;
 
 	/***********************
 	 * Game Object methods *
@@ -397,9 +407,10 @@ public interface IFacade {
 
 	/**
 	 * Return the orientation of the given game object.
-	 *   The resulting value is negative if the given game object is oriented to the left,
-	 *   0 if the given game object is oriented to the front and positive if the given
-	 *   game object is oriented to the right.
+	 *   The resulting value is
+	 *   - negative if the given game object is oriented to the left or to the bottom,
+	 *   - 0 if the given game object is oriented to the front, and
+	 *   - positive if the given game object is oriented to the right or to the top.
 	 */
 	int getOrientation(Object gameObject) throws ModelException;
 	
@@ -480,11 +491,21 @@ public interface IFacade {
 	 * Return the identification of the given slime.
 	 */
 	long getIdentification(Slime slime) throws ModelException;
+	
+	/**
+	 * Clean all identification used for slimes created so far.
+	 */
+	void cleanAllSlimeIds();
 
 	/**
 	 * Create an instance of School belonging to the given world and with no slimes yet.
 	 */
 	School createSchool(World world) throws ModelException;
+	
+	/**
+	 * Terminate the given school
+	 */
+	void terminateSchool(School school) throws ModelException;
 	
 	/**
 	 * Return a boolean indicating whether the given slime belongs to the given school.
@@ -495,7 +516,7 @@ public interface IFacade {
 	 * Return all the slimes belonging to the given school.
 	 */
 	Collection<? extends Slime> getAllSlimes(School school);
-	
+		
 	/**
 	 * Add the given slime to the given school.
 	 */
