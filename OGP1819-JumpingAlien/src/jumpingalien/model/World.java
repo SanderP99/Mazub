@@ -812,11 +812,16 @@ public class World {
 	if (dt != dt)
 	    throw new IllegalArgumentException();
 
+	if (getPlayer() != null)
+	    getPlayer().advanceTime(dt, getTimeStep(getPlayer(), dt));
+
 	for (final Object object : getAllObjects()) {
 	    double timeStep = getTimeStep((GameObject) object, dt);
-	    if (timeStep == Double.POSITIVE_INFINITY)
-		timeStep = 0.002;
-	    ((GameObject) object).advanceTime(dt, timeStep);
+	    if (object != getPlayer()) {
+		if (timeStep == Double.POSITIVE_INFINITY)
+		    timeStep = 0.002;
+		((GameObject) object).advanceTime(dt, timeStep);
+	    }
 	}
 
 	advanceVisibleWindow();
