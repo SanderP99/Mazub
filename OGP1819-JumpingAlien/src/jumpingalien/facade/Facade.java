@@ -590,7 +590,7 @@ public class Facade implements IFacade {
 
     @Override
     public Shark createShark(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-	if (sprites == null)
+	if (sprites == null || sprites.length != 3)
 	    throw new ModelException("The sprites are not valid");
 	for (final Sprite sprite : sprites)
 	    if (sprite == null)
@@ -611,7 +611,6 @@ public class Facade implements IFacade {
 
     @Override
     public boolean isLateTeamSplit() {
-	// TODO Auto-generated method stub
 	return false;
     }
 
