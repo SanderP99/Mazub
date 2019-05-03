@@ -609,4 +609,16 @@ public class Facade implements IFacade {
 	school.terminate();
     }
 
+    @Override
+    public boolean isLateTeamSplit() {
+	// TODO Auto-generated method stub
+	return false;
+    }
+
+    @Override
+    public void cleanAllSlimeIds() {
+	Slime.cleanAllIds();
+
+    }
+
 }

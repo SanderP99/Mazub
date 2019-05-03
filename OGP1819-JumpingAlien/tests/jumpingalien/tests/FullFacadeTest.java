@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
@@ -18,8 +19,11 @@ import org.junit.jupiter.api.Test;
 
 import jumpingalien.facade.Facade;
 import jumpingalien.facade.IFacade;
-import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.model.Mazub;
+import jumpingalien.model.School;
+import jumpingalien.model.Shark;
+import jumpingalien.model.Skullcab;
+import jumpingalien.model.Slime;
 import jumpingalien.model.Sneezewort;
 import jumpingalien.model.World;
 import jumpingalien.util.ModelException;
@@ -36,8 +40,6 @@ class FullFacadeTest {
     public static final double V_VELOCITY_JUMPING = 8.0;
     public final static double HORIZONTAL_ACCELERATION = 0.9;
     public static final double V_ACCELERATION_JUMPING = -10.0;
-    public static final double WORLD_WIDTH = 10.24;
-    public static final double WORLD_HEIGHT = 7.68;
 
     // Variable referencing the facade.
     IFacade facade = new Facade();
@@ -45,12 +47,19 @@ class FullFacadeTest {
     // Variables referencing some predefined mazub's
     private static Mazub mazub_0_0, mazub_0_1000, mazub_100_0, mazub_100_1000, mazub_20_45;
 
-    // Variables referencing some predefined plants
-    private static Sneezewort plant_120_10;
+    // Variables referencing some predefined sneezeworts.
+    private static Sneezewort sneezewort_120_10;
 
-    // Variables referencing a proper array of sprites for mazubs and plants.
+    // Variables referencing some predefined schools.
+    private static School someSchool;
+
+    // Variables referencing a proper array of sprites for mazubs, for sneezeworts,
+    // for skullcabs, for slimes and for sharks.
     private static Sprite[] mazubSprites;
-    private static Sprite[] plantSprites;
+    private static Sprite[] sneezewortSprites;
+    private static Sprite[] skullcabSprites;
+    private static Sprite[] slimeSprites;
+    private static Sprite[] sharkSprites;
 
     // Variable referencing a predefined world.
     private static World world_100_200, world_250_400;
@@ -72,10 +81,14 @@ class FullFacadeTest {
 		new Sprite("Moving Right 5", 90, 45), new Sprite("Moving Left 1", 90, 45),
 		new Sprite("Moving Left 2", 90, 45), new Sprite("Moving Left 3", 90, 45),
 		new Sprite("Moving Left 4", 90, 45), new Sprite("Moving Left 5", 90, 45), };
-	plantSprites = new Sprite[] { new Sprite("Moving Left", 40, 30), new Sprite("Moving Right", 40, 30) };
-	// Instruction to see to it that the default sprite for Mazub has the
-	// proper size for the test suite.
-	JumpingAlienSprites.setDefaultMazubSprite(mazubSprites[0]);
+	sneezewortSprites = new Sprite[] { new Sprite("Sneezewort Moving Left", 40, 30),
+		new Sprite("Sneezewort Moving Right", 40, 30) };
+	skullcabSprites = new Sprite[] { new Sprite("Scullcab Moving Up", 50, 40),
+		new Sprite("Scullcab Moving Down", 50, 40) };
+	slimeSprites = new Sprite[] { new Sprite("Slime Moving Right", 60, 60),
+		new Sprite("Slime Moving Left", 60, 60) };
+	sharkSprites = new Sprite[] { new Sprite("Shark Resting", 70, 30), new Sprite("Shark Moving Left", 70, 30),
+		new Sprite("Shark Moving Right", 70, 30) };
     }
 
     @AfterAll
@@ -86,14 +99,16 @@ class FullFacadeTest {
 
     @BeforeEach
     void setUp() throws Exception {
+	facade.cleanAllSlimeIds();
 	mazub_0_0 = facade.createMazub(0, 0, mazubSprites);
 	mazub_0_1000 = facade.createMazub(0, 1000, mazubSprites);
 	mazub_100_0 = facade.createMazub(100, 0, mazubSprites);
 	mazub_100_1000 = facade.createMazub(100, 1000, mazubSprites);
 	mazub_20_45 = facade.createMazub(20, 45, mazubSprites);
-	plant_120_10 = facade.createSneezewort(120, 10, plantSprites);
+	sneezewort_120_10 = facade.createSneezewort(120, 10, sneezewortSprites);
 	world_100_200 = facade.createWorld(10, 100, 200, new int[] { 10, 20 }, 20, 10);
 	world_250_400 = facade.createWorld(5, 250, 400, new int[] { 33, 222 }, 25, 40);
+	someSchool = facade.createSchool(world_100_200);
     }
 
     /*******************
@@ -105,7 +120,7 @@ class FullFacadeTest {
 	maximumScore += 18;
 	final Mazub newMazub = facade.createMazub(10, 6, mazubSprites);
 	assertArrayEquals(new int[] { 10, 6 }, facade.getPixelPosition(newMazub));
-	assertArrayEquals(new double[] { 0.1, 0.06 }, facade.getActualPosition(newMazub), HIGH_PRECISION);
+	assertArrayEquals(new double[] { 0.1, 0.06 }, facade.getActualPosition(newMazub), LOW_PRECISION);
 	assertTrue(facade.getOrientation(newMazub) == 0);
 	assertFalse(facade.isMoving(newMazub));
 	assertFalse(facade.isJumping(newMazub));
@@ -113,8 +128,8 @@ class FullFacadeTest {
 	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(newMazub));
 	assertEquals(0.0, facade.getAcceleration(newMazub)[0], HIGH_PRECISION);
 	assertTrue(Math.abs(facade.getAcceleration(newMazub)[1]) <= HIGH_PRECISION
-		|| Math.abs(facade.getAcceleration(newMazub)[1]) >= 10.0 - HIGH_PRECISION
-			&& Math.abs(facade.getAcceleration(newMazub)[1]) <= 10.0 + HIGH_PRECISION);
+		|| Math.abs(facade.getAcceleration(newMazub)[1]) >= 10.0 - LOW_PRECISION
+			&& Math.abs(facade.getAcceleration(newMazub)[1]) <= 10.0 + LOW_PRECISION);
 	assertEquals(100, facade.getHitPoints(newMazub));
 	if (facade.isTeamSolution()) {
 	    assertArrayEquals(mazubSprites, facade.getSprites(newMazub));
@@ -124,15 +139,27 @@ class FullFacadeTest {
     }
 
     @Test
+    void createMazub_OutsideUniverse() throws Exception {
+	maximumScore += 4;
+	assertThrows(ModelException.class, () -> facade.createMazub(-2000, 10, mazubSprites));
+	assertThrows(ModelException.class, () -> facade.createMazub(200, Integer.MIN_VALUE, mazubSprites));
+	actualScore += 4;
+    }
+
+    @Test
     void createMazub_IllegalSprites() throws Exception {
 	if (facade.isTeamSolution()) {
 	    maximumScore += 8;
+	    // Non-effective array of sprites
 	    assertThrows(ModelException.class, () -> facade.createMazub(5, 10, (Sprite[]) null));
+	    // Not enough sprites
 	    assertThrows(ModelException.class, () -> facade.createMazub(5, 10, new Sprite[] { new Sprite("a", 1, 2) }));
+	    // Odd number of sprites
 	    final Sprite[] oddSprites = new Sprite[13];
 	    for (int i = 0; i < oddSprites.length; i++)
 		oddSprites[i] = new Sprite("z", i, i * 2);
 	    assertThrows(ModelException.class, () -> facade.createMazub(5, 10, oddSprites));
+	    // Non-effective sprites
 	    assertThrows(ModelException.class, () -> facade.createMazub(5, 10,
 		    new Sprite[] { null, null, null, null, null, null, null, null, null, null }));
 	    actualScore += 8;
@@ -167,7 +194,8 @@ class FullFacadeTest {
 
     @Test
     void terminate_ObjectInWorld() throws Exception {
-	maximumScore += 10;
+	maximumScore += 15;
+	// Mazub
 	facade.addGameObject(mazub_0_0, world_100_200);
 	assertFalse(facade.isTerminatedGameObject(mazub_0_0));
 	assertEquals(world_100_200, facade.getWorld(mazub_0_0));
@@ -176,15 +204,47 @@ class FullFacadeTest {
 	assertTrue(facade.isTerminatedGameObject(mazub_0_0));
 	assertNull(facade.getWorld(mazub_0_0));
 	assertFalse(facade.getAllGameObjects(world_100_200).contains(mazub_0_0));
-	actualScore += 10;
+	// Sneezewort
+	final Sneezewort someSneezewort = facade.createSneezewort(10, 20, sneezewortSprites);
+	facade.terminateGameObject(someSneezewort);
+	assertTrue(facade.isTerminatedGameObject(someSneezewort));
+	assertNull(facade.getWorld(someSneezewort));
+	// Skullcab
+	final Skullcab someSkullcab = facade.createSkullcab(10, 20, skullcabSprites);
+	facade.terminateGameObject(someSkullcab);
+	assertTrue(facade.isTerminatedGameObject(someSkullcab));
+	assertNull(facade.getWorld(someSkullcab));
+	// Slime
+	final Slime someSlime = facade.createSlime(22, 10, 20, someSchool, slimeSprites);
+	facade.terminateGameObject(someSlime);
+	assertTrue(facade.isTerminatedGameObject(someSlime));
+	assertNull(facade.getWorld(someSlime));
+	assertFalse(facade.hasAsSlime(someSchool, someSlime));
+	// Shark
+	final Shark someShark = facade.createShark(10, 20, sharkSprites);
+	facade.terminateGameObject(someShark);
+	assertTrue(facade.isTerminatedGameObject(someShark));
+	assertNull(facade.getWorld(someShark));
+	actualScore += 15;
+    }
+
+    @Test
+    void terminate_ObjectNotInWorld() throws Exception {
+	maximumScore += 3;
+	facade.terminateGameObject(mazub_0_0);
+	assertTrue(facade.isTerminatedGameObject(mazub_0_0));
+	assertNull(facade.getWorld(mazub_0_0));
+	actualScore += 3;
     }
 
     @Test
     void changeActualPosition_LegalCases() throws Exception {
 	maximumScore += 4;
-	facade.changeActualPosition(mazub_0_0, new double[] { 2.4, 3.6 });
+	// Changing position of Mazub located in a game world.
 	facade.addGameObject(mazub_0_0, world_100_200);
+	facade.changeActualPosition(mazub_0_0, new double[] { 2.4, 3.6 });
 	assertArrayEquals(new double[] { 2.4, 3.6 }, facade.getActualPosition(mazub_0_0), LOW_PRECISION);
+	// Changing position of Mazub in the universe (not in a world).
 	facade.changeActualPosition(mazub_100_0, new double[] { 33.6, Double.POSITIVE_INFINITY });
 	assertArrayEquals(new double[] { 33.6, Double.POSITIVE_INFINITY }, facade.getActualPosition(mazub_100_0),
 		LOW_PRECISION);
@@ -202,7 +262,6 @@ class FullFacadeTest {
 	// Position with NaN as displacement
 	assertThrows(ModelException.class,
 		() -> facade.changeActualPosition(mazub_0_0, new double[] { Double.NaN, 33.6 }));
-	// Position with INFINITY as displacement
 	actualScore += 4;
     }
 
@@ -228,7 +287,7 @@ class FullFacadeTest {
 	facade.changeActualPosition(theMazub, new double[] { newX, 14.7 });
 	assertTrue(facade.isTerminatedGameObject(theMazub));
 	assertFalse(facade.hasAsGameObject(theMazub, world_250_400));
-	// Position to above top of the world
+	// Position above top of the world
 	theMazub = facade.createMazub(12, 7, mazubSprites);
 	facade.addGameObject(theMazub, world_250_400);
 	final double newY = (facade.getSizeInPixels(world_250_400)[1] + 1) * 0.01;
@@ -240,12 +299,18 @@ class FullFacadeTest {
 
     @Test
     void changeActualPosition_OnImpassableTerrain() throws Exception {
-	maximumScore += 6;
+	maximumScore += 10;
 	final Mazub theMazub = facade.createMazub(0, 0, mazubSprites);
 	facade.addGameObject(theMazub, world_250_400);
 	facade.setGeologicalFeature(world_250_400, 550, 300, SOLID_GROUND);
 	assertThrows(ModelException.class, () -> facade.changeActualPosition(theMazub, new double[] { 5.2, 2.7 }));
-	actualScore += 6;
+	final Sneezewort theSneezewort = facade.createSneezewort(10, 20, sneezewortSprites);
+	facade.addGameObject(theSneezewort, world_250_400);
+	facade.setGeologicalFeature(world_250_400, 220, 110, ICE);
+	final double[] newPosition = { 2.1, 1.0 };
+	facade.changeActualPosition(theSneezewort, newPosition);
+	assertArrayEquals(newPosition, facade.getActualPosition(theSneezewort), LOW_PRECISION);
+	actualScore += 10;
     }
 
     @Test
@@ -253,23 +318,20 @@ class FullFacadeTest {
 	maximumScore += 15;
 	facade.setGeologicalFeature(world_250_400, 10, 1010, MAGMA);
 	facade.setGeologicalFeature(world_250_400, 50, 995, SOLID_GROUND);
-	final Mazub theMazub = facade.createMazub(0, 999, mazubSprites);
+	final Mazub theMazub = facade.createMazub(0, 1000, mazubSprites);
 	facade.addGameObject(theMazub, world_250_400);
-	// After 0.2 seconds, mazub will be dead because of its contact with water.
-	facade.advanceTime(theMazub, 0.15);
-	facade.advanceTime(theMazub, 0.15);
-	// Dead objects can not move nor jump.
-	assertThrows(ModelException.class, () -> facade.startMoveRight(theMazub));
-	assertThrows(ModelException.class, () -> facade.startJump(theMazub));
-	facade.advanceTime(theMazub, 0.15);
+	// After 0.3 seconds, mazub will be dead because of its contact with water.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(0, facade.getHitPoints(theMazub));
 	assertEquals(0.0, facade.getActualPosition(theMazub)[0], HIGH_PRECISION);
 	assertTrue(facade.getActualPosition(theMazub)[1] >= 9.99 - LOW_PRECISION
 		&& facade.getActualPosition(theMazub)[1] <= 10.01);
 	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(theMazub));
 	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getAcceleration(theMazub));
 	// 0.6 seconds after its dead, mazub must be removed from its game world.
-	for (int i = 1; i <= 3; i++)
-	    facade.advanceTime(theMazub, 0.15);
+	for (int i = 1; i <= 4; i++)
+	    facade.advanceWorldTime(world_250_400, 0.16);
 	assertTrue(facade.isTerminatedGameObject(theMazub));
 	assertNull(facade.getWorld(theMazub));
 	assertFalse(facade.getAllGameObjects(world_250_400).contains(theMazub));
@@ -316,16 +378,34 @@ class FullFacadeTest {
     }
 
     @Test
+    public void startMove_DeadMazub() throws Exception {
+	maximumScore += 4;
+	facade.setGeologicalFeature(world_250_400, 80, 40, SOLID_GROUND);
+	facade.setGeologicalFeature(world_250_400, 30, 50, MAGMA);
+	facade.addGameObject(mazub_20_45, world_250_400);
+	// Mazub will be dead after more than 0.2 seconds in contact with MAGMA.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertTrue(facade.isDeadGameObject(mazub_20_45));
+	assertThrows(ModelException.class, () -> facade.startMoveLeft(mazub_20_45));
+	assertThrows(ModelException.class, () -> facade.startMoveRight(mazub_20_45));
+	actualScore += 4;
+    }
+
+    @Test
     public void endMove_LegalCase() throws Exception {
 	maximumScore += 6;
-	facade.startMoveLeft(mazub_100_0);
-	facade.endMove(mazub_100_0);
-	assertFalse(facade.isMoving(mazub_100_0));
-	assertTrue(facade.getOrientation(mazub_100_0) <= 0);
-	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(mazub_100_0), HIGH_PRECISION);
-	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getAcceleration(mazub_100_0), HIGH_PRECISION);
+	facade.setGeologicalFeature(world_250_400, 80, 40, SOLID_GROUND);
+	facade.addGameObject(mazub_20_45, world_250_400);
+	facade.startMoveLeft(mazub_20_45);
+	facade.advanceWorldTime(world_250_400, 0.1);
+	facade.endMove(mazub_20_45);
+	assertFalse(facade.isMoving(mazub_20_45));
+	assertTrue(facade.getOrientation(mazub_20_45) < 0);
+	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(mazub_20_45), HIGH_PRECISION);
+	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getAcceleration(mazub_20_45), HIGH_PRECISION);
 	if (facade.isTeamSolution())
-	    assertEquals(mazubSprites[3], facade.getCurrentSprite(mazub_100_0));
+	    assertEquals(mazubSprites[3], facade.getCurrentSprite(mazub_20_45));
 	actualScore += 6;
     }
 
@@ -354,6 +434,20 @@ class FullFacadeTest {
 	maximumScore += 2;
 	facade.startJump(mazub_100_0);
 	assertThrows(ModelException.class, () -> facade.startJump(mazub_100_0));
+	actualScore += 2;
+    }
+
+    @Test
+    public void startJump_DeadMazub() throws Exception {
+	maximumScore += 2;
+	facade.setGeologicalFeature(world_250_400, 80, 40, SOLID_GROUND);
+	facade.setGeologicalFeature(world_250_400, 30, 50, MAGMA);
+	facade.addGameObject(mazub_20_45, world_250_400);
+	// Mazub will be dead after more than 0.2 seconds in contact with MAGMA.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertTrue(facade.isDeadGameObject(mazub_20_45));
+	assertThrows(ModelException.class, () -> facade.startJump(mazub_20_45));
 	actualScore += 2;
     }
 
@@ -479,15 +573,18 @@ class FullFacadeTest {
 	    facade.startDuck(mazub_100_1000);
 	    for (int i = 0; i < 10; i++)
 		facade.advanceTime(mazub_100_1000, 0.1);
-	    // Mazub will not be able to stand up, because of the solid ground at (220,35).
+	    // Mazub will not be able to stand up, because of the solid ground at
+	    // (220,35).
 	    facade.endDuck(mazub_100_1000);
 	    assertTrue(facade.isDucking(mazub_100_1000));
 	    // Mazub will move over 50.0 cm in 0.5 seconds.
 	    for (int i = 0; i < 5; i++)
 		facade.advanceTime(mazub_100_1000, 0.1);
 	    if (facade.isTeamSolution())
-		assertEquals(mazubSprites[6], facade.getCurrentSprite(mazub_100_1000));
-	    // Mazub will now be able to stand up.
+		assertTrue(facade.getCurrentSprite(mazub_100_1000).equals(mazubSprites[6])
+			|| facade.getCurrentSprite(mazub_100_1000).equals(mazubSprites[11]));
+	    // Mazub will now be able to stand up, and might already stand up at this
+	    // point.
 	    facade.endDuck(mazub_100_1000);
 	    assertFalse(facade.isDucking(mazub_100_1000));
 	    if (facade.isTeamSolution())
@@ -502,15 +599,15 @@ class FullFacadeTest {
 	    maximumScore += 6;
 	    facade.addGameObject(mazub_100_0, world_250_400);
 	    facade.startDuck(mazub_100_0);
-	    final Mazub otherMazub = facade.createMazub(120, 35, mazubSprites);
-	    facade.addGameObject(otherMazub, world_250_400);
+	    final Slime slimeToBumpAgainst = facade.createSlime(10, 120, 35, someSchool, slimeSprites);
+	    facade.addGameObject(slimeToBumpAgainst, world_250_400);
 	    // Mazub will not be able to stand up, because of the newly added game object.
 	    facade.endDuck(mazub_100_0);
 	    if (facade.isTeamSolution())
 		assertEquals(mazubSprites[1], facade.getCurrentSprite(mazub_100_0));
 	    assertTrue(facade.isDucking(mazub_100_0));
 	    // After removing the newly added game object, mazub can stand up.
-	    facade.removeGameObject(otherMazub, world_250_400);
+	    facade.removeGameObject(slimeToBumpAgainst, world_250_400);
 	    facade.endDuck(mazub_100_0);
 	    assertFalse(facade.isDucking(mazub_100_0));
 	    if (facade.isTeamSolution())
@@ -520,11 +617,11 @@ class FullFacadeTest {
     }
 
     @Test
-    public void advanceTime_StationaryMazub() throws Exception {
+    public void advanceTime_MazubStationary() throws Exception {
 	maximumScore += 4;
-	facade.setGeologicalFeature(world_100_200, 120, 995, SOLID_GROUND);
+	facade.setGeologicalFeature(world_100_200, 120, 990, SOLID_GROUND);
 	facade.addGameObject(mazub_100_1000, world_100_200);
-	facade.advanceTime(mazub_100_1000, 0.15);
+	facade.advanceWorldTime(world_100_200, 0.15);
 	assertEquals(1.0, facade.getActualPosition(mazub_100_1000)[0], HIGH_PRECISION);
 	assertTrue(facade.getActualPosition(mazub_100_1000)[1] >= 9.99 - LOW_PRECISION
 		&& facade.getActualPosition(mazub_100_1000)[1] <= 10.01);
@@ -560,7 +657,7 @@ class FullFacadeTest {
 	facade.startMoveRight(mazub_100_1000);
 	// Mazub will move 18.3 cm over 0.17 seconds; its velocity increases with 0.153
 	// m/s
-	facade.advanceTime(mazub_100_1000, 0.17);
+	facade.advanceWorldTime(world_250_400, 0.17);
 	assertEquals(1.183, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
 	assertEquals(1.153, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 	if (facade.isTeamSolution())
@@ -571,65 +668,76 @@ class FullFacadeTest {
     @Test
     public void advanceTime_MazubReachingLeftBorder() throws Exception {
 	maximumScore += 5;
-	facade.addGameObject(mazub_100_0, world_250_400);
-	facade.changeActualPosition(mazub_100_0, new double[] { 0.05, 0.0 });
-	facade.startMoveLeft(mazub_100_0);
+	facade.setGeologicalFeature(world_250_400, 50, 995, SOLID_GROUND);
+	facade.addGameObject(mazub_100_1000, world_250_400);
+	facade.changeActualPosition(mazub_100_1000, new double[] { 0.05, 10.0 });
+	facade.startMoveLeft(mazub_100_1000);
 	// Mazub reaches left border after 0.1024 seconds.
-	facade.advanceTime(mazub_100_0, 0.19);
-	assertTrue(facade.isTerminatedGameObject(mazub_100_0));
-	assertNull(facade.getWorld(mazub_100_0));
+	facade.advanceWorldTime(world_250_400, 0.19);
+	assertTrue(facade.isTerminatedGameObject(mazub_100_1000));
+	assertNull(facade.getWorld(mazub_100_1000));
 	actualScore += 5;
     }
 
     @Test
     public void advanceTime_MazubReachingRightBorder() throws Exception {
 	maximumScore += 3;
-	facade.addGameObject(mazub_100_0, world_250_400);
-	facade.changeActualPosition(mazub_100_0,
-		new double[] { facade.getSizeInPixels(world_250_400)[0] / 100.0 - 0.05, 0.0 });
-	facade.startMoveRight(mazub_100_0);
+	facade.setGeologicalFeature(world_250_400, 50, 995, SOLID_GROUND);
+	facade.addGameObject(mazub_100_1000, world_250_400);
+	facade.changeActualPosition(mazub_100_1000,
+		new double[] { facade.getSizeInPixels(world_250_400)[0] / 100.0 - 0.05, 10.0 });
+	facade.startMoveRight(mazub_100_1000);
 	// Mazub reaches right border after 0.1447 seconds.
-	facade.advanceTime(mazub_100_0, 0.19);
-	assertTrue(facade.isTerminatedGameObject(mazub_100_0));
-	assertNull(facade.getWorld(mazub_100_0));
+	facade.advanceWorldTime(world_250_400, 0.19);
+	assertTrue(facade.isTerminatedGameObject(mazub_100_1000));
+	assertNull(facade.getWorld(mazub_100_1000));
 	actualScore += 3;
     }
 
     @Test
-    public void advanceTime_MazubCollidingWithMazubAtLeftSide() throws Exception {
-	maximumScore += 6;
-	facade.addGameObject(mazub_0_1000, world_250_400);
-	facade.startDuck(mazub_0_1000);
-	final int movingMazubXposition = 20 + facade.getCurrentSprite(mazub_0_1000).getWidth();
+    public void advanceTime_MazubCollidingWithSlimeAtLeftSide() throws Exception {
+	maximumScore += 10;
+	final Slime slimeToCollideWith = facade.createSlime(10, 0, 1000, someSchool, slimeSprites);
+	facade.addGameObject(slimeToCollideWith, world_250_400);
+	final int movingMazubXposition = 20 + facade.getCurrentSprite(slimeToCollideWith).getWidth();
 	final Mazub moving_mazub = facade.createMazub(movingMazubXposition, 1000, mazubSprites);
 	facade.addGameObject(moving_mazub, world_250_400);
 	facade.startMoveLeft(moving_mazub);
-	// The moving mazub is at a distance of 20 cm from the other mazub and will
+	// The moving mazub is at a distance of 20 cm from the slime and will
 	// collide with it after 0.184656 seconds.
 	facade.advanceTime(moving_mazub, 0.19);
 	assertEquals((movingMazubXposition - 20) / 100.0, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
 	assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
 	assertEquals(0.0, facade.getAcceleration(moving_mazub)[0], HIGH_PRECISION);
-	actualScore += 6;
+	assertEquals(100 - 20, facade.getHitPoints(moving_mazub));
+	actualScore += 10;
     }
 
     @Test
-    public void advanceTime_MazubCollidingWithMazubAtRightSide() throws Exception {
-	maximumScore += 6;
-	final Mazub mazubToCollideWith = facade.createMazub(200, 990, mazubSprites);
-	facade.addGameObject(mazubToCollideWith, world_250_400);
+    public void advanceTime_MazubCollidingWithSharkAtRightSide() throws Exception {
+	maximumScore += 10;
+	Shark sharkToCollideWith = null;
+	Slime slimeToCollideWith = null;
+	if (shouldImplementSharks()) {
+	    sharkToCollideWith = facade.createShark(200, 990, sharkSprites);
+	    facade.addGameObject(sharkToCollideWith, world_250_400);
+	} else {
+	    slimeToCollideWith = facade.createSlime(10, 200, 990, null, slimeSprites);
+	    facade.addGameObject(slimeToCollideWith, world_250_400);
+	}
 	final int movingMazubXPos = facade.isTeamSolution() ? 95 : 85;
 	final Mazub moving_mazub = facade.createMazub(movingMazubXPos, 1000, mazubSprites);
 	facade.addGameObject(moving_mazub, world_250_400);
 	facade.startMoveRight(moving_mazub);
-	// The moving mazub is at a distance of 15 cm from the other mazub and will
+	// The moving mazub is at a distance of 15 cm from the shark and will
 	// collide with it after 0.141 seconds.
 	facade.advanceTime(moving_mazub, 0.15);
 	final double expectedMazubXPos = facade.isTeamSolution() ? 1.1 : 1.0;
 	assertEquals(expectedMazubXPos, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
 	assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
 	assertEquals(0.0, facade.getAcceleration(moving_mazub)[0], HIGH_PRECISION);
-	actualScore += 6;
+	assertEquals(100 - 50, facade.getHitPoints(moving_mazub));
+	actualScore += 10;
     }
 
     @Test
@@ -640,7 +748,8 @@ class FullFacadeTest {
 	final Mazub moving_mazub = facade.createMazub(110, 999, mazubSprites);
 	facade.addGameObject(moving_mazub, world_250_400);
 	facade.startMoveLeft(moving_mazub);
-	// The moving mazub will collide with the other mazub after 0.0489 seconds.
+	// The moving mazub will collide with the impassable terrain after 0.0489
+	// seconds.
 	facade.advanceTime(moving_mazub, 0.1);
 	assertEquals(1.05, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
 	assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
@@ -659,7 +768,8 @@ class FullFacadeTest {
 	// The moving mazub will collide with the impassable terrain after 0.141
 	// seconds.
 	facade.advanceTime(moving_mazub, 0.15);
-	assertEquals(1.15, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
+	final double expectedPosition = facade.isTeamSolution() ? 1.15 : 1.05;
+	assertEquals(expectedPosition, facade.getActualPosition(moving_mazub)[0], LOW_PRECISION);
 	assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
 	assertEquals(0.0, facade.getAcceleration(moving_mazub)[0], HIGH_PRECISION);
 	actualScore += 6;
@@ -679,11 +789,9 @@ class FullFacadeTest {
 	facade.setGeologicalFeature(world_250_400, 550, 995, SOLID_GROUND);
 	facade.addGameObject(mazub_100_1000, world_250_400);
 	// Mazub needs (3.0-1.0)/0.9 = 2.22 seconds to reach top speed.
-	// Mazub will move over 452.778 cm in a period of 2.25 seconds (444.438 cm in
-	// 2.2222
-	// seconds at increasing speed, and 8.34 cm in a period of 2.25-0.2222 seconds
-	// at
-	// top speed)
+	// Mazub will move over 452.778 cm in a period of 2.25 seconds
+	// (444.438 cm in 2.2222 seconds at increasing speed,
+	// and 8.34 cm in a period of 2.25-0.2222 seconds at top speed)
 	facade.startMoveRight(mazub_100_1000);
 	for (int i = 1; i <= 15; i++)
 	    facade.advanceTime(mazub_100_1000, 0.15);
@@ -702,15 +810,16 @@ class FullFacadeTest {
     @Test
     public void advanceTime_MazubJumpingUpwardsOnly() throws Exception {
 	maximumScore += 6;
-	facade.addGameObject(mazub_100_0, world_250_400);
-	facade.startJump(mazub_100_0);
+	facade.setGeologicalFeature(world_250_400, 70, 40, SOLID_GROUND);
+	facade.addGameObject(mazub_20_45, world_250_400);
+	facade.startJump(mazub_20_45);
 	// Mazub will jump over 108.75 cm in 0.15 seconds; it will have a velocity of
 	// 6.5m/s
-	facade.advanceTime(mazub_100_0, 0.15);
-	assertEquals(1.0875, facade.getActualPosition(mazub_100_0)[1], LOW_PRECISION);
-	assertEquals(6.5, facade.getVelocity(mazub_100_0)[1], LOW_PRECISION);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(0.45 + 1.0875, facade.getActualPosition(mazub_20_45)[1], LOW_PRECISION);
+	assertEquals(6.5, facade.getVelocity(mazub_20_45)[1], LOW_PRECISION);
 	if (facade.isTeamSolution())
-	    assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_0));
+	    assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_20_45));
 	actualScore += 6;
     }
 
@@ -740,8 +849,7 @@ class FullFacadeTest {
 	assertEquals(3.2, facade.getActualPosition(mazub_100_0)[1], LOW_PRECISION);
 	assertEquals(0.0, facade.getVelocity(mazub_100_0)[1], LOW_PRECISION);
 	// After 0.18 seconds, mazub will have fallen over 16.2 cm; its velocity is
-	// changed
-	// to -1.8 m/s.
+	// changed to -1.8 m/s.
 	facade.advanceTime(mazub_100_0, 0.18);
 	assertEquals(3.2 - 0.162, facade.getActualPosition(mazub_100_0)[1], LOW_PRECISION);
 	assertEquals(-1.8, facade.getVelocity(mazub_100_0)[1], LOW_PRECISION);
@@ -817,46 +925,54 @@ class FullFacadeTest {
     @Test
     public void advanceTime_MazubBumpingAgainstOtherGameObject() throws Exception {
 	maximumScore += 15;
-	final Mazub mazubToBumpAgainst = facade.createMazub(150, 200, mazubSprites);
-	facade.addGameObject(mazubToBumpAgainst, world_250_400);
 	facade.addGameObject(mazub_100_0, world_250_400);
 	facade.startJump(mazub_100_0);
-	// Mazub reaches other mazub after 0.2169 seconds, and then starts falling down.
-	facade.advanceTime(mazub_100_0, 0.1);
-	facade.advanceTime(mazub_100_0, 0.1169);
+	final int mazubHeight = facade.getCurrentSprite(mazub_100_0).getHeight();
+	final Slime slimeToBumpAgainst = facade.createSlime(10, 150, mazubHeight + 50, someSchool, slimeSprites);
+	facade.addGameObject(slimeToBumpAgainst, world_250_400);
+	// Mazub reaches slime after 0.06515 seconds, and then starts falling down.
+	// The slime will have moved 0.0139 cm to the right.
+	facade.advanceWorldTime(world_250_400, 0.06515);
 	assertEquals(1.0, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
-	assertEquals(1.5, facade.getActualPosition(mazub_100_0)[1], LOW_PRECISION);
-	// Mazub falls down 5 cm over a period of 0.1 seconds
-	facade.advanceTime(mazub_100_0, 0.1);
-	assertEquals(1.0, facade.getActualPosition(mazub_100_0)[0], LOW_PRECISION);
-	assertEquals(1.45, facade.getActualPosition(mazub_100_0)[1], LOW_PRECISION);
-	// Mazub reaches bottom of world after falling 0.5385 seconds.
-	for (int i = 0; i < 3; i++)
-	    facade.advanceTime(mazub_100_0, 0.18);
-	assertTrue(facade.isTerminatedGameObject(mazub_100_0));
-	assertNull(facade.getWorld(mazub_100_0));
+	assertEquals(0.50, facade.getActualPosition(mazub_100_0)[1], LOW_PRECISION);
+	assertEquals(1.5 + 0.00139, facade.getActualPosition(slimeToBumpAgainst)[0], LOW_PRECISION);
+	// The mazub now starts falling down. It will have fallen over 5cm in 0.1
+	// seconds.
+	// The hit points of one of the objects will have changed because of the
+	// collision.
+	facade.advanceWorldTime(world_250_400, 0.1);
+	assertEquals(0.5 - 0.05, facade.getActualPosition(mazub_100_0)[1], LOW_PRECISION);
+	assertEquals(1.5 + 0.009546, facade.getActualPosition(slimeToBumpAgainst)[0], LOW_PRECISION);
+	assertTrue(facade.getHitPoints(mazub_100_0) + facade.getHitPoints(slimeToBumpAgainst) < 200);
 	actualScore += 15;
     }
 
     @Test
-    public void advanceTime_MazubLandingOntTopOfGameObject() throws Exception {
+    public void advanceTime_MazubLandingOnTopOfGameObject() throws Exception {
 	maximumScore += 15;
 	final Mazub jumpingMazub = facade.createMazub(100, 150, mazubSprites);
 	facade.addGameObject(jumpingMazub, world_250_400);
-	facade.addGameObject(mazub_100_0, world_250_400);
+	final Slime slimeToLandOn = facade.createSlime(10, 50, 0, null, slimeSprites);
+	facade.addGameObject(slimeToLandOn, world_250_400);
 	facade.startJump(jumpingMazub);
 	// Mazub reaches top after 0.8 seconds; the distance of the jump is 320 cm.
 	for (int i = 0; i < 5; i++)
-	    facade.advanceTime(jumpingMazub, 0.16);
+	    facade.advanceWorldTime(world_250_400, 0.16);
 	assertEquals(1.0, facade.getActualPosition(jumpingMazub)[0], LOW_PRECISION);
 	assertEquals(4.70, facade.getActualPosition(jumpingMazub)[1], LOW_PRECISION);
+	// The total time to land depends on the height of both objects.
+	final int slimeHeight = facade.getCurrentSprite(slimeToLandOn).getHeight();
+	double timeToLand = Math.sqrt((470 - slimeHeight) / 500.0);
 	// Mazub is still falling after 0.9 seconds.
 	for (int i = 0; i < 5; i++)
-	    facade.advanceTime(jumpingMazub, 0.18);
+	    facade.advanceWorldTime(world_250_400, 0.18);
+	timeToLand -= 0.9;
 	assertEquals(0.65, facade.getActualPosition(jumpingMazub)[1], LOW_PRECISION);
-	// Mazub reaches the top of the other mazub after another 0.0165 seconds.
-	facade.advanceTime(jumpingMazub, 0.04);
-	assertEquals(0.5, facade.getActualPosition(jumpingMazub)[1], LOW_PRECISION);
+	// Mazub reaches the top of the slime after the remaining time to land.
+	// The hit points of one of both objects will have been decreased
+	facade.advanceWorldTime(world_250_400, timeToLand + 0.03);
+	assertEquals(slimeHeight / 100.0, facade.getActualPosition(jumpingMazub)[1], LOW_PRECISION);
+	assertTrue(facade.getHitPoints(jumpingMazub) + facade.getHitPoints(slimeToLandOn) < 200);
 	actualScore += 15;
     }
 
@@ -923,10 +1039,10 @@ class FullFacadeTest {
 	maximumScore += 4;
 	facade.addGameObject(mazub_100_1000, world_250_400);
 	facade.startMoveLeft(mazub_100_1000);
-	// Mazub will have moved over 14.822 cm in a period of 0.14 seconds. Its
+	// Mazub will have moved over 14.882 cm in a period of 0.14 seconds. Its
 	// velocity will have raised to 1.126 m/s.
 	facade.advanceTime(mazub_100_1000, 0.14);
-	assertEquals(1.0 - 0.14822, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
+	assertEquals(1.0 - 0.14882, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
 	assertEquals(-1.126, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 	// Starting to duck
 	facade.startDuck(mazub_100_1000);
@@ -937,7 +1053,7 @@ class FullFacadeTest {
 	// Mazub will have moved over 12 cm in a period of 0.12 seconds. Its
 	// velocity stays constant at 1.0 m/s.
 	facade.advanceTime(mazub_100_1000, 0.12);
-	assertEquals(1.0 - 0.14822 - 0.12, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
+	assertEquals(1.0 - 0.14882 - 0.12, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
 	assertEquals(-MINIMUM_HORIZONTAL_VELOCITY, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 	if (facade.isTeamSolution())
 	    assertEquals(mazubSprites[7], facade.getCurrentSprite(mazub_100_1000));
@@ -951,7 +1067,7 @@ class FullFacadeTest {
 	// Mazub will have moved over 10.45 cm in a period of 0.14 seconds. Its
 	// velocity will have raised to 1.09 m/s.
 	facade.advanceTime(mazub_100_1000, 0.1);
-	assertEquals(1.0 - 0.14822 - 0.12 - 0.1045, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
+	assertEquals(1.0 - 0.14882 - 0.12 - 0.1045, facade.getActualPosition(mazub_100_1000)[0], LOW_PRECISION);
 	assertEquals(-1.09, facade.getVelocity(mazub_100_1000)[0], LOW_PRECISION);
 	if (facade.isTeamSolution())
 	    assertEquals(mazubSprites[14], facade.getCurrentSprite(mazub_100_1000));
@@ -967,8 +1083,7 @@ class FullFacadeTest {
 	if (facade.isTeamSolution())
 	    assertEquals(mazubSprites[4], facade.getCurrentSprite(mazub_100_0));
 	// Mazub will have moved over 14.822 cm in 0.14 seconds, and will have a
-	// horizontal
-	// velocity of 1.126 m/s.
+	// horizontal velocity of 1.126 m/s.
 	// Mazub will also have jumped over 102.2 cm in 0.14 seconds, and will have a
 	// vertical velocity of 6.6 m/s.
 	facade.advanceTime(mazub_100_0, 0.14);
@@ -1038,7 +1153,7 @@ class FullFacadeTest {
     }
 
     @Test
-    public void advanceTime_DyingInWater() {
+    public void advanceTime_MazubDyingInWater() {
 	maximumScore += 6;
 	facade.setGeologicalFeature(world_250_400, 120, 1010, WATER);
 	facade.setGeologicalFeature(world_250_400, 120, 995, SOLID_GROUND);
@@ -1051,7 +1166,7 @@ class FullFacadeTest {
 	facade.advanceTime(mazub_100_1000, 0.15);
 	assertEquals(0, facade.getHitPoints(mazub_100_1000));
 	// After another 0.60 seconds, mazub is terminated and removed from its world
-	for (int i = 1; i <= 4; i++)
+	for (int i = 1; i <= 5; i++)
 	    facade.advanceTime(mazub_100_1000, 0.15);
 	assertTrue(facade.isTerminatedGameObject(mazub_100_1000));
 	assertNull(facade.getWorld(mazub_100_1000));
@@ -1115,71 +1230,168 @@ class FullFacadeTest {
     }
 
     @Test
-    public void advanceTime_EatingSinglePlant() {
+    public void advanceTime_MazubInGas() {
+	maximumScore += 16;
+	facade.setGeologicalFeature(world_250_400, 220, 995, SOLID_GROUND);
+	facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
+	facade.setGeologicalFeature(world_250_400, 50, 995, SOLID_GROUND);
+	facade.setGeologicalFeature(world_250_400, 175, 1010, GAS);
+	facade.setGeologicalFeature(world_250_400, 125, 1020, WATER);
+	facade.addGameObject(mazub_100_1000, world_250_400);
+	// Mazub reaches gas after 0.1846 seconds. Mazub immediately looses 4 hit
+	// points.
+	facade.startMoveLeft(mazub_100_1000);
+	final int mazubWidth = facade.getCurrentSprite(mazub_100_1000).getWidth();
+	double timeToLeaveGas = (-100.0 + Math.sqrt(100.0 * 100.0 + 4.0 * 45.0 * (mazubWidth + 30))) / (2 * 45.0);
+	facade.changeActualPosition(mazub_100_1000, new double[] { 2.0, 10.0 });
+	facade.advanceWorldTime(world_250_400, 0.15);
+	facade.advanceWorldTime(world_250_400, 0.05);
+	timeToLeaveGas -= 0.2;
+	assertEquals(96, facade.getHitPoints(mazub_100_1000));
+	// 0.2 seconds after the first contact with gas, mazub looses another 4 hit
+	// points.
+	facade.advanceWorldTime(world_250_400, 0.12);
+	facade.advanceWorldTime(world_250_400, 0.12);
+	timeToLeaveGas -= 0.24;
+	assertEquals(92, facade.getHitPoints(mazub_100_1000));
+	// 0.5593 seconds after starting its first move, mazub reaches water.
+	// It has no impact as long as mazub is also in contact with gas.
+	facade.advanceWorldTime(world_250_400, 0.11);
+	facade.advanceWorldTime(world_250_400, 0.1);
+	timeToLeaveGas -= 0.21;
+	assertEquals(88, facade.getHitPoints(mazub_100_1000));
+	// When the time to leave gas has passed,mazub is no longer in contact
+	// with gas, but still in contact with water.
+	facade.advanceWorldTime(world_250_400, 0.1);
+	facade.advanceWorldTime(world_250_400, timeToLeaveGas - 0.1);
+	assertEquals(84, facade.getHitPoints(mazub_100_1000));
+	// after 0.2 seconds in contact with water only, mazub loses 2 hit points.
+	facade.advanceWorldTime(world_250_400, 0.1);
+	facade.advanceWorldTime(world_250_400, 0.1);
+	assertEquals(82, facade.getHitPoints(mazub_100_1000));
+	actualScore += 16;
+    }
+
+    @Test
+    public void advanceTime_EatingSingleSneezewort() {
 	maximumScore += 15;
-	facade.addGameObject(mazub_0_1000, world_250_400);
-	plant_120_10 = facade.createSneezewort(120, 960, plantSprites);
-	facade.addGameObject(plant_120_10, world_250_400);
-	// Mazub will reach the plant after 0.2677 seconds.
-	facade.startMoveRight(mazub_0_1000);
-	facade.advanceTime(mazub_0_1000, 0.19);
-	assertEquals(100, facade.getHitPoints(mazub_0_1000));
-	assertEquals(0.206, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
-	assertFalse(facade.isTerminatedGameObject(plant_120_10));
-	facade.advanceTime(mazub_0_1000, 0.1);
-	assertEquals(0.328, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
-	assertEquals(150, facade.getHitPoints(mazub_0_1000));
-	assertTrue(facade.isTerminatedGameObject(plant_120_10));
-	assertNull(facade.getWorld(plant_120_10));
+	facade.setGeologicalFeature(world_250_400, 50, 995, SOLID_GROUND);
+	facade.setGeologicalFeature(world_250_400, 120, 995, SOLID_GROUND);
+	final Mazub theEatingMazub = facade.createMazub(100, 1000, mazubSprites);
+	facade.addGameObject(theEatingMazub, world_250_400);
+	final Sneezewort theSneezewortToEat = facade.createSneezewort(220, 1010, sneezewortSprites);
+	facade.addGameObject(theSneezewortToEat, world_250_400);
+	// Mazub strats moving towards the sneezewort.
+	facade.startMoveRight(theEatingMazub);
+	final int mazubWidth = facade.getCurrentSprite(theEatingMazub).getWidth();
+	double timeToReachSneezewort = (-100.0 + Math.sqrt(100.0 * 100.0 + 4.0 * 45.0 * (120 - mazubWidth)))
+		/ (2 * 45.0);
+	facade.advanceTime(theEatingMazub, 0.12);
+	timeToReachSneezewort -= 0.12;
+	assertEquals(100, facade.getHitPoints(theEatingMazub));
+	assertEquals(1.0 + 0.12648, facade.getActualPosition(theEatingMazub)[0], LOW_PRECISION);
+	assertFalse(facade.isTerminatedGameObject(theSneezewortToEat));
+	// Mazub now reaches sneezewort and eats it.
+	facade.advanceTime(theEatingMazub, timeToReachSneezewort + 0.01);
+	assertEquals(150, facade.getHitPoints(theEatingMazub));
+	assertTrue(facade.isTerminatedGameObject(theSneezewortToEat));
+	assertNull(facade.getWorld(theSneezewortToEat));
 	actualScore += 15;
     }
 
     @Test
-    public void advanceTime_EatingDeadPlant() {
+    public void advanceTime_EatingDeadSneezewort() {
 	maximumScore += 15;
 	facade.addGameObject(mazub_0_1000, world_250_400);
-	final Sneezewort plant_120_960 = facade.createSneezewort(120, 960, plantSprites);
-	facade.addGameObject(plant_120_960, world_250_400);
+	final Sneezewort theSneezewort = facade.createSneezewort(50, 900, sneezewortSprites);
+	facade.addGameObject(theSneezewort, world_250_400);
+	final int sneezeWortHeight = facade.getCurrentSprite(theSneezewort).getHeight();
 	// The plant dies after 10 seconds of game time, but is still in the world
 	// for 0.6 seconds.
 	for (int i = 1; i <= 100; i++)
-	    facade.advanceTime(plant_120_960, 0.1);
-	facade.advanceTime(plant_120_960, 0.05);
-	assertTrue(facade.isDeadGameObject(plant_120_960));
-	assertEquals(world_250_400, facade.getWorld(plant_120_960));
-	// Mazub will reach the plant after 0.2474 seconds.
-	facade.startMoveRight(mazub_0_1000);
-	facade.advanceTime(mazub_0_1000, 0.19);
+	    facade.advanceTime(theSneezewort, 0.1);
+	facade.advanceTime(theSneezewort, 0.05);
+	assertTrue(facade.isDeadGameObject(theSneezewort));
+	assertEquals(world_250_400, facade.getWorld(theSneezewort));
+	// Mazub will start to fall towards the sneezewort.
+	double timetoReachSneezewort = Math.sqrt((100 - sneezeWortHeight) / 500.0);
+	while (timetoReachSneezewort > 0.15) {
+	    facade.advanceTime(mazub_0_1000, 0.16);
+	    timetoReachSneezewort -= 0.15;
+	}
 	assertEquals(100, facade.getHitPoints(mazub_0_1000));
-	assertEquals(0.206, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
-	assertFalse(facade.isTerminatedGameObject(plant_120_960));
-	facade.advanceTime(mazub_0_1000, 0.1);
-	assertEquals(0.328, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
+	assertTrue(facade.getActualPosition(mazub_0_1000)[1] > 9.0 + sneezeWortHeight / 100.0);
+	assertFalse(facade.isTerminatedGameObject(theSneezewort));
+	// Mazub now eats the dead sneezewort.
+	facade.advanceTime(mazub_0_1000, timetoReachSneezewort + 0.02);
+	assertTrue(facade.getActualPosition(mazub_0_1000)[1] < 9.0 + sneezeWortHeight / 100.0);
 	assertEquals(80, facade.getHitPoints(mazub_0_1000));
-	assertTrue(facade.isTerminatedGameObject(plant_120_960));
-	assertNull(facade.getWorld(plant_120_960));
+	assertTrue(facade.isTerminatedGameObject(theSneezewort));
+	assertNull(facade.getWorld(theSneezewort));
 	actualScore += 15;
     }
 
     @Test
-    public void advanceTime_EatingSeveralPlants() {
+    public void advanceTime_EatingSeveralSneezeworts() {
 	maximumScore += 10;
 	facade.addGameObject(mazub_100_1000, world_250_400);
-	final Sneezewort plant1 = facade.createSneezewort(120, 1010, plantSprites);
-	facade.addGameObject(plant1, world_250_400);
-	final Sneezewort plant2 = facade.createSneezewort(150, 1030, plantSprites);
-	facade.addGameObject(plant2, world_250_400);
-	final Sneezewort plant3 = facade.createSneezewort(190, 1040, plantSprites);
-	facade.addGameObject(plant3, world_250_400);
+	final Sneezewort sneeze1 = facade.createSneezewort(120, 1010, sneezewortSprites);
+	facade.addGameObject(sneeze1, world_250_400);
+	final Sneezewort sneeze2 = facade.createSneezewort(150, 1030, sneezewortSprites);
+	facade.addGameObject(sneeze2, world_250_400);
+	final Sneezewort sneeze3 = facade.createSneezewort(190, 1040, sneezewortSprites);
+	facade.addGameObject(sneeze3, world_250_400);
 	// Time must be advanced for mazub to eat all the plants.
 	assertEquals(100, facade.getHitPoints(mazub_100_1000));
-	assertFalse(facade.isTerminatedGameObject(plant1));
+	assertFalse(facade.isTerminatedGameObject(sneeze1));
 	facade.advanceTime(mazub_100_1000, 0.01);
 	assertEquals(250, facade.getHitPoints(mazub_100_1000));
-	assertTrue(facade.isTerminatedGameObject(plant1));
-	assertTrue(facade.isTerminatedGameObject(plant2));
-	assertTrue(facade.isTerminatedGameObject(plant3));
+	assertTrue(facade.isTerminatedGameObject(sneeze1));
+	assertTrue(facade.isTerminatedGameObject(sneeze2));
+	assertTrue(facade.isTerminatedGameObject(sneeze3));
 	actualScore += 10;
+    }
+
+    @Test
+    public void advanceTime_EatingSingleScullCab() {
+	maximumScore += 15;
+	facade.setGeologicalFeature(world_250_400, 50, 875, SOLID_GROUND);
+	final Mazub theEatingMazub = facade.createMazub(0, 1000, mazubSprites);
+	facade.addGameObject(theEatingMazub, world_250_400);
+	final Skullcab theScullcab = facade.createSkullcab(40, 900, skullcabSprites);
+	facade.addGameObject(theScullcab, world_250_400);
+	final int skullcabHeight = facade.getCurrentSprite(theScullcab).getHeight();
+	double timeToReachScullcab = Math.sqrt(2 * (100 - skullcabHeight) / 1000.0);
+	// Mazub starts to fall.
+	while (timeToReachScullcab > 0.15) {
+	    facade.advanceTime(theEatingMazub, 0.15);
+	    timeToReachScullcab -= 0.15;
+	}
+	assertEquals(100, facade.getHitPoints(theEatingMazub));
+	assertEquals(3, facade.getHitPoints(theScullcab));
+	// Mazub will now eat the scullcab for the first time.
+	facade.advanceTime(theEatingMazub, timeToReachScullcab + 0.02);
+	assertEquals(150, facade.getHitPoints(theEatingMazub));
+	assertEquals(2, facade.getHitPoints(theScullcab));
+	// Mazub will land on the solid ground and eat the scullCab for a second time
+	// 0.6 seconds after it has eaten it for the first time.
+	for (int i = 0; i < 4; i++)
+	    facade.advanceTime(theEatingMazub, 0.15);
+	assertEquals(200, facade.getHitPoints(theEatingMazub));
+	assertEquals(1, facade.getHitPoints(theScullcab));
+	// Mazub will eat the scullCab for a third time
+	// 0.6 seconds after it has eaten it for the second time.
+	for (int i = 0; i < 4; i++)
+	    facade.advanceTime(theEatingMazub, 0.15);
+	assertEquals(250, facade.getHitPoints(theEatingMazub));
+	assertEquals(0, facade.getHitPoints(theScullcab));
+	// After another 0.6 seconds, the scullcab will have been removed from the
+	// world.
+	for (int i = 1; i <= 8; i++)
+	    facade.advanceTime(theScullcab, 0.15);
+	assertTrue(facade.isTerminatedGameObject(theScullcab));
+	assertNull(facade.getWorld(theScullcab));
+	actualScore += 15;
     }
 
     @Test
@@ -1188,8 +1400,9 @@ class FullFacadeTest {
 	facade.setGeologicalFeature(world_250_400, 140, 995, SOLID_GROUND);
 	facade.addGameObject(mazub_100_1000, world_250_400);
 	for (int i = 1; i <= 10; i++)
-	    facade.addGameObject(facade.createSneezewort(100 + i * 8, 1000 + i * 4, plantSprites), world_250_400);
-	// Time must be advanced for mazub to eat all the plants.
+	    facade.addGameObject(facade.createSneezewort(100 + i * 8, 1000 + i * 4, sneezewortSprites), world_250_400);
+	// Time must be advanced for mazub to eat. Mazub will eat 8 sneezeworts to
+	// reach the maximum number of hit points.
 	facade.advanceTime(mazub_100_1000, 0.01);
 	assertEquals(500, facade.getHitPoints(mazub_100_1000));
 	assertEquals(3, facade.getAllGameObjects(world_250_400).size());
@@ -1197,90 +1410,15 @@ class FullFacadeTest {
     }
 
     @Test
-    public void advanceTime_WindowUpdateFarFromBoundaries() {
-	if (facade.isTeamSolution()) {
-	    maximumScore += 15;
-	    final World theWorld = facade.createWorld(10, 1000, 500, new int[] { 9900, 4900 }, 800, 600);
-	    final Mazub theMazub = facade.createMazub(400, 300, mazubSprites);
-	    facade.addGameObject(theMazub, theWorld);
-	    facade.startGame(theWorld);
-	    facade.startMoveRight(theMazub);
-	    int[] windowPixelPosition = facade.getVisibleWindowPosition(theWorld);
-	    assertTrue(windowPixelPosition[0] + 200 <= 400);
-	    assertTrue(windowPixelPosition[0] + 800 + 200 >= 500);
-	    assertTrue(windowPixelPosition[1] + 200 <= 300);
-	    assertTrue(windowPixelPosition[1] + 600 + 200 >= 350);
-	    // After 0.4 seconds, mazub will have moved 47.2 cm to the right and will have
-	    // fallen down 80 cm.
-	    for (int i = 1; i <= 4; i++)
-		facade.advanceTime(theMazub, 0.1);
-	    windowPixelPosition = facade.getVisibleWindowPosition(theWorld);
-	    assertTrue(windowPixelPosition[0] + 200 <= 447);
-	    assertTrue(windowPixelPosition[0] + 800 + 200 >= 547);
-	    assertTrue(windowPixelPosition[1] + 200 <= 220);
-	    assertTrue(windowPixelPosition[1] + 600 + 200 >= 270);
-	    actualScore += 15;
-	}
-    }
-
-    @Test
-    public void advanceTime_WindowUpdateNearBoundaries() {
-	if (facade.isTeamSolution()) {
-	    maximumScore += 15;
-	    final World theWorld = facade.createWorld(10, 28, 17, new int[] { 100, 200 }, 150, 120);
-	    final Mazub theMazub = facade.createMazub(100, 70, mazubSprites);
-	    facade.addGameObject(theMazub, theWorld);
-	    facade.startGame(theWorld);
-	    facade.startMoveRight(theMazub);
-	    int windowLeft = facade.getVisibleWindowPosition(theWorld)[0];
-	    int windowRight = facade.getVisibleWindowPosition(theWorld)[0] + 150;
-	    int windowBottom = facade.getVisibleWindowPosition(theWorld)[1];
-	    int windowTop = facade.getVisibleWindowPosition(theWorld)[1] + 120;
-	    // Some pixels of mazub must be in the window, meaning that mazub is
-	    // completely in the window, its left part is in the window or its
-	    // right part is in the window. The same holds in the vertical direction.
-	    assertTrue(windowLeft <= 100 && windowRight >= 200 || windowLeft >= 100 && windowLeft < 200
-		    || windowRight > 100 && windowRight <= 200);
-	    assertTrue(windowBottom <= 70 && windowTop >= 120 || windowBottom >= 70 && windowBottom < 120
-		    || windowTop > 70 && windowTop <= 120);
-	    // After 0.37 seconds, mazub will have moved 43.16 cm to the right and will
-	    // have
-	    // fallen down 68.45 cm.
-	    facade.advanceTime(theMazub, 0.19);
-	    facade.advanceTime(theMazub, 0.18);
-	    windowLeft = facade.getVisibleWindowPosition(theWorld)[0];
-	    windowRight = facade.getVisibleWindowPosition(theWorld)[0] + 150;
-	    windowBottom = facade.getVisibleWindowPosition(theWorld)[1];
-	    windowTop = facade.getVisibleWindowPosition(theWorld)[1] + 120;
-	    assertTrue(windowLeft <= 100 && windowRight >= 200 || windowLeft >= 100 && windowLeft < 200
-		    || windowRight > 100 && windowRight <= 200);
-	    assertTrue(windowBottom <= 70 && windowTop >= 120 || windowBottom >= 70 && windowBottom < 120
-		    || windowTop > 70 && windowTop <= 120);
-	    actualScore += 15;
-	}
-    }
-
-    @Test
-    public void advanceTime_IllegalTime() throws Exception {
-	maximumScore += 3;
-	facade.addGameObject(mazub_100_0, world_250_400);
-	facade.startMoveLeft(mazub_100_0);
-	facade.startJump(mazub_100_0);
-	facade.startDuck(mazub_100_0);
-	assertThrows(ModelException.class, () -> facade.advanceTime(mazub_100_0, Double.NaN));
-	actualScore += 3;
-    }
-
-    @Test
     public void getCurrentSprite_Scenario() {
 	if (facade.isTeamSolution()) {
 	    maximumScore += 15;
 	    final World broadWorld = facade.createWorld(10, 1000, 200, new int[] { 10, 20 }, 200, 100);
-	    facade.setGeologicalFeature(broadWorld, 900, 96, SOLID_GROUND);
-	    facade.setGeologicalFeature(broadWorld, 825, 96, SOLID_GROUND);
-	    facade.setGeologicalFeature(broadWorld, 750, 96, SOLID_GROUND);
-	    facade.setGeologicalFeature(broadWorld, 675, 96, SOLID_GROUND);
-	    facade.setGeologicalFeature(broadWorld, 600, 96, SOLID_GROUND);
+	    facade.setGeologicalFeature(broadWorld, 900, 90, SOLID_GROUND);
+	    facade.setGeologicalFeature(broadWorld, 820, 90, SOLID_GROUND);
+	    facade.setGeologicalFeature(broadWorld, 750, 90, SOLID_GROUND);
+	    facade.setGeologicalFeature(broadWorld, 680, 90, SOLID_GROUND);
+	    facade.setGeologicalFeature(broadWorld, 600, 90, SOLID_GROUND);
 	    final Mazub mazubToPlayWith = facade.createMazub(850, 100, mazubSprites);
 	    facade.addGameObject(mazubToPlayWith, broadWorld);
 	    assertEquals(mazubSprites[0], facade.getCurrentSprite(mazubToPlayWith));
@@ -1357,22 +1495,22 @@ class FullFacadeTest {
 	}
     }
 
-    /************************
-     * Tests for Sneezewort *
-     ************************/
+    /*************************************
+     * Tests for Sneezewort and Skullcab *
+     *************************************/
 
     @Test
     void createSneezewort_LegalCase() throws Exception {
 	maximumScore += 8;
-	final Sneezewort newPlant = facade.createSneezewort(10, 6, plantSprites);
-	assertArrayEquals(new int[] { 10, 6 }, facade.getPixelPosition(newPlant));
-	assertArrayEquals(new double[] { 0.1, 0.06 }, facade.getActualPosition(newPlant), HIGH_PRECISION);
-	assertTrue(facade.getOrientation(newPlant) < 0);
-	assertArrayEquals(new double[] { -0.5, 0.0 }, facade.getVelocity(newPlant), LOW_PRECISION);
-	assertEquals(1, facade.getHitPoints(newPlant));
+	final Sneezewort newSneeze = facade.createSneezewort(10, 6, sneezewortSprites);
+	assertArrayEquals(new int[] { 10, 6 }, facade.getPixelPosition(newSneeze));
+	assertArrayEquals(new double[] { 0.1, 0.06 }, facade.getActualPosition(newSneeze), HIGH_PRECISION);
+	assertTrue(facade.getOrientation(newSneeze) < 0);
+	assertArrayEquals(new double[] { -0.5, 0.0 }, facade.getVelocity(newSneeze), LOW_PRECISION);
+	assertEquals(1, facade.getHitPoints(newSneeze));
 	if (facade.isTeamSolution()) {
-	    assertArrayEquals(plantSprites, facade.getSprites(newPlant));
-	    assertEquals(plantSprites[0], facade.getCurrentSprite(plant_120_10));
+	    assertArrayEquals(sneezewortSprites, facade.getSprites(newSneeze));
+	    assertEquals(sneezewortSprites[0], facade.getCurrentSprite(newSneeze));
 	}
 	actualScore += 8;
     }
@@ -1389,92 +1527,1015 @@ class FullFacadeTest {
 	    assertThrows(ModelException.class, () -> facade.createSneezewort(5, 10,
 		    new Sprite[] { new Sprite("a", 1, 2), new Sprite("b", 2, 3), new Sprite("c", 3, 4) }));
 	    // Array of sprites must have effective elements.
-	    assertThrows(ModelException.class, () -> facade.createMazub(5, 10, new Sprite[] { null, null }));
+	    assertThrows(ModelException.class, () -> facade.createSneezewort(5, 10, new Sprite[] { null, null }));
 	    actualScore += 4;
 	}
     }
 
     @Test
-    void advanceTimePlant_NoOrientationSwitch() throws Exception {
+    void advanceTimeSneezewort_NoOrientationSwitch() throws Exception {
 	maximumScore += 8;
-	facade.addGameObject(plant_120_10, world_250_400);
-	facade.advanceTime(plant_120_10, 0.1);
-	// The plant will have moved 5 cm to the left after 0.1 seconds
-	assertArrayEquals(new double[] { 1.15, 0.1 }, facade.getActualPosition(plant_120_10), LOW_PRECISION);
+	facade.addGameObject(sneezewort_120_10, world_250_400);
+	facade.advanceWorldTime(world_250_400, 0.1);
+	// The sneezewort will have moved 5 cm to the left after 0.1 seconds
+	assertArrayEquals(new double[] { 1.15, 0.1 }, facade.getActualPosition(sneezewort_120_10), LOW_PRECISION);
 	if (facade.isTeamSolution())
-	    assertEquals(plantSprites[0], facade.getCurrentSprite(plant_120_10));
+	    assertEquals(sneezewortSprites[0], facade.getCurrentSprite(sneezewort_120_10));
 	actualScore += 8;
     }
 
     @Test
-    void advanceTimePlant_OrientationSwitch() throws Exception {
+    void advanceTimeSneezewort_OrientationSwitch() throws Exception {
 	maximumScore += 8;
-	facade.addGameObject(plant_120_10, world_250_400);
+	facade.addGameObject(sneezewort_120_10, world_250_400);
 	for (int i = 1; i <= 4; i++)
-	    facade.advanceTime(plant_120_10, 0.15);
-	// The plant will have moved 25 cm to the left after 0.5 seconds and 5 cm to
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	// The sneezewort will have moved 25 cm to the left after 0.5 seconds and 5 cm
+	// to
 	// the right after and additional 0.1 seconds.
-	assertArrayEquals(new double[] { 1.0, 0.1 }, facade.getActualPosition(plant_120_10), LOW_PRECISION);
+	assertArrayEquals(new double[] { 1.0, 0.1 }, facade.getActualPosition(sneezewort_120_10), LOW_PRECISION);
 	if (facade.isTeamSolution())
-	    assertEquals(plantSprites[1], facade.getCurrentSprite(plant_120_10));
+	    assertEquals(sneezewortSprites[1], facade.getCurrentSprite(sneezewort_120_10));
 	actualScore += 8;
     }
 
     @Test
-    void advanceTimePlant_OverlapHungryMazub() throws Exception {
+    void advanceTimeSneezewort_OverlapHungryMazub() throws Exception {
 	maximumScore += 12;
 	facade.addGameObject(mazub_0_0, world_250_400);
-	facade.addGameObject(plant_120_10, world_250_400);
+	facade.addGameObject(sneezewort_120_10, world_250_400);
 	for (int i = 1; i <= 2; i++)
-	    facade.advanceTime(plant_120_10, 0.15);
-	assertArrayEquals(new double[] { 1.05, 0.1 }, facade.getActualPosition(plant_120_10), LOW_PRECISION);
-	facade.advanceTime(plant_120_10, 0.15);
-	assertTrue(facade.isTerminatedGameObject(plant_120_10));
-	assertNull(facade.getWorld(plant_120_10));
+	    facade.advanceTime(sneezewort_120_10, 0.15);
+	assertArrayEquals(new double[] { 1.05, 0.1 }, facade.getActualPosition(sneezewort_120_10), LOW_PRECISION);
+	facade.advanceTime(sneezewort_120_10, 0.15);
+	assertTrue(facade.isTerminatedGameObject(sneezewort_120_10));
+	assertNull(facade.getWorld(sneezewort_120_10));
 	assertEquals(150, facade.getHitPoints(mazub_0_0));
 	actualScore += 12;
     }
 
     @Test
-    void advanceTimePlant_PlantDying() throws Exception {
+    void advanceTimeSneezewort_SneezewortDying() throws Exception {
 	maximumScore += 12;
-	facade.addGameObject(plant_120_10, world_250_400);
-	// The plant is still alive after 9.9 seconds of game time.
+	facade.addGameObject(sneezewort_120_10, world_250_400);
+	// The sneezewort is still alive after 9.9 seconds of game time.
 	for (int i = 1; i <= 66; i++)
-	    facade.advanceTime(plant_120_10, 0.15);
-	assertFalse(facade.isDeadGameObject(plant_120_10));
-	// The plant dies after 10 seconds of game time.
-	facade.advanceTime(plant_120_10, 0.15);
-	assertTrue(facade.isDeadGameObject(plant_120_10));
-	assertFalse(facade.isTerminatedGameObject(plant_120_10));
-	assertEquals(world_250_400, facade.getWorld(plant_120_10));
-	// The plant no longer moves onze it has died.
-	final double[] oldPosition = facade.getActualPosition(plant_120_10);
-	facade.advanceTime(plant_120_10, 0.15);
-	assertArrayEquals(oldPosition, facade.getActualPosition(plant_120_10));
-	// The plant is destroyed 0.6 seconds after its dead.
+	    facade.advanceTime(sneezewort_120_10, 0.15);
+	assertFalse(facade.isDeadGameObject(sneezewort_120_10));
+	// The sneezewort dies after 10 seconds of game time.
+	facade.advanceTime(sneezewort_120_10, 0.15);
+	assertTrue(facade.isDeadGameObject(sneezewort_120_10));
+	assertFalse(facade.isTerminatedGameObject(sneezewort_120_10));
+	assertEquals(world_250_400, facade.getWorld(sneezewort_120_10));
+	// The sneezewort no longer moves once it has died.
+	final double[] oldPosition = facade.getActualPosition(sneezewort_120_10);
+	facade.advanceTime(sneezewort_120_10, 0.15);
+	assertArrayEquals(oldPosition, facade.getActualPosition(sneezewort_120_10));
+	// The sneezewort is destroyed 0.6 seconds after its dead.
 	for (int i = 1; i <= 3; i++)
-	    facade.advanceTime(plant_120_10, 0.15);
-	assertTrue(facade.isTerminatedGameObject(plant_120_10));
-	assertNull(facade.getWorld(plant_120_10));
+	    facade.advanceTime(sneezewort_120_10, 0.15);
+	assertTrue(facade.isTerminatedGameObject(sneezewort_120_10));
+	assertNull(facade.getWorld(sneezewort_120_10));
 	actualScore += 12;
     }
 
     @Test
-    void advanceTimePlant_PlantLeavingWorld() throws Exception {
+    void advanceTimeSneezewort_SneezewortLeavingWorld() throws Exception {
 	maximumScore += 8;
-	final Sneezewort thePlant = facade.createSneezewort(15, 20, plantSprites);
-	facade.addGameObject(thePlant, world_250_400);
-	// The plant will leave its world after 0.3 seconds
-	facade.advanceTime(thePlant, 0.15);
-	facade.advanceTime(thePlant, 0.14);
-	assertFalse(facade.isTerminatedGameObject(thePlant));
-	assertEquals(world_250_400, facade.getWorld(thePlant));
-	facade.advanceTime(thePlant, 0.03);
-	assertTrue(facade.isTerminatedGameObject(thePlant));
-	assertNull(facade.getWorld(thePlant));
-	assertFalse(facade.getAllGameObjects(world_250_400).contains(thePlant));
+	final Sneezewort theSneezewort = facade.createSneezewort(15, 20, sneezewortSprites);
+	facade.addGameObject(theSneezewort, world_250_400);
+	// The sneezewort will leave its world after 0.3 seconds
+	facade.advanceTime(theSneezewort, 0.15);
+	facade.advanceTime(theSneezewort, 0.14);
+	assertFalse(facade.isTerminatedGameObject(theSneezewort));
+	assertEquals(world_250_400, facade.getWorld(theSneezewort));
+	facade.advanceTime(theSneezewort, 0.03);
+	assertTrue(facade.isTerminatedGameObject(theSneezewort));
+	assertNull(facade.getWorld(theSneezewort));
+	assertFalse(facade.getAllGameObjects(world_250_400).contains(theSneezewort));
 	actualScore += 8;
+    }
+
+    @Test
+    void createSkullcab_LegalCase() throws Exception {
+	maximumScore += 8;
+	final Skullcab newSkullcab = facade.createSkullcab(40, 50, skullcabSprites);
+	assertArrayEquals(new int[] { 40, 50 }, facade.getPixelPosition(newSkullcab));
+	assertArrayEquals(new double[] { 0.4, 0.5 }, facade.getActualPosition(newSkullcab), HIGH_PRECISION);
+	assertTrue(facade.getOrientation(newSkullcab) > 0);
+	assertArrayEquals(new double[] { 0.0, 0.5 }, facade.getVelocity(newSkullcab), LOW_PRECISION);
+	assertEquals(3, facade.getHitPoints(newSkullcab));
+	if (facade.isTeamSolution()) {
+	    assertArrayEquals(skullcabSprites, facade.getSprites(newSkullcab));
+	    assertEquals(skullcabSprites[0], facade.getCurrentSprite(newSkullcab));
+	}
+	actualScore += 8;
+    }
+
+    @Test
+    void advanceTimeSkullcab_NoOrientationSwitch() throws Exception {
+	maximumScore += 4;
+	final Skullcab theSkullcab = facade.createSkullcab(300, 500, skullcabSprites);
+	facade.addGameObject(theSkullcab, world_250_400);
+	facade.advanceWorldTime(world_250_400, 0.1);
+	// The s will have moved up over 5 cm after 0.1 seconds
+	assertArrayEquals(new double[] { 3.0, 5.05 }, facade.getActualPosition(theSkullcab), LOW_PRECISION);
+	if (facade.isTeamSolution())
+	    assertEquals(skullcabSprites[0], facade.getCurrentSprite(theSkullcab));
+	actualScore += 4;
+    }
+
+    @Test
+    void advanceTimeSkullcab_OrientationSwitch() throws Exception {
+	maximumScore += 4;
+	final Skullcab theSkullcab = facade.createSkullcab(300, 500, skullcabSprites);
+	facade.addGameObject(theSkullcab, world_250_400);
+	for (int i = 1; i <= 4; i++)
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	// The skullcab will have moved up 25 cm after 0.5 seconds and
+	// 5 cm down after and additional 0.1 seconds.
+	assertArrayEquals(new double[] { 3.0, 5.2 }, facade.getActualPosition(theSkullcab), LOW_PRECISION);
+	if (facade.isTeamSolution())
+	    assertEquals(skullcabSprites[1], facade.getCurrentSprite(theSkullcab));
+	actualScore += 4;
+    }
+
+    @Test
+    void advanceTimeSkullcab_OverlapHungryMazub() throws Exception {
+	maximumScore += 15;
+	facade.addGameObject(mazub_0_0, world_250_400);
+	final int mazubHeight = facade.getCurrentSprite(mazub_0_0).getHeight();
+	final Skullcab theSkullcab = facade.createSkullcab(20, mazubHeight - 10, skullcabSprites);
+	facade.addGameObject(theSkullcab, world_250_400);
+	// Mazub immediately eats the skulcab for the first time.
+	facade.advanceTime(theSkullcab, 0.01);
+	assertEquals(150, facade.getHitPoints(mazub_0_0));
+	assertEquals(2, facade.getHitPoints(theSkullcab));
+	// The skullcab leaves the mazub and reenters after 0.79 seconds.
+	// It is then eaten for the second time.
+	for (int i = 0; i < 5; i++)
+	    facade.advanceTime(theSkullcab, 0.15);
+	facade.advanceTime(theSkullcab, 0.09);
+	assertEquals(mazubHeight / 100.0 - 0.025, facade.getActualPosition(theSkullcab)[1], LOW_PRECISION);
+	assertEquals(200, facade.getHitPoints(mazub_0_0));
+	assertEquals(1, facade.getHitPoints(theSkullcab));
+	// After another second, the skullcab will hafve left and re-entered the mazub
+	// once more.
+	// It is then eaten for the third time, and dies.
+	for (int i = 0; i < 10; i++)
+	    facade.advanceTime(theSkullcab, 0.1);
+	assertEquals(250, facade.getHitPoints(mazub_0_0));
+	assertTrue(facade.isDeadGameObject(theSkullcab));
+	// 0.6 seconds after it died, the skullcab is terminated.
+	final double oldYPosition = facade.getActualPosition(theSkullcab)[1];
+	facade.advanceTime(theSkullcab, 0.1);
+	assertEquals(oldYPosition, facade.getActualPosition(theSkullcab)[1]);
+	for (int i = 0; i < 6; i++)
+	    facade.advanceTime(theSkullcab, 0.1);
+	assertTrue(facade.isTerminatedGameObject(theSkullcab));
+	assertNull(facade.getWorld(theSkullcab));
+	actualScore += 15;
+    }
+
+    @Test
+    void advanceTimeSkullcab_SkullcabDying() throws Exception {
+	maximumScore += 12;
+	final Skullcab theSkullcab = facade.createSkullcab(20, 70, skullcabSprites);
+	facade.addGameObject(theSkullcab, world_250_400);
+	// The skullcab is still alive after 11.9 seconds of game time.
+	for (int i = 0; i < 119; i++)
+	    facade.advanceTime(theSkullcab, 0.1);
+	assertFalse(facade.isDeadGameObject(theSkullcab));
+	// The skullcab dies after 12 seconds of game time.
+	facade.advanceTime(theSkullcab, 0.15);
+	assertTrue(facade.isDeadGameObject(theSkullcab));
+	assertFalse(facade.isTerminatedGameObject(theSkullcab));
+	assertEquals(world_250_400, facade.getWorld(theSkullcab));
+	// The skullcab no longer moves once it has died.
+	final double[] oldPosition = facade.getActualPosition(theSkullcab);
+	facade.advanceTime(theSkullcab, 0.15);
+	assertArrayEquals(oldPosition, facade.getActualPosition(theSkullcab));
+	// The skullcab is destroyed 0.6 seconds after its dead.
+	for (int i = 1; i <= 3; i++)
+	    facade.advanceTime(theSkullcab, 0.15);
+	assertTrue(facade.isTerminatedGameObject(theSkullcab));
+	assertNull(facade.getWorld(theSkullcab));
+	actualScore += 12;
+    }
+
+    @Test
+    void advanceTimeSkullcab_SkullcabLeavingWorld() throws Exception {
+	maximumScore += 6;
+	final Skullcab theSkullcab = facade.createSkullcab(15, 1990, skullcabSprites);
+	facade.addGameObject(theSkullcab, world_250_400);
+	// The skullcab will leave its world after 0.2 seconds
+	facade.advanceTime(theSkullcab, 0.18);
+	assertFalse(facade.isTerminatedGameObject(theSkullcab));
+	assertEquals(world_250_400, facade.getWorld(theSkullcab));
+	facade.advanceTime(theSkullcab, 0.1);
+	assertTrue(facade.isTerminatedGameObject(theSkullcab));
+	assertNull(facade.getWorld(theSkullcab));
+	assertFalse(facade.getAllGameObjects(world_250_400).contains(theSkullcab));
+	actualScore += 6;
+    }
+
+    /*******************
+     * Tests for Slime *
+     *******************/
+
+    @Test
+    void createSlime_LegalCase() throws Exception {
+	maximumScore += 10;
+	final Slime newSlime = facade.createSlime(10, 10, 6, null, slimeSprites);
+	assertEquals(10, facade.getIdentification(newSlime));
+	assertArrayEquals(new int[] { 10, 6 }, facade.getPixelPosition(newSlime));
+	assertArrayEquals(new double[] { 0.1, 0.06 }, facade.getActualPosition(newSlime), HIGH_PRECISION);
+	assertTrue(facade.getOrientation(newSlime) > 0);
+	assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(newSlime), LOW_PRECISION);
+	assertArrayEquals(new double[] { 0.7, 0.0 }, facade.getAcceleration(newSlime), LOW_PRECISION);
+	assertEquals(100, facade.getHitPoints(newSlime));
+	if (facade.isTeamSolution()) {
+	    assertArrayEquals(slimeSprites, facade.getSprites(newSlime));
+	    assertEquals(slimeSprites[0], facade.getCurrentSprite(newSlime));
+	}
+	actualScore += 10;
+    }
+
+    @Test
+    void createSlime_IllegalId() throws Exception {
+	maximumScore += 2;
+	// Identification must be positive.
+	assertThrows(ModelException.class, () -> facade.createSlime(-66, 5, 10, null, slimeSprites));
+	actualScore += 2;
+    }
+
+    @Test
+    void createSlime_NonUniqueId() throws Exception {
+	maximumScore += 10;
+	facade.createSlime(10, 10, 6, null, slimeSprites);
+	assertThrows(ModelException.class, () -> facade.createSlime(10, 5, 10, null, slimeSprites));
+	actualScore += 10;
+    }
+
+    @Test
+    void createSlime_IllegalSprites() throws Exception {
+	if (facade.isTeamSolution()) {
+	    maximumScore += 4;
+	    // Array of sprites must be effective.
+	    assertThrows(ModelException.class, () -> facade.createSlime(6, 5, 10, null, (Sprite[]) null));
+	    // Array of sprites must have exactly 2 elements.
+	    assertThrows(ModelException.class,
+		    () -> facade.createSlime(12, 5, 10, null, new Sprite[] { new Sprite("a", 1, 2) }));
+	    assertThrows(ModelException.class, () -> facade.createSlime(7, 5, 10, null,
+		    new Sprite[] { new Sprite("a", 1, 2), new Sprite("b", 2, 3), new Sprite("c", 3, 4) }));
+	    // Array of sprites must have effective elements.
+	    assertThrows(ModelException.class, () -> facade.createSlime(8, 5, 10, null, new Sprite[] { null, null }));
+	    actualScore += 4;
+	}
+    }
+
+    @Test
+    public void advanceTime_SlimeMovingWithinBoundaries() throws Exception {
+	maximumScore += 10;
+	final Slime movingSlime = facade.createSlime(10, 20, 30, null, slimeSprites);
+	facade.addGameObject(movingSlime, world_250_400);
+	// Slime will move 0.7875 cm over 0.15 seconds; its velocity increases with
+	// 0.105
+	// m/s
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(0.2 + 0.007875, facade.getActualPosition(movingSlime)[0], LOW_PRECISION);
+	assertEquals(0.105, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	if (facade.isTeamSolution())
+	    assertEquals(slimeSprites[0], facade.getCurrentSprite(movingSlime));
+	// After another 0.1 seconds Slime will have moved 2.1875 cm in total;
+	// its velocity is increased to 0.175 m/s
+	facade.advanceWorldTime(world_250_400, 0.1);
+	assertEquals(0.2 + 0.021875, facade.getActualPosition(movingSlime)[0], LOW_PRECISION);
+	assertEquals(0.175, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	if (facade.isTeamSolution())
+	    assertEquals(slimeSprites[0], facade.getCurrentSprite(movingSlime));
+	actualScore += 10;
+    }
+
+    @Test
+    public void advanceTime_SlimeReachingTopSpeed() throws Exception {
+	maximumScore += 10;
+	final Slime movingSlime = facade.createSlime(10, 20, 30, null, slimeSprites);
+	facade.addGameObject(movingSlime, world_250_400);
+	// Slime will reach its maximum velocity (2.5 m/s) after (250/70 = 3,5714 s).
+	// It will have moved over 446,43 cm in that time span
+	for (int i = 0; i < 35; i++)
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	facade.advanceWorldTime(world_250_400, 0.0714);
+	assertEquals(0.2 + 4.4643, facade.getActualPosition(movingSlime)[0], LOW_PRECISION);
+	assertEquals(2.50, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	if (facade.isTeamSolution())
+	    assertEquals(slimeSprites[0], facade.getCurrentSprite(movingSlime));
+	// From this point on, the slime moves at maximum speed.
+	// After another second, it will have moved over another 250 cm.
+	for (int i = 0; i < 10; i++)
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	assertEquals(0.2 + 4.4643 + 2.5, facade.getActualPosition(movingSlime)[0], LOW_PRECISION);
+	assertEquals(2.50, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	if (facade.isTeamSolution())
+	    assertEquals(slimeSprites[0], facade.getCurrentSprite(movingSlime));
+	actualScore += 10;
+    }
+
+    @Test
+    public void advanceTime_SlimeMovingOutOfWorld() throws Exception {
+	maximumScore += 6;
+	final Slime movingSlime = facade.createSlime(10, 1200, 30, null, slimeSprites);
+	facade.addGameObject(movingSlime, world_250_400);
+	// Slime reaches the right side of the world after 1,195 seconds.
+	for (int i = 0; i < 11; i++)
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	facade.advanceWorldTime(world_250_400, 0.09);
+	assertEquals(12.0 + 0.4956, facade.getActualPosition(movingSlime)[0], LOW_PRECISION);
+	assertEquals(0.833, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	// Slime moves out of world after another 0.005 seconds.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertTrue(facade.isTerminatedGameObject(movingSlime));
+	assertNull(facade.getWorld(movingSlime));
+	actualScore += 6;
+    }
+
+    @Test
+    public void advanceTime_SlimeInWater() {
+	maximumScore += 12;
+	facade.setGeologicalFeature(world_250_400, 120, 1010, WATER);
+	final Slime slimeInWater = facade.createSlime(10, 100, 1000, null, slimeSprites);
+	facade.addGameObject(slimeInWater, world_250_400);
+	// No loss of hit points as long as the time in water is below 0.4 seconds.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(100, facade.getHitPoints(slimeInWater));
+	// After another 0.15 seconds in water, the slime looses 4 hit points.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(96, facade.getHitPoints(slimeInWater));
+	// After a total time of 0.8452 seconds, the slime moves out of the water.
+	for (int i = 1; i <= 3; i++)
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(92, facade.getHitPoints(slimeInWater));
+	assertTrue(facade.getActualPosition(slimeInWater)[0] > 1.25);
+	actualScore += 12;
+    }
+
+    @Test
+    public void advanceTime_SlimeOfSchoolInWater() {
+	maximumScore += 8;
+	facade.setGeologicalFeature(world_250_400, 120, 1010, WATER);
+	final Slime mate1 = facade.createSlime(10, 20, 20, someSchool, slimeSprites);
+	final Slime mate2 = facade.createSlime(20, 100, 100, someSchool, slimeSprites);
+	final Slime slimeInWater = facade.createSlime(30, 100, 1000, someSchool, slimeSprites);
+	facade.addGameObject(slimeInWater, world_250_400);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	facade.advanceWorldTime(world_250_400, 0.15);
+	// The slimes in the same school as the slime in water each loose 1 hit-point.
+	assertEquals(96, facade.getHitPoints(slimeInWater));
+	assertEquals(100 - 1, facade.getHitPoints(mate1));
+	assertEquals(100 - 1, facade.getHitPoints(mate2));
+	actualScore += 8;
+    }
+
+    @Test
+    public void advanceTime_SlimeInGas() {
+	maximumScore += 12;
+	facade.setGeologicalFeature(world_250_400, 120, 1010, GAS);
+	final Slime slimeInGas = facade.createSlime(10, 100, 1000, null, slimeSprites);
+	facade.addGameObject(slimeInGas, world_250_400);
+	// No gain of hit points as long as the time in gas is below 0.3 seconds.
+	facade.advanceWorldTime(world_250_400, 0.12);
+	facade.advanceWorldTime(world_250_400, 0.12);
+	assertEquals(100, facade.getHitPoints(slimeInGas));
+	// After another 0.12 seconds in gas, the slime gains 2 hit points.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(102, facade.getHitPoints(slimeInGas));
+	// After a total time of 0.8452 seconds, the slime moves out of the gas.
+	for (int i = 1; i <= 5; i++)
+	    facade.advanceWorldTime(world_250_400, 0.12);
+	assertEquals(104, facade.getHitPoints(slimeInGas));
+	assertTrue(facade.getActualPosition(slimeInGas)[0] > 1.25);
+	actualScore += 12;
+    }
+
+    @Test
+    public void advanceTime_SlimeInMagma() {
+	maximumScore += 12;
+	final Slime slimeInMagma = facade.createSlime(10, 100, 1000, null, slimeSprites);
+	final int slimeWidth = facade.getCurrentSprite(slimeInMagma).getWidth();
+	facade.setGeologicalFeature(world_250_400, 100 + slimeWidth + 10, 1010, MAGMA);
+	facade.addGameObject(slimeInMagma, world_250_400);
+	// The slime reaches the magma after 0.5345 seconds.
+	for (int i = 0; i < 3; i++)
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	assertFalse(facade.isDeadGameObject(slimeInMagma));
+	// After another 0.15 seconds the slime moves into the magma and immediately
+	// dies.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertTrue(facade.isDeadGameObject(slimeInMagma));
+	actualScore += 12;
+    }
+
+    @Test
+    public void advanceTime_SlimeReachingImpassableTerrain() throws Exception {
+	maximumScore += 8;
+	final Slime movingSlime = facade.createSlime(10, 100, 30, null, slimeSprites);
+	facade.addGameObject(movingSlime, world_250_400);
+	final int slimeWidth = facade.getCurrentSprite(movingSlime).getWidth();
+	facade.setGeologicalFeature(world_250_400, 100 + slimeWidth + 30, 50, ICE);
+	// Slime reaches the impassable terrain after 0,9258 seconds.
+	for (int i = 0; i < 9; i++)
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	assertEquals(1.0 + 0.2835, facade.getActualPosition(movingSlime)[0], LOW_PRECISION);
+	assertEquals(0.63, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	// After another 0.1, the slime is blocked by the impassable terrain, and its
+	// velocity drops to 0.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(130, facade.getPixelPosition(movingSlime)[0]);
+	assertEquals(0.0, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	// Position and velocity of the slime do not change as long as it is blocked by
+	// impassable terrain.
+	facade.advanceWorldTime(world_250_400, 0.15);
+	assertEquals(130, facade.getPixelPosition(movingSlime)[0]);
+	assertEquals(0.0, facade.getVelocity(movingSlime)[0], LOW_PRECISION);
+	actualScore += 8;
+    }
+
+    @Test
+    public void advanceTime_SlimeBouncingAgainstOtherSlime() throws Exception {
+	maximumScore += 18;
+	// The slime to bounce with is blocked by impassable terrain.
+	final Slime slimeToBounceWith = facade.createSlime(10, 200, 30, null, slimeSprites);
+	facade.addGameObject(slimeToBounceWith, world_250_400);
+	final int slimeWidth = facade.getCurrentSprite(slimeToBounceWith).getWidth();
+	facade.setGeologicalFeature(world_250_400, 200 + slimeWidth, 50, SOLID_GROUND);
+	final Slime movingSlime = facade.createSlime(20, 100, 30, null, slimeSprites);
+	facade.addGameObject(movingSlime, world_250_400);
+	// The time needed to reach the slime to bounce with depends on the width of
+	// the slime's sprite.
+	double timeToReachSlime = Math.sqrt((100.0 - slimeWidth) / 35.0);
+	while (timeToReachSlime > 0.15) {
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	    timeToReachSlime -= 0.15;
+	}
+	facade.advanceWorldTime(world_250_400, timeToReachSlime);
+	assertEquals(100 + 100 - slimeWidth, facade.getPixelPosition(movingSlime)[0]);
+	// The slime to bounce against will not change its position.
+	assertEquals(200, facade.getPixelPosition(slimeToBounceWith)[0]);
+	// The moving slime must now reverse its direction and reset its velocity.
+	// It might take a small amount of time to see that such a switch is needed.
+	// After 1.0 seconds, it will have moved around 35 cm to the left.
+	// It will then have a velocity around -70 cm/s.
+	final double bouncingXPos = facade.getActualPosition(movingSlime)[0];
+	for (int i = 0; i < 10; i++)
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	if (facade.isTeamSolution())
+	    assertEquals(slimeSprites[1], facade.getCurrentSprite(movingSlime));
+	assertTrue(bouncingXPos - 0.3 > facade.getActualPosition(movingSlime)[0]);
+	assertTrue(facade.getVelocity(movingSlime)[0] < 0);
+	// The slime to bounce against may have changed its position. This may happen in
+	// particular if that slime is the first slime whose time is advanced.
+	assertTrue(200 >= facade.getPixelPosition(slimeToBounceWith)[0]);
+	actualScore += 18;
+    }
+
+    @Test
+    public void advanceTime_SlimeBouncingAgainstMazub() throws Exception {
+	maximumScore += 24;
+	// The mazub to bounce with.
+	final Mazub mazoubToBounceWith = facade.createMazub(200, 30, mazubSprites);
+	facade.setGeologicalFeature(world_250_400, 240, 25, SOLID_GROUND);
+	facade.addGameObject(mazoubToBounceWith, world_250_400);
+	final Slime movingSlime = facade.createSlime(10, 100, 30, null, slimeSprites);
+	final int slimeWidth = facade.getCurrentSprite(movingSlime).getWidth();
+	facade.addGameObject(movingSlime, world_250_400);
+	// The time needed to reach the mazub to bounce with depends on the width of
+	// the slime's sprite. The sprite looses 30 hit points because of the collision.
+	// Because mazub is stationary, the collision has no impact on it.
+	double timeToReachSlime = Math.sqrt((100.0 - slimeWidth) / 35.0);
+	while (timeToReachSlime > 0.15) {
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	    timeToReachSlime -= 0.15;
+	}
+	facade.advanceWorldTime(world_250_400, timeToReachSlime + 0.03);
+	assertEquals(100 + 100 - slimeWidth, facade.getPixelPosition(movingSlime)[0]);
+	assertEquals(100 - 30, facade.getHitPoints(movingSlime));
+	assertEquals(100, facade.getHitPoints(mazoubToBounceWith));
+	assertEquals(0.0, facade.getVelocity(movingSlime)[0]);
+	// Both objects are now stationary.
+	facade.advanceWorldTime(world_250_400, 0.1);
+	assertEquals(100 + 100 - slimeWidth, facade.getPixelPosition(movingSlime)[0]);
+	assertEquals(100 - 30, facade.getHitPoints(movingSlime));
+	// Mazub now moves away from the slime. The slime also starts to move again.
+	facade.startMoveRight(mazoubToBounceWith);
+	facade.advanceWorldTime(world_250_400, 0.02);
+	facade.endMove(mazoubToBounceWith);
+	assertEquals(2.0 + 0.02018, facade.getActualPosition(mazoubToBounceWith)[0], LOW_PRECISION);
+	assertTrue(facade.getVelocity(movingSlime)[0] > 0.0);
+	// The slime needs 0.2401 seconds to collide with mazub again.
+	// The collision has no effect, because no 0.6 seconds have passed since the
+	// previous collision
+	for (int i = 0; i < 3; i++)
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	assertEquals(2.0 - slimeWidth / 100.0 + 0.02018, facade.getActualPosition(movingSlime)[0], LOW_PRECISION);
+	assertEquals(100 - 30, facade.getHitPoints(movingSlime));
+	assertEquals(0.0, facade.getVelocity(movingSlime)[0]);
+	actualScore += 24;
+    }
+
+    @Test
+    public void advanceTime_SlimeInSchoolBouncingAgainstMazub() throws Exception {
+	maximumScore += 10;
+	// The mazub to bounce with.
+	final Mazub mazoubToBounceWith = facade.createMazub(200, 30, mazubSprites);
+	facade.setGeologicalFeature(world_250_400, 240, 25, SOLID_GROUND);
+	facade.addGameObject(mazoubToBounceWith, world_250_400);
+	final Slime mate1 = facade.createSlime(10, 20, 20, someSchool, slimeSprites);
+	final Slime mate2 = facade.createSlime(20, 100, 100, someSchool, slimeSprites);
+	final Slime movingSlime = facade.createSlime(30, 100, 30, someSchool, slimeSprites);
+	final int slimeWidth = facade.getCurrentSprite(movingSlime).getWidth();
+	facade.addGameObject(movingSlime, world_250_400);
+	// The time needed to reach the mazub to bounce with depends on the width of
+	// the slime's sprite. The sprite looses 30 hit points because of the collision.
+	// Because mazub is stationary, the collision has no impact on it.
+	double timeToReachSlime = Math.sqrt((100.0 - slimeWidth) / 35.0);
+	while (timeToReachSlime > 0.15) {
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	    timeToReachSlime -= 0.15;
+	}
+	facade.advanceWorldTime(world_250_400, timeToReachSlime + 0.03);
+	// The slimes in the same school as the moving slime each loose 1 hit-point.
+	assertEquals(100 - 30, facade.getHitPoints(movingSlime));
+	assertEquals(100 - 1, facade.getHitPoints(mate1));
+	assertEquals(100 - 1, facade.getHitPoints(mate2));
+	actualScore += 10;
+    }
+
+    @Test
+    public void advanceTime_SlimeBouncingAgainstSlimeOfLargerSchool() throws Exception {
+	maximumScore += 12;
+	// The slime to bounce with is blocked by impassable terrain.
+	final School largerSchool = facade.createSchool(null);
+	facade.createSlime(10, 20, 30, largerSchool, slimeSprites);
+	facade.createSlime(20, 120, 30, largerSchool, slimeSprites);
+	facade.createSlime(30, 20, 120, largerSchool, slimeSprites);
+	facade.createSlime(40, 120, 120, largerSchool, slimeSprites);
+	final Slime slimeToBounceWith = facade.createSlime(50, 200, 30, largerSchool, slimeSprites);
+	facade.addGameObject(slimeToBounceWith, world_250_400);
+	final int slimeWidth = facade.getCurrentSprite(slimeToBounceWith).getWidth();
+	facade.setGeologicalFeature(world_250_400, 200 + slimeWidth, 50, SOLID_GROUND);
+	final Slime movingSlime = facade.createSlime(60, 100, 30, someSchool, slimeSprites);
+	facade.addGameObject(movingSlime, world_250_400);
+	final Slime oldMate = facade.createSlime(70, 20, 30, someSchool, slimeSprites);
+	// The time needed to reach the slime to bounce with depends on the width of
+	// the slime's sprite.
+	double timeToReachSlime = Math.sqrt((100.0 - slimeWidth) / 35.0);
+	while (timeToReachSlime > 0.15) {
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	    timeToReachSlime -= 0.15;
+	}
+	facade.advanceWorldTime(world_250_400, timeToReachSlime + 0.03);
+	// The bouncing slime must now have switched to the larger school.
+	assertTrue(facade.getAllSlimes(largerSchool).contains(movingSlime));
+	assertFalse(facade.getAllSlimes(someSchool).contains(movingSlime));
+	assertEquals(largerSchool, facade.getSchool(movingSlime));
+	assertEquals(100 + 1, facade.getHitPoints(oldMate));
+	assertEquals(100 - 1 + 5, facade.getHitPoints(movingSlime));
+	assertEquals(100 - 1, facade.getHitPoints(slimeToBounceWith));
+	actualScore += 12;
+    }
+
+    @Test
+    public void advanceTime_SlimeBouncingAgainstSlimeOfSmallerSchool() throws Exception {
+	maximumScore += 4;
+	// The slime to bounce with is blocked by impassable terrain.
+	final School smallerSchool = facade.createSchool(null);
+	final Slime slimeToBounceWith = facade.createSlime(10, 200, 30, smallerSchool, slimeSprites);
+	facade.addGameObject(slimeToBounceWith, world_250_400);
+	final int slimeWidth = facade.getCurrentSprite(slimeToBounceWith).getWidth();
+	facade.setGeologicalFeature(world_250_400, 200 + slimeWidth, 50, SOLID_GROUND);
+	final Slime movingSlime = facade.createSlime(20, 100, 30, someSchool, slimeSprites);
+	facade.addGameObject(movingSlime, world_250_400);
+	facade.createSlime(30, 20, 30, someSchool, slimeSprites);
+	facade.createSlime(40, 20, 30, someSchool, slimeSprites);
+	// The time needed to reach the slime to bounce with depends on the width of
+	// the slime's sprite.
+	double timeToReachSlime = Math.sqrt((100.0 - slimeWidth) / 35.0);
+	while (timeToReachSlime > 0.15) {
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	    timeToReachSlime -= 0.15;
+	}
+	facade.advanceWorldTime(world_250_400, timeToReachSlime + 0.03);
+	// Both slimes involved in the collision must still be part of the same school.
+	assertTrue(facade.getAllSlimes(someSchool).contains(movingSlime));
+	assertTrue(facade.getAllSlimes(smallerSchool).contains(slimeToBounceWith));
+	actualScore += 4;
+    }
+
+    /**********
+     * Sharks *
+     **********/
+
+    boolean shouldImplementSharks() {
+	return facade.isTeamSolution() || facade.isLateTeamSplit();
+    }
+
+    @Test
+    void createShark_LegalCase() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 6;
+	    final Shark newShark = facade.createShark(10, 6, sharkSprites);
+	    assertArrayEquals(new int[] { 10, 6 }, facade.getPixelPosition(newShark));
+	    assertArrayEquals(new double[] { 0.1, 0.06 }, facade.getActualPosition(newShark), HIGH_PRECISION);
+	    assertArrayEquals(new double[] { 0.0, 0.0 }, facade.getVelocity(newShark), LOW_PRECISION);
+	    assertTrue(Math.abs(facade.getAcceleration(newShark)[0]) <= HIGH_PRECISION
+		    || Math.abs(facade.getAcceleration(newShark)[0]) >= 1.5 - LOW_PRECISION
+			    && Math.abs(facade.getAcceleration(newShark)[0]) <= 1.5 + LOW_PRECISION);
+	    assertTrue(Math.abs(facade.getAcceleration(newShark)[1]) <= HIGH_PRECISION
+		    || Math.abs(facade.getAcceleration(newShark)[1]) >= 10.0 - LOW_PRECISION
+			    && Math.abs(facade.getAcceleration(newShark)[1]) <= 10.0 + LOW_PRECISION);
+	    assertEquals(100, facade.getHitPoints(newShark));
+	    if (facade.isTeamSolution()) {
+		assertArrayEquals(sharkSprites, facade.getSprites(newShark));
+		assertEquals(sharkSprites[0], facade.getCurrentSprite(newShark));
+	    }
+	    actualScore += 6;
+	}
+    }
+
+    @Test
+    void createShark_IllegalSprites() throws Exception {
+	if (facade.isTeamSolution()) {
+	    maximumScore += 4;
+	    // Array of sprites must be effective.
+	    assertThrows(ModelException.class, () -> facade.createShark(5, 10, (Sprite[]) null));
+	    // Array of sprites must have exactly 3 elements.
+	    assertThrows(ModelException.class,
+		    () -> facade.createShark(5, 10, new Sprite[] { new Sprite("a", 1, 2), new Sprite("b", 3, 4) }));
+	    assertThrows(ModelException.class, () -> facade.createShark(5, 10, new Sprite[] { new Sprite("a", 1, 2),
+		    new Sprite("b", 2, 3), new Sprite("c", 3, 4), new Sprite("d", 5, 6) }));
+	    // Array of sprites must have effective elements.
+	    assertThrows(ModelException.class, () -> facade.createShark(5, 10, new Sprite[] { null, null, null }));
+	    actualScore += 4;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkMovingLeftAndJumping() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 12;
+	    final Shark theShark = facade.createShark(50, 100, sharkSprites);
+	    facade.addGameObject(theShark, world_100_200);
+	    final int sharkWidth = facade.getCurrentSprite(theShark).getWidth();
+	    facade.setGeologicalFeature(world_100_200, 50 + sharkWidth - 10, 90, SOLID_GROUND);
+	    final double sharkInitXpos = facade.getActualPosition(theShark)[0];
+	    final double sharkInitYpos = facade.getActualPosition(theShark)[1];
+	    // After 0.1 seconds, the shark shall have moved to the left over 0.75 cm,
+	    // and shall have jumped up over 15 cm.
+	    facade.advanceWorldTime(world_100_200, 0.1);
+	    assertArrayEquals(new double[] { sharkInitXpos - 0.0075, sharkInitYpos + 0.15 },
+		    facade.getActualPosition(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { -0.15, 1.0 }, facade.getVelocity(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { -1.5, -10.0 }, facade.getAcceleration(theShark), LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[1], facade.getCurrentSprite(theShark));
+	    // After another 0.3 seconds, the shark shall have moved to the left over 12.0
+	    // cm,
+	    // and is falling down.
+	    facade.advanceWorldTime(world_100_200, 0.15);
+	    facade.advanceWorldTime(world_100_200, 0.15);
+	    assertArrayEquals(new double[] { sharkInitXpos - 0.12, sharkInitYpos }, facade.getActualPosition(theShark),
+		    LOW_PRECISION);
+	    assertArrayEquals(new double[] { -0.6, -2.0 }, facade.getVelocity(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { -1.5, -10.0 }, facade.getAcceleration(theShark), LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[1], facade.getCurrentSprite(theShark));
+	    // After another 0.1 seconds, the shark stops moving to the left, but keeps on
+	    // falling.
+	    facade.advanceWorldTime(world_100_200, 0.11);
+	    assertArrayEquals(new double[] { sharkInitXpos - 0.1875, sharkInitYpos - 0.2805 },
+		    facade.getActualPosition(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { 0.0, -3.1 }, facade.getVelocity(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { 0.0, -10.0 }, facade.getAcceleration(theShark), LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[0], facade.getCurrentSprite(theShark));
+	    actualScore += 12;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkMovingRightAndJumping() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 12;
+	    final Shark theShark = facade.createShark(50, 100, sharkSprites);
+	    facade.addGameObject(theShark, world_100_200);
+	    facade.setGeologicalFeature(world_100_200, 50, 100, WATER);
+	    facade.setGeologicalFeature(world_100_200, 65, 70, SOLID_GROUND);
+	    double sharkInitXpos = facade.getActualPosition(theShark)[0];
+	    double sharkInitYpos = facade.getActualPosition(theShark)[1];
+	    // After 1.5 seconds, the shark has moved to the left during 0.5 seconds,
+	    // and has rested during 1.0 seconds during which it has fallen down to
+	    // land on solid ground.
+	    for (int i = 0; i < 15; i++)
+		facade.advanceWorldTime(world_100_200, 0.1);
+	    assertEquals(sharkInitXpos - 0.1875, facade.getActualPosition(theShark)[0], LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] >= 0.79 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 0.8 + LOW_PRECISION);
+	    // After 0.1 seconds, the shark has moved to the right over 0.75 cm
+	    // and has jumped up over 15 cm.
+	    sharkInitXpos = facade.getActualPosition(theShark)[0];
+	    sharkInitYpos = facade.getActualPosition(theShark)[1];
+	    facade.advanceWorldTime(world_100_200, 0.1);
+	    assertArrayEquals(new double[] { sharkInitXpos + 0.0075, sharkInitYpos + 0.15 },
+		    facade.getActualPosition(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { 0.15, 1.0 }, facade.getVelocity(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { 1.5, -10.0 }, facade.getAcceleration(theShark), LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[2], facade.getCurrentSprite(theShark));
+	    // After another 0.3 seconds, the shark shall have moved to the right over 0.75
+	    // cm,
+	    // and re-enters the water tile.
+	    facade.advanceWorldTime(world_100_200, 0.15);
+	    facade.advanceWorldTime(world_100_200, 0.15);
+	    assertArrayEquals(new double[] { sharkInitXpos + 0.12, sharkInitYpos }, facade.getActualPosition(theShark),
+		    LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[2], facade.getCurrentSprite(theShark));
+	    // After another 0.1 seconds, the shark stops moving to the right.
+	    facade.advanceWorldTime(world_100_200, 0.11);
+	    assertEquals(0.0, facade.getVelocity(theShark)[0], LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] >= 0.79 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 0.8 + LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[0], facade.getCurrentSprite(theShark));
+	    actualScore += 12;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkLandingOnImpassableTerrain() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 10;
+	    final Shark theShark = facade.createShark(50, 100, sharkSprites);
+	    facade.addGameObject(theShark, world_250_400);
+	    facade.setGeologicalFeature(world_250_400, 80, 95, SOLID_GROUND);
+	    facade.setGeologicalFeature(world_250_400, 50, 95, ICE);
+	    facade.setGeologicalFeature(world_250_400, 70, 120, WATER);
+	    final double sharkInitXpos = facade.getActualPosition(theShark)[0];
+	    final double sharkInitYpos = facade.getActualPosition(theShark)[1];
+	    // After 0.2 seconds, the shark has reached its top.
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    assertArrayEquals(new double[] { sharkInitXpos - 0.03, sharkInitYpos + 0.2 },
+		    facade.getActualPosition(theShark), LOW_PRECISION);
+	    // After another 0.2 seconds, the shark lands on impassable terrain.
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    facade.advanceWorldTime(world_250_400, 0.11);
+	    assertEquals(sharkInitXpos - 0.1261, facade.getActualPosition(theShark)[0], LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] >= 0.99 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 1.0 + LOW_PRECISION);
+	    // After another 0.09 seconds, the shark stops moving to the left
+	    facade.advanceWorldTime(world_250_400, 0.11);
+	    assertTrue(facade.getActualPosition(theShark)[0] <= sharkInitXpos - 0.1261 + LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[0] >= sharkInitXpos - 0.1875 + LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] >= 0.99 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 1.0 + LOW_PRECISION);
+	    actualScore += 10;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkFalling() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 14;
+	    final World theTallWorld = facade.createWorld(10, 100, 400, new int[] { 10, 10 }, 30, 40);
+	    final Shark theShark = facade.createShark(50, 3990, sharkSprites);
+	    facade.addGameObject(theShark, theTallWorld);
+	    final double sharkInitXpos = facade.getActualPosition(theShark)[0];
+	    final double sharkInitYpos = facade.getActualPosition(theShark)[1];
+	    // After 0.2 seconds, the shark has fallen down 20 cm.
+	    facade.advanceWorldTime(theTallWorld, 0.1);
+	    facade.advanceWorldTime(theTallWorld, 0.1);
+	    assertArrayEquals(new double[] { sharkInitXpos - 0.03, sharkInitYpos - 0.2 },
+		    facade.getActualPosition(theShark), LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[1], facade.getCurrentSprite(theShark));
+	    // After another 0.3 seconds, the shark stops moving to the left.
+	    // It has fallen down 125 cm in total.
+	    facade.advanceWorldTime(theTallWorld, 0.15);
+	    facade.advanceWorldTime(theTallWorld, 0.15);
+	    assertArrayEquals(new double[] { sharkInitXpos - 0.1875, sharkInitYpos - 1.25 },
+		    facade.getActualPosition(theShark), LOW_PRECISION);
+	    // After another 1.2 seconds, the shark is moving to the right.
+	    // It has moved over 3 cm and has fallen 14.45 cm in total.
+	    for (int i = 0; i < 12; i++)
+		facade.advanceWorldTime(theTallWorld, 0.1);
+	    assertArrayEquals(new double[] { sharkInitXpos - 0.1875 + 0.03, sharkInitYpos - 14.45 },
+		    facade.getActualPosition(theShark), LOW_PRECISION);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[2], facade.getCurrentSprite(theShark));
+	    // After another 0.3 seconds, the shark stops moving to the right.
+	    // It has fallen over 2000 cm in total
+	    facade.advanceWorldTime(theTallWorld, 0.15);
+	    facade.advanceWorldTime(theTallWorld, 0.15);
+	    assertArrayEquals(new double[] { sharkInitXpos, sharkInitYpos - 20.00 }, facade.getActualPosition(theShark),
+		    LOW_PRECISION);
+	    // After a total time of 2.8249 seconds, the shark falls out of the world.
+	    facade.advanceWorldTime(theTallWorld, 0.15);
+	    if (facade.isTeamSolution())
+		assertEquals(sharkSprites[0], facade.getCurrentSprite(theShark));
+	    for (int i = 0; i < 5; i++)
+		facade.advanceWorldTime(theTallWorld, 0.15);
+	    assertTrue(facade.isTerminatedGameObject(theShark));
+	    assertNull(facade.getWorld(theShark));
+	    assertFalse(facade.getAllGameObjects(theTallWorld).contains(theShark));
+	    actualScore += 14;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkFallingInWater() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 12;
+	    final World theTallWorld = facade.createWorld(10, 100, 400, new int[] { 10, 10 }, 30, 40);
+	    facade.setGeologicalFeature(theTallWorld, 70, 990, WATER);
+	    final Shark theShark = facade.createShark(50, 2750, sharkSprites);
+	    facade.addGameObject(theShark, theTallWorld);
+	    // The top of the shark must reach the water in order to stop the fall.
+	    final int sharkHeight = facade.getCurrentSprite(theShark).getHeight();
+	    double timeToHaveTopInWater = Math.sqrt(2 * (1750.0 + sharkHeight / 100.0) / 1000.0);
+	    while (timeToHaveTopInWater > 0.1) {
+		facade.advanceWorldTime(theTallWorld, 0.1);
+		timeToHaveTopInWater -= 0.1;
+	    }
+	    facade.advanceWorldTime(theTallWorld, 0.15);
+	    final double expectedYpos = 10.0 - sharkHeight / 100.0;
+	    assertTrue(facade.getActualPosition(theShark)[1] >= expectedYpos - 0.01 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= expectedYpos + LOW_PRECISION);
+	    // After some time, the shark will start to move horizontally.
+	    // Because it is positioned in water, it will also start jumping.
+	    while (facade.getVelocity(theShark)[0] == 0.0)
+		facade.advanceWorldTime(theTallWorld, 0.1);
+	    final double oldXPos = facade.getActualPosition(theShark)[0];
+	    final double oldYPos = facade.getActualPosition(theShark)[1];
+	    facade.advanceWorldTime(theTallWorld, 0.15);
+	    assertTrue(facade.getActualPosition(theShark)[0] != oldXPos);
+	    assertEquals(oldYPos, facade.getActualPosition(theShark)[1], LOW_PRECISION);
+	    actualScore += 12;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkOutOfWater() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 12;
+	    final Shark theShark = facade.createShark(50, 1000, sharkSprites);
+	    facade.addGameObject(theShark, world_250_400);
+	    final int sharkWidth = facade.getCurrentSprite(theShark).getWidth();
+	    facade.setGeologicalFeature(world_250_400, 50 + sharkWidth - 5, 1010, WATER);
+	    facade.setGeologicalFeature(world_250_400, 70, 910, WATER);
+	    // The shark first jumps up over 20 cm for 0.2 seconds, leaving the water for
+	    // a short while. It then starts falling down until it re-enters the water.
+	    // After moving to the left during 0.2582 seconds over 5 cm, the shark is out
+	    // of the water, and starts falling again.
+	    facade.advanceWorldTime(world_250_400, 0.12);
+	    facade.advanceWorldTime(world_250_400, 0.14);
+	    assertEquals(100, facade.getHitPoints(theShark));
+	    // The shark looses 6 hit points after 0.2 seconds out of the water.
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    assertEquals(100 - 6, facade.getHitPoints(theShark));
+	    // The shark looses 6 hit points after another 0.2 seconds out of the water.
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    assertEquals(100 - 2 * 6, facade.getHitPoints(theShark));
+	    // The shark will now dive into the water, and will no longer loose hit points
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	    facade.advanceWorldTime(world_250_400, 0.15);
+	    assertEquals(100 - 2 * 6, facade.getHitPoints(theShark));
+	    actualScore += 12;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkOverlappingWithPlant() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 4;
+	    facade.setGeologicalFeature(world_250_400, 70, 95, SOLID_GROUND);
+	    final Shark theShark = facade.createShark(50, 100, sharkSprites);
+	    final int sharkWidth = facade.getCurrentSprite(theShark).getWidth();
+	    facade.addGameObject(theShark, world_250_400);
+	    final Sneezewort theSneezeWort = facade.createSneezewort(50 + sharkWidth + 5, 110, sneezewortSprites);
+	    facade.addGameObject(theSneezeWort, world_250_400);
+	    // After 0.2 seconds, the shark shall have moved to the left over 0.75 cm,
+	    // and shall have jumped up over 3 cm.
+	    // The plant will have moved to the left over 10 cm, meaning that it overlaps
+	    // with the shark.
+	    // Sharks do not eat plants.
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    facade.advanceWorldTime(world_250_400, 0.1);
+	    assertTrue(facade.getActualPosition(theShark)[0]
+		    + sharkWidth / 100.0 > facade.getActualPosition(theSneezeWort)[0]);
+	    assertEquals(100, facade.getHitPoints(theShark));
+	    assertFalse(facade.isDeadGameObject(theSneezeWort));
+	    assertEquals(world_250_400, facade.getWorld(theSneezeWort));
+	    actualScore += 4;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkBouncingAgainstOtherShark() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 8;
+	    facade.setGeologicalFeature(world_100_200, 65, 120, SOLID_GROUND);
+	    facade.setGeologicalFeature(world_100_200, 130, 120, SOLID_GROUND);
+	    final Shark sharkOrientedToTheRight = facade.createShark(50, 300, sharkSprites);
+	    facade.addGameObject(sharkOrientedToTheRight, world_100_200);
+	    final double sharkInitXpos = facade.getActualPosition(sharkOrientedToTheRight)[0];
+	    final int sharkWidth = facade.getCurrentSprite(sharkOrientedToTheRight).getWidth();
+	    final Shark sharkOrientedToTheLeft = facade.createShark(
+		    facade.getPixelPosition(sharkOrientedToTheRight)[0] + sharkWidth + 1, 130, sharkSprites);
+	    facade.addGameObject(sharkOrientedToTheLeft, world_100_200);
+	    // After 1.5 seconds, the shark has moved to the left during 0.5 seconds,
+	    // and has rested during 1.0 seconds during which it has fallen down to
+	    // land on solid ground.
+	    for (int i = 0; i < 15; i++)
+		facade.advanceTime(sharkOrientedToTheRight, 0.1);
+	    assertEquals(sharkInitXpos - 0.1875, facade.getActualPosition(sharkOrientedToTheRight)[0], LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(sharkOrientedToTheRight)[1] >= 1.29 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(sharkOrientedToTheRight)[1] <= 1.3 + LOW_PRECISION);
+	    // After less than 0.45 seconds, one shark will bounce against the other shark.
+	    facade.advanceWorldTime(world_100_200, 0.15);
+	    facade.advanceWorldTime(world_100_200, 0.15);
+	    facade.advanceWorldTime(world_100_200, 0.15);
+	    assertTrue(facade.getPixelPosition(sharkOrientedToTheRight)[0]
+		    + sharkWidth == facade.getPixelPosition(sharkOrientedToTheLeft)[0]);
+	    // After 1.05 seconds, the sharks start moving away from each other.
+	    for (int i = 0; i < 13; i++)
+		facade.advanceWorldTime(world_100_200, 0.1);
+	    assertTrue(facade.getPixelPosition(sharkOrientedToTheRight)[0]
+		    + sharkWidth < facade.getPixelPosition(sharkOrientedToTheLeft)[0]);
+	    actualScore += 8;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkBouncingAgainstSlime() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 14;
+	    facade.setGeologicalFeature(world_100_200, 65, 290, SOLID_GROUND);
+	    final Shark theShark = facade.createShark(50, 300, sharkSprites);
+	    final int sharkHeight = facade.getCurrentSprite(theShark).getHeight();
+	    facade.addGameObject(theShark, world_100_200);
+	    final Slime theSlime = facade.createSlime(10, 60, 310 + sharkHeight, null, slimeSprites);
+	    final double slimeInitXPos = facade.getActualPosition(theSlime)[0];
+	    facade.addGameObject(theSlime, world_100_200);
+	    // After 0.0586 seconds, the shark bounces against the slime.
+	    // As a result, the shark gains 10 hit points and starts falling down.
+	    facade.advanceTime(theShark, 0.07);
+	    assertEquals(100 + 10, facade.getHitPoints(theShark));
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 3.1 + LOW_PRECISION);
+	    // After another 0.15 seconds, the shark has landed on the solid ground,
+	    // and the slime has moved to the left.
+	    facade.advanceWorldTime(world_100_200, 0.18);
+	    assertTrue(facade.getActualPosition(theShark)[1] >= 2.9 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 3.0 + LOW_PRECISION);
+	    assertEquals(slimeInitXPos + 0.01134, facade.getActualPosition(theSlime)[0]);
+	    actualScore += 14;
+	}
+    }
+
+    @Test
+    void advanceTime_SharkBouncingAgainstMazoub() throws Exception {
+	if (shouldImplementSharks()) {
+	    maximumScore += 14;
+	    facade.setGeologicalFeature(world_100_200, 60, 230, SOLID_GROUND);
+	    final Shark theShark = facade.createShark(50, 300, sharkSprites);
+	    facade.addGameObject(theShark, world_100_200);
+	    final Mazub theMazub = facade.createMazub(30, 240, mazubSprites);
+	    final int mazubHeight = facade.getCurrentSprite(theMazub).getHeight();
+	    facade.addGameObject(theMazub, world_100_200);
+	    // When the shark lands on the mazub, it stops falling and looses 50 hit points.
+	    double timeToLandOnMazub = Math.sqrt(2.0 * (60.0 - mazubHeight) / 1000.0);
+	    while (timeToLandOnMazub > 0.1) {
+		facade.advanceTime(theShark, 0.1);
+		timeToLandOnMazub -= 0.1;
+	    }
+	    facade.advanceTime(theShark, timeToLandOnMazub + 0.1);
+	    assertEquals(100 - 50, facade.getHitPoints(theShark));
+	    assertTrue(facade.getActualPosition(theShark)[1] >= 2.4 + mazubHeight / 100.0 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 2.4 + mazubHeight / 100.0 + LOW_PRECISION);
+	    // After another 0.3 seconds, the shark is still in contact with the mazub,
+	    // but has not lost any additional hit points.
+	    facade.advanceTime(theShark, 0.15);
+	    facade.advanceTime(theShark, 0.15);
+	    assertEquals(100 - 50, facade.getHitPoints(theShark));
+	    assertTrue(facade.getActualPosition(theShark)[1] >= 2.4 + mazubHeight / 100.0 - LOW_PRECISION);
+	    assertTrue(facade.getActualPosition(theShark)[1] <= 2.4 + mazubHeight / 100.0 + LOW_PRECISION);
+	    actualScore += 14;
+	}
     }
 
     /*******************
@@ -1485,6 +2546,8 @@ class FullFacadeTest {
     public final static int SOLID_GROUND = 1;
     public final static int WATER = 2;
     public final static int MAGMA = 3;
+    public final static int ICE = 4;
+    public final static int GAS = 5;
 
     @Test
     void createWorld_AllDefaultGeologicalFeatures() throws Exception {
@@ -1508,9 +2571,9 @@ class FullFacadeTest {
     @Test
     void createWorld_AllExplicitGeologicalFeatures() throws Exception {
 	maximumScore += 8;
-	final int[] geologicalFeatures = new int[] { AIR, SOLID_GROUND, WATER, WATER, MAGMA, AIR };
-	final World newWorld = facade.createWorld(5, 2, 3, new int[] { 0, 1 }, 4, 5, geologicalFeatures);
-	for (int tileY = 0; tileY < 3; tileY++)
+	final int[] geologicalFeatures = new int[] { AIR, SOLID_GROUND, WATER, WATER, MAGMA, AIR, ICE, GAS };
+	final World newWorld = facade.createWorld(5, 2, 4, new int[] { 0, 1 }, 4, 5, geologicalFeatures);
+	for (int tileY = 0; tileY < 4; tileY++)
 	    for (int tileX = 0; tileX < 2; tileX++)
 		assertEquals(geologicalFeatures[tileY * 2 + tileX],
 			facade.getGeologicalFeature(newWorld, tileX * 5, tileY * 5));
@@ -1520,9 +2583,9 @@ class FullFacadeTest {
     @Test
     void createWorld_SomeExplicitGeologicalFeatures() throws Exception {
 	maximumScore += 4;
-	final int[] geologicalFeatures = new int[] { AIR, SOLID_GROUND, WATER, MAGMA };
-	final World newWorld = facade.createWorld(5, 2, 3, new int[] { 1, 2 }, 3, 3, geologicalFeatures);
-	for (int tileY = 0; tileY < 3; tileY++)
+	final int[] geologicalFeatures = new int[] { AIR, SOLID_GROUND, WATER, MAGMA, ICE, GAS };
+	final World newWorld = facade.createWorld(5, 2, 4, new int[] { 1, 2 }, 3, 3, geologicalFeatures);
+	for (int tileY = 0; tileY < 4; tileY++)
 	    for (int tileX = 0; tileX < 2; tileX++)
 		assertEquals(
 			tileY * 2 + tileX < geologicalFeatures.length ? geologicalFeatures[tileY * 2 + tileX] : AIR,
@@ -1531,21 +2594,35 @@ class FullFacadeTest {
     }
 
     @Test
+    void createWorld_IllegalTargetTile() throws Exception {
+	maximumScore += 4;
+	// Non-effective target tile
+	assertThrows(ModelException.class, () -> facade.createWorld(5, 20, 30, null, 20, 30));
+	// Target tile with illegal number of displacements
+	assertThrows(ModelException.class, () -> facade.createWorld(5, 20, 30, new int[] { 1, 1, 2 }, 10, 30));
+	actualScore += 4;
+    }
+
+    @Test
     void createWorld_IllegalWindow() throws Exception {
 	if (facade.isTeamSolution()) {
-	    maximumScore += 3;
+	    maximumScore += 4;
 	    assertThrows(ModelException.class, () -> facade.createWorld(5, 2, 3, new int[] { 1, 1 }, 20, 30));
-	    actualScore += 3;
+	    assertThrows(ModelException.class, () -> facade.createWorld(5, 2, 3, new int[] { 1, 1 }, -10, 30));
+	    actualScore += 4;
 	}
     }
 
     @Test
     void createWorld_IllegalDimensions() throws Exception {
 	maximumScore += 3;
+	// Illegal tile size
 	World newWorld = facade.createWorld(-10, 100, 200, new int[] { 10, 20 }, 10, 15);
 	assertTrue(facade.getTileLength(newWorld) >= 0);
+	// Illegal number of horizontal pixels
 	newWorld = facade.createWorld(10, -100, 200, new int[] { 10, 20 }, 20, 30);
 	assertTrue(facade.getSizeInPixels(newWorld)[0] >= 0);
+	// Illegal number of vertical pixels
 	newWorld = facade.createWorld(10, 100, -200, new int[] { 10, 20 }, 10, 20);
 	assertTrue(facade.getSizeInPixels(newWorld)[1] >= 0);
 	actualScore += 3;
@@ -1553,14 +2630,38 @@ class FullFacadeTest {
 
     @Test
     void createWorld_IllegalGeologicalFeatures() throws Exception {
-	maximumScore += 3;
+	maximumScore += 4;
+	assertThrows(ModelException.class, () -> facade.createWorld(5, 2, 3, new int[] { 0, 1 }, 4, 5, null));
 	final int[] geologicalFeatures = new int[] { AIR, -4, WATER, 12 };
 	final World newWorld = facade.createWorld(5, 2, 3, new int[] { 4, 7 }, 2, 2, geologicalFeatures);
 	for (int tileY = 0; tileY < 3; tileY++)
 	    for (int tileX = 0; tileX < 2; tileX++)
 		assertEquals(tileY * 2 + tileX == 2 ? WATER : AIR,
 			facade.getGeologicalFeature(newWorld, tileX * 5, tileY * 5));
-	actualScore += 3;
+	actualScore += 4;
+    }
+
+    @Test
+    void terminateWorld() throws Exception {
+	maximumScore += 12;
+	final Mazub someMazub = facade.createMazub(500, 150, mazubSprites);
+	facade.addGameObject(someMazub, world_100_200);
+	final Sneezewort someSneezeWort = facade.createSneezewort(10, 10, sneezewortSprites);
+	facade.addGameObject(someSneezeWort, world_100_200);
+	final Skullcab someSkullcab = facade.createSkullcab(200, 10, skullcabSprites);
+	facade.addGameObject(someSkullcab, world_100_200);
+	final Slime someSlime = facade.createSlime(10, 10, 100, someSchool, slimeSprites);
+	facade.addGameObject(someSlime, world_100_200);
+	final Shark someShark = facade.createShark(200, 10, sharkSprites);
+	facade.addGameObject(someShark, world_100_200);
+	facade.terminateWorld(world_100_200);
+	assertTrue(facade.getAllGameObjects(world_100_200).isEmpty());
+	assertNull(facade.getWorld(someMazub));
+	assertNull(facade.getWorld(someSneezeWort));
+	assertNull(facade.getWorld(someSkullcab));
+	assertNull(facade.getWorld(someSlime));
+	assertNull(facade.getWorld(someShark));
+	actualScore += 12;
     }
 
     @Test
@@ -1587,7 +2688,7 @@ class FullFacadeTest {
 	final int tileSize = facade.getTileLength(world_100_200);
 	facade.setGeologicalFeature(world_100_200, 50, 100, -20);
 	assertTrue(facade.getGeologicalFeature(world_100_200, 50, 100) >= AIR);
-	assertTrue(facade.getGeologicalFeature(world_100_200, 50, 100) <= MAGMA);
+	assertTrue(facade.getGeologicalFeature(world_100_200, 50, 100) <= GAS);
 	facade.setGeologicalFeature(world_100_200, -tileSize - 1, 10, WATER);
 	facade.setGeologicalFeature(world_100_200, 12, 200 * tileSize, SOLID_GROUND);
 	actualScore += 2;
@@ -1595,15 +2696,39 @@ class FullFacadeTest {
 
     @Test
     void addGameObject_LegalCasePassableTerrain() throws Exception {
-	maximumScore += 15;
-	final Mazub some_mazub = facade.createMazub(300, 150, mazubSprites);
-	facade.addGameObject(some_mazub, world_100_200);
-	assertTrue(facade.hasAsGameObject(some_mazub, world_100_200));
+	maximumScore += 25;
+	final Mazub someMazub = facade.createMazub(500, 150, mazubSprites);
+	facade.addGameObject(someMazub, world_100_200);
+	assertTrue(facade.hasAsGameObject(someMazub, world_100_200));
 	assertEquals(1, facade.getAllGameObjects(world_100_200).size());
-	assertTrue(facade.getAllGameObjects(world_100_200).contains(some_mazub));
-	assertEquals(world_100_200, facade.getWorld(some_mazub));
-	assertEquals(some_mazub, facade.getMazub(world_100_200));
-	actualScore += 15;
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(someMazub));
+	assertEquals(world_100_200, facade.getWorld(someMazub));
+	assertEquals(someMazub, facade.getMazub(world_100_200));
+	final Sneezewort someSneezeWort = facade.createSneezewort(10, 10, sneezewortSprites);
+	facade.addGameObject(someSneezeWort, world_100_200);
+	assertTrue(facade.hasAsGameObject(someSneezeWort, world_100_200));
+	assertEquals(2, facade.getAllGameObjects(world_100_200).size());
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(someSneezeWort));
+	assertEquals(world_100_200, facade.getWorld(someSneezeWort));
+	final Skullcab someSkullcab = facade.createSkullcab(200, 10, skullcabSprites);
+	facade.addGameObject(someSkullcab, world_100_200);
+	assertTrue(facade.hasAsGameObject(someSkullcab, world_100_200));
+	assertEquals(3, facade.getAllGameObjects(world_100_200).size());
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(someSkullcab));
+	assertEquals(world_100_200, facade.getWorld(someSkullcab));
+	final Slime someSlime = facade.createSlime(10, 10, 100, someSchool, slimeSprites);
+	facade.addGameObject(someSlime, world_100_200);
+	assertTrue(facade.hasAsGameObject(someSlime, world_100_200));
+	assertEquals(4, facade.getAllGameObjects(world_100_200).size());
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(someSlime));
+	assertEquals(world_100_200, facade.getWorld(someSlime));
+	final Shark someShark = facade.createShark(200, 10, sharkSprites);
+	facade.addGameObject(someShark, world_100_200);
+	assertTrue(facade.hasAsGameObject(someShark, world_100_200));
+	assertEquals(5, facade.getAllGameObjects(world_100_200).size());
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(someShark));
+	assertEquals(world_100_200, facade.getWorld(someShark));
+	actualScore += 25;
     }
 
     @Test
@@ -1649,65 +2774,74 @@ class FullFacadeTest {
     @Test
     void addGameObject_AdjacentToImpassableTerrain() throws Exception {
 	maximumScore += 10;
-	final int width = mazubSprites[0].getWidth();
-	final int height = mazubSprites[0].getHeight();
+	final int mazubWidth = mazubSprites[0].getWidth();
+	final int slimeHeight = slimeSprites[0].getHeight();
 	// Adjacent left and right
 	facade.setGeologicalFeature(world_100_200, 220, 330, SOLID_GROUND);
-	facade.addGameObject(facade.createMazub(220 - width, 335, mazubSprites), world_100_200);
-	facade.addGameObject(facade.createMazub(230, 335, mazubSprites), world_100_200);
+	facade.addGameObject(facade.createMazub(220 - mazubWidth, 335, mazubSprites), world_100_200);
+	facade.addGameObject(facade.createSlime(10, 230, 335, someSchool, slimeSprites), world_100_200);
 	// Adjacent bottom and top
 	facade.setGeologicalFeature(world_100_200, 220, 530, SOLID_GROUND);
-	facade.addGameObject(facade.createMazub(225, 530 - height, mazubSprites), world_100_200);
-	facade.addGameObject(facade.createMazub(225, 540, mazubSprites), world_100_200);
+	facade.addGameObject(facade.createSlime(20, 225, 530 - slimeHeight, someSchool, slimeSprites), world_100_200);
+	facade.addGameObject(facade.createShark(225, 540, sharkSprites), world_100_200);
 	// Overlapping with top row of impassable terrain.
 	facade.setGeologicalFeature(world_100_200, 220, 630, SOLID_GROUND);
-	facade.addGameObject(facade.createMazub(225, 639, mazubSprites), world_100_200);
+	facade.addGameObject(facade.createShark(225, 639, sharkSprites), world_100_200);
 	actualScore += 10;
     }
 
     @Test
-    void addGameObject_MazubOnImpassableTerrain() throws Exception {
+    void addGameObject_OnImpassableTerrain() throws Exception {
 	maximumScore += 8;
 	facade.setGeologicalFeature(world_100_200, 220, 330, SOLID_GROUND);
+	facade.setGeologicalFeature(world_100_200, 500, 500, ICE);
 	final int width = mazubSprites[0].getWidth();
 	final int height = mazubSprites[0].getHeight();
 	assertThrows(ModelException.class,
 		() -> facade.addGameObject(facade.createMazub(220 - width + 2, 335, mazubSprites), world_100_200));
 	assertThrows(ModelException.class,
-		() -> facade.addGameObject(facade.createMazub(229, 335, mazubSprites), world_100_200));
+		() -> facade.addGameObject(facade.createSlime(10, 229, 335, someSchool, slimeSprites), world_100_200));
 	assertThrows(ModelException.class,
 		() -> facade.addGameObject(facade.createMazub(225, 330 - height + 2, mazubSprites), world_100_200));
 	assertThrows(ModelException.class,
-		() -> facade.addGameObject(facade.createMazub(225, 338, mazubSprites), world_100_200));
+		() -> facade.addGameObject(facade.createShark(225, 338, mazubSprites), world_100_200));
+	assertThrows(ModelException.class,
+		() -> facade.addGameObject(facade.createMazub(505, 503, mazubSprites), world_100_200));
 	actualScore += 8;
     }
 
     @Test
-    void addGameObject_PlantOnImpassableTerrain() throws Exception {
-	maximumScore += 8;
+    void addGameObject_SneezewortOnImpassableTerrain() throws Exception {
+	maximumScore += 10;
 	facade.setGeologicalFeature(world_100_200, 220, 330, SOLID_GROUND);
-	final Sneezewort newPlant = facade.createSneezewort(210, 320, plantSprites);
-	facade.addGameObject(newPlant, world_100_200);
-	assertTrue(facade.hasAsGameObject(newPlant, world_100_200));
-	assertEquals(world_100_200, facade.getWorld(newPlant));
-	actualScore += 8;
+	facade.setGeologicalFeature(world_100_200, 10, 10, ICE);
+	final Sneezewort newSneezewort = facade.createSneezewort(210, 320, sneezewortSprites);
+	facade.addGameObject(newSneezewort, world_100_200);
+	assertTrue(facade.hasAsGameObject(newSneezewort, world_100_200));
+	assertEquals(world_100_200, facade.getWorld(newSneezewort));
+	final Skullcab newSkullcab = facade.createSkullcab(210, 320, skullcabSprites);
+	facade.addGameObject(newSkullcab, world_100_200);
+	assertTrue(facade.hasAsGameObject(newSkullcab, world_100_200));
+	assertEquals(world_100_200, facade.getWorld(newSkullcab));
+	actualScore += 10;
     }
 
     @Test
     void addGameObject_AdjacentObjects() throws Exception {
 	maximumScore += 10;
-	Mazub mazubInWorld = facade.createMazub(140, 250, mazubSprites);
+	final Mazub mazubInWorld = facade.createMazub(140, 250, mazubSprites);
 	facade.addGameObject(mazubInWorld, world_100_200);
-	final int width = mazubSprites[0].getWidth();
-	final int height = mazubSprites[0].getHeight();
+	final int mazubWidth = mazubSprites[0].getWidth();
+	final int mazubHeight = mazubSprites[0].getHeight();
+	final int slimeWidth = slimeSprites[0].getWidth();
+	final int slimeHeight = slimeSprites[0].getHeight();
 	// Adjacent left and right
-	facade.addGameObject(facade.createMazub(140 - width, 270, mazubSprites), world_100_200);
-	facade.addGameObject(facade.createMazub(140 + width, 270, mazubSprites), world_100_200);
-	mazubInWorld = facade.createMazub(40, 450, mazubSprites);
-	facade.addGameObject(facade.createMazub(60, 450 - height, mazubSprites), world_100_200);
-	facade.addGameObject(facade.createMazub(60, 450 + height, mazubSprites), world_100_200);
+	facade.addGameObject(facade.createSlime(10, 140 - slimeWidth, 270, someSchool, slimeSprites), world_100_200);
+	facade.addGameObject(facade.createShark(140 + mazubWidth, 270, sharkSprites), world_100_200);
+	// Adjacent top and bottom
+	facade.addGameObject(facade.createSlime(20, 180, 450 - slimeHeight, someSchool, slimeSprites), world_100_200);
+	facade.addGameObject(facade.createShark(60, 450 + mazubHeight, sharkSprites), world_100_200);
 	actualScore += 10;
-
     }
 
     @Test
@@ -1715,16 +2849,20 @@ class FullFacadeTest {
 	maximumScore += 8;
 	final Mazub mazubInWorld = facade.createMazub(140, 250, mazubSprites);
 	facade.addGameObject(mazubInWorld, world_100_200);
-	final int width = mazubSprites[0].getWidth();
-	final int height = mazubSprites[0].getHeight();
+	final int mazubWidth = mazubSprites[0].getWidth();
+	final int mazubHeight = mazubSprites[0].getHeight();
+	final int slimeWidth = slimeSprites[0].getWidth();
+	final int slimeHeight = slimeSprites[0].getHeight();
 	assertThrows(ModelException.class,
-		() -> facade.addGameObject(facade.createMazub(140 - width + 2, 270, mazubSprites), world_100_200));
+		() -> facade.addGameObject(facade.createSlime(10, 140 - slimeWidth + 2, 270, someSchool, slimeSprites),
+			world_100_200));
 	assertThrows(ModelException.class,
-		() -> facade.addGameObject(facade.createMazub(140 + width - 2, 270, mazubSprites), world_100_200));
+		() -> facade.addGameObject(facade.createShark(140 + mazubWidth - 2, 270, sharkSprites), world_100_200));
 	assertThrows(ModelException.class,
-		() -> facade.addGameObject(facade.createMazub(170, 250 - height + 2, mazubSprites), world_100_200));
-	assertThrows(ModelException.class,
-		() -> facade.addGameObject(facade.createMazub(170, 250 + height - 2, mazubSprites), world_100_200));
+		() -> facade.addGameObject(facade.createSlime(20, 170, 250 - slimeHeight + 2, someSchool, slimeSprites),
+			world_100_200));
+	assertThrows(ModelException.class, () -> facade
+		.addGameObject(facade.createShark(170, 250 + mazubHeight - 2, mazubSprites), world_100_200));
 	actualScore += 8;
     }
 
@@ -1733,33 +2871,31 @@ class FullFacadeTest {
 	maximumScore += 2;
 	facade.addGameObject(mazub_0_0, world_100_200);
 	facade.startGame(world_100_200);
-	assertThrows(ModelException.class, () -> facade.addGameObject(mazub_20_45, world_100_200));
+	final Sneezewort newSneezewort = facade.createSneezewort(210, 320, sneezewortSprites);
+	assertThrows(ModelException.class, () -> facade.addGameObject(newSneezewort, world_100_200));
 	actualScore += 2;
     }
 
     @Test
-    void addGameObject_SeveralMazubsAndPlants() throws Exception {
-	maximumScore += 8;
-	final World bigWorld = facade.createWorld(5, 200, 110, new int[] { 10, 20 }, 50, 40);
-	facade.addGameObject(mazub_0_0, bigWorld);
-	for (int i = 0; i <= 3; i++) {
-	    facade.addGameObject(facade.createMazub((i + 1) * 100, i * 50, mazubSprites), bigWorld);
-	    facade.addGameObject(facade.createSneezewort(i * 50, (i + 2) * 50, plantSprites), bigWorld);
-	}
-	assertEquals(facade.getMazub(bigWorld), mazub_0_0);
-	assertEquals(9, facade.getAllGameObjects(bigWorld).size());
-	actualScore += 8;
+    void addGameObject_TooManyObjects() throws Exception {
+	maximumScore += 12;
+	final World bigWorld = facade.createWorld(5, 200, 200, new int[] { 10, 20 }, 50, 40);
+	for (int i = 0; i <= 99; i++)
+	    facade.addGameObject(facade.createShark(i % 10 * 100, i / 10 * 50, sharkSprites), bigWorld);
+	// No more than 100 other game objects in a world.
+	assertThrows(ModelException.class,
+		() -> facade.addGameObject(facade.createShark(0, 800, sharkSprites), bigWorld));
+	// Adding a mazub must still be possible.
+	facade.addGameObject(facade.createMazub(100, 800, mazubSprites), bigWorld);
+	actualScore += 12;
     }
 
     @Test
-    void addGameObject_TooManyObjects() throws Exception {
-	maximumScore += 8;
-	final World bigWorld = facade.createWorld(5, 200, 110, new int[] { 10, 20 }, 50, 40);
-	for (int i = 0; i <= 100; i++)
-	    facade.addGameObject(facade.createMazub(i % 10 * 100, i / 10 * 50, mazubSprites), bigWorld);
-	assertThrows(ModelException.class,
-		() -> facade.addGameObject(facade.createMazub(100, 500, mazubSprites), bigWorld));
-	actualScore += 8;
+    void addGameObject_SeveralMazubs() throws Exception {
+	maximumScore += 4;
+	facade.addGameObject(mazub_0_0, world_250_400);
+	assertThrows(ModelException.class, () -> facade.addGameObject(mazub_100_0, world_250_400));
+	actualScore += 4;
     }
 
     @Test
@@ -1771,48 +2907,52 @@ class FullFacadeTest {
 	assertFalse(facade.hasAsGameObject(some_mazub, world_100_200));
 	assertNull(facade.getWorld(some_mazub));
 	assertNull(facade.getMazub(world_100_200));
+	// Adding another mazub should not be a problem.
+	facade.addGameObject(mazub_0_0, world_100_200);
 	actualScore += 12;
     }
 
     @Test
     void removeGameObject_ObjectNotInWorld() throws Exception {
 	maximumScore += 6;
+	// Mazub not in a world
 	assertThrows(ModelException.class, () -> facade.removeGameObject(mazub_100_0, world_100_200));
+	// Non-effective mazub
 	assertThrows(ModelException.class, () -> facade.removeGameObject(null, world_100_200));
+	// Mazub in other world
+	facade.addGameObject(mazub_0_0, world_100_200);
+	assertThrows(ModelException.class, () -> facade.removeGameObject(mazub_0_0, world_250_400));
 	actualScore += 6;
     }
 
     @Test
     void getAllGameObjects_SeveralObjects() {
 	maximumScore += 5;
-	final Mazub mazub1 = facade.createMazub(300, 150, mazubSprites);
-	facade.addGameObject(mazub1, world_100_200);
-	final Mazub mazub2 = facade.createMazub(600, 150, mazubSprites);
-	facade.addGameObject(mazub2, world_100_200);
-	final Mazub mazub3 = facade.createMazub(500, 550, mazubSprites);
-	facade.addGameObject(mazub3, world_100_200);
+	final Mazub mazub = facade.createMazub(300, 150, mazubSprites);
+	facade.addGameObject(mazub, world_100_200);
+	final Shark shark = facade.createShark(600, 150, sharkSprites);
+	facade.addGameObject(shark, world_100_200);
+	final Slime slime = facade.createSlime(10, 500, 550, someSchool, slimeSprites);
+	facade.addGameObject(slime, world_100_200);
 	assertEquals(3, facade.getAllGameObjects(world_100_200).size());
-	assertTrue(facade.getAllGameObjects(world_100_200).contains(mazub1));
-	assertTrue(facade.getAllGameObjects(world_100_200).contains(mazub2));
-	assertTrue(facade.getAllGameObjects(world_100_200).contains(mazub3));
-	assertEquals(mazub1, facade.getMazub(world_100_200));
-	facade.removeGameObject(mazub1, world_100_200);
-	assertNull(facade.getMazub(world_100_200));
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(mazub));
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(shark));
+	assertTrue(facade.getAllGameObjects(world_100_200).contains(slime));
 	actualScore += 5;
     }
 
     @Test
     void getAllGameObjects_LeakTest() {
 	maximumScore += 15;
-	final Mazub mazub1 = facade.createMazub(300, 150, mazubSprites);
-	facade.addGameObject(mazub1, world_100_200);
-	final Mazub mazub2 = facade.createMazub(600, 150, mazubSprites);
-	facade.addGameObject(mazub2, world_100_200);
+	final Mazub mazub = facade.createMazub(300, 150, mazubSprites);
+	facade.addGameObject(mazub, world_100_200);
+	final Shark shark = facade.createShark(600, 150, sharkSprites);
+	facade.addGameObject(shark, world_100_200);
 	final Set<? extends Object> allGameObjects = facade.getAllGameObjects(world_100_200);
 	allGameObjects.add(null);
 	assertEquals(2, facade.getAllGameObjects(world_100_200).size());
-	allGameObjects.remove(mazub1);
-	assertTrue(facade.hasAsGameObject(mazub1, world_100_200));
+	allGameObjects.remove(mazub);
+	assertTrue(facade.hasAsGameObject(mazub, world_100_200));
 	actualScore += 15;
     }
 
@@ -1849,12 +2989,14 @@ class FullFacadeTest {
 
     @Test
     void setTargetTile_GameNotActive() {
-	maximumScore += 2;
+	maximumScore += 5;
 	final World theWorld = facade.createWorld(10, 100, 200, new int[] { 1, 2 }, 20, 10);
 	final int[] targetTileCoords = new int[] { 4000, -100 };
 	facade.setTargetTileCoordinate(theWorld, targetTileCoords);
 	assertArrayEquals(targetTileCoords, facade.getTargetTileCoordinate(theWorld));
-	actualScore += 2;
+	targetTileCoords[0] = -2000;
+	assertEquals(4000, facade.getTargetTileCoordinate(theWorld)[0]);
+	actualScore += 5;
     }
 
     @Test
@@ -1870,6 +3012,141 @@ class FullFacadeTest {
     }
 
     @Test
+    public void getVisibleWindowPosition_WindowUpdateFarFromBoundaries() {
+	maximumScore += 15;
+	final int windowWidth = 550;
+	final int windowHeight = 500;
+	final World theWorld = facade.createWorld(10, 1000, 500, new int[] { 9900, 4900 }, windowWidth, windowHeight);
+	final Mazub theMazub = facade.createMazub(400, 300, mazubSprites);
+	facade.addGameObject(theMazub, theWorld);
+	facade.startGame(theWorld);
+	facade.startMoveRight(theMazub);
+	final int mazubWidth = facade.getCurrentSprite(theMazub).getWidth();
+	final int mazubHeight = facade.getCurrentSprite(theMazub).getHeight();
+	for (int nbSteps = 0; nbSteps < 5; nbSteps++) {
+	    final int[] windowPixelPosition = facade.getVisibleWindowPosition(theWorld);
+	    final int mazubPixelPositionX = facade.getPixelPosition(theMazub)[0];
+	    final int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
+	    if (facade.isTeamSolution()) {
+		assertTrue(windowPixelPosition[0] + 200 <= mazubPixelPositionX);
+		assertTrue(windowPixelPosition[0] + windowWidth + 200 >= mazubPixelPositionX + mazubWidth);
+		assertTrue(windowPixelPosition[1] + 200 <= mazubPixelPositionY);
+		assertTrue(windowPixelPosition[1] + windowHeight + 200 >= mazubPixelPositionY + mazubHeight);
+	    } else {
+		assertEquals(mazubPixelPositionX, windowPixelPosition[0] + 100);
+		assertEquals(mazubPixelPositionY, windowPixelPosition[1] + 50);
+	    }
+	    // Mazub advances to the right and falls down.
+	    facade.advanceWorldTime(theWorld, 0.1);
+	}
+	actualScore += 15;
+    }
+
+    @Test
+    public void getVisibleWindowPosition_WindowUpdateNearBoundaries() {
+	maximumScore += 12;
+	final int windowWidth = 150;
+	final int windowHeight = 120;
+	final World theWorld = facade.createWorld(10, 28, 17, new int[] { 100, 200 }, windowWidth, windowHeight);
+	final Mazub theMazub = facade.createMazub(80, 30, mazubSprites);
+	facade.addGameObject(theMazub, theWorld);
+	facade.startGame(theWorld);
+	facade.startMoveLeft(theMazub);
+	for (int nbSteps = 0; nbSteps < 2; nbSteps++) {
+	    final int windowLeft = facade.getVisibleWindowPosition(theWorld)[0];
+	    final int windowRight = facade.getVisibleWindowPosition(theWorld)[0] + windowWidth;
+	    final int windowBottom = facade.getVisibleWindowPosition(theWorld)[1];
+	    final int windowTop = facade.getVisibleWindowPosition(theWorld)[1] + windowHeight;
+	    final int mazubPixelPositionX = facade.getPixelPosition(theMazub)[0];
+	    final int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
+	    final int mazubWidth = facade.getCurrentSprite(theMazub).getWidth();
+	    final int mazubHeight = facade.getCurrentSprite(theMazub).getHeight();
+	    if (facade.isTeamSolution()) {
+		assertTrue(windowLeft >= mazubPixelPositionX && windowLeft < mazubPixelPositionX + mazubWidth
+			|| windowRight > mazubPixelPositionX && windowRight <= mazubPixelPositionX + mazubWidth
+			|| windowLeft <= mazubPixelPositionX && windowRight >= mazubPixelPositionX + mazubWidth);
+		assertTrue(windowBottom >= mazubPixelPositionY && windowBottom < mazubPixelPositionY + mazubHeight
+			|| windowTop > mazubPixelPositionY && windowTop <= mazubPixelPositionY + mazubHeight
+			|| windowBottom <= mazubPixelPositionY && windowTop >= mazubPixelPositionY + mazubHeight);
+	    } else {
+		assertEquals(0, windowLeft);
+		assertEquals(0, windowBottom);
+	    }
+	    // After 0.1 seconds, mazub will have moved to the left and will have fallen
+	    // down.
+	    facade.advanceWorldTime(theWorld, 0.1);
+	}
+	actualScore += 12;
+    }
+
+    @Test
+    public void getVisibleWindowPosition_MazubPartiallyOutsideBoundaries() {
+	maximumScore += 10;
+	final int windowWidth = 150;
+	final int windowHeight = 120;
+	final int worldWidth = 280;
+	final int worldHeight = 170;
+	final World theWorld = facade.createWorld(10, worldWidth / 10, worldHeight / 10, new int[] { 100, 200 },
+		windowWidth, windowHeight);
+	final Mazub theMazub = facade.createMazub(250, 150, mazubSprites);
+	facade.addGameObject(theMazub, theWorld);
+	facade.startGame(theWorld);
+	facade.startMoveRight(theMazub);
+	facade.startJump(theMazub);
+	for (int nbSteps = 0; nbSteps < 2; nbSteps++) {
+	    final int windowLeft = facade.getVisibleWindowPosition(theWorld)[0];
+	    final int windowRight = facade.getVisibleWindowPosition(theWorld)[0] + windowWidth;
+	    final int windowBottom = facade.getVisibleWindowPosition(theWorld)[1];
+	    final int windowTop = facade.getVisibleWindowPosition(theWorld)[1] + windowHeight;
+	    final int mazubPixelPositionX = facade.getPixelPosition(theMazub)[0];
+	    final int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
+	    if (facade.isTeamSolution()) {
+		assertEquals(worldWidth - windowWidth, windowLeft);
+		assertEquals(worldWidth, windowRight);
+		assertEquals(worldHeight - windowHeight, windowBottom);
+		assertEquals(worldHeight, windowTop);
+	    } else {
+		assertEquals(mazubPixelPositionX - 100, windowLeft);
+		assertEquals(mazubPixelPositionY - 50, windowBottom);
+	    }
+	    // After 0.01 seconds, mazub will have moved to the right and up.
+	    facade.advanceWorldTime(theWorld, 0.01);
+	}
+	actualScore += 10;
+    }
+
+    @Test
+    public void getVisibleWindowPosition_VerySmallWorld() {
+	maximumScore += 5;
+	final int windowWidth = 115;
+	final int windowHeight = 60;
+	final World theWorld = facade.createWorld(10, 13, 7, new int[] { 100, 200 }, windowWidth, windowHeight);
+	final Mazub theMazub = facade.createMazub(10, 10, mazubSprites);
+	facade.addGameObject(theMazub, theWorld);
+	facade.startGame(theWorld);
+	final int windowLeft = facade.getVisibleWindowPosition(theWorld)[0];
+	final int windowRight = facade.getVisibleWindowPosition(theWorld)[0] + windowWidth;
+	final int windowBottom = facade.getVisibleWindowPosition(theWorld)[1];
+	final int windowTop = facade.getVisibleWindowPosition(theWorld)[1] + windowHeight;
+	final int mazubPixelPositionX = facade.getPixelPosition(theMazub)[0];
+	final int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
+	final int mazubWidth = facade.getCurrentSprite(theMazub).getWidth();
+	final int mazubHeight = facade.getCurrentSprite(theMazub).getHeight();
+	if (facade.isTeamSolution()) {
+	    assertTrue(windowLeft >= mazubPixelPositionX && windowLeft < mazubPixelPositionX + mazubWidth
+		    || windowRight > mazubPixelPositionX && windowRight <= mazubPixelPositionX + mazubWidth
+		    || windowLeft <= mazubPixelPositionX && windowRight >= mazubPixelPositionX + mazubWidth);
+	    assertTrue(windowBottom >= mazubPixelPositionY && windowBottom < mazubPixelPositionY + mazubHeight
+		    || windowTop > mazubPixelPositionY && windowTop <= mazubPixelPositionY + mazubHeight
+		    || windowBottom <= mazubPixelPositionY && windowTop >= mazubPixelPositionY + mazubHeight);
+	} else {
+	    assertEquals(0, windowLeft);
+	    assertEquals(0, windowBottom);
+	}
+	actualScore += 5;
+    }
+
+    @Test
     void startGame_IllegalCase() {
 	maximumScore += 2;
 	assertThrows(ModelException.class, () -> facade.startGame(world_100_200));
@@ -1880,7 +3157,7 @@ class FullFacadeTest {
     void isGameOver_WinningScenario() {
 	maximumScore += 6;
 	final World theWorld = facade.createWorld(10, 100, 200, new int[] { 11, 101 }, 20, 10);
-	facade.setGeologicalFeature(theWorld, 50, 995, SOLID_GROUND);
+	facade.setGeologicalFeature(theWorld, 50, 990, SOLID_GROUND);
 	facade.addGameObject(mazub_0_1000, theWorld);
 	assertFalse(facade.isGameOver(theWorld));
 	assertFalse(facade.didPlayerWin(theWorld));
@@ -1891,8 +3168,6 @@ class FullFacadeTest {
 	facade.startMoveRight(mazub_0_1000);
 	facade.advanceTime(mazub_0_1000, 0.19);
 	facade.advanceTime(mazub_0_1000, 0.10);
-	System.out.println(facade.getActualPosition(mazub_0_1000)[0]);
-	System.out.println(facade.getPixelPosition(mazub_0_1000)[0]);
 	assertTrue(facade.isGameOver(theWorld));
 	assertTrue(facade.didPlayerWin(theWorld));
 	actualScore += 6;
@@ -1907,116 +3182,251 @@ class FullFacadeTest {
 	// Mazub will fall out of the world after 1.6 seconds.
 	facade.startJump(mazub_0_0);
 	for (int i = 1; i <= 10; i++)
-	    facade.advanceTime(mazub_0_0, 0.19);
-	facade.advanceTime(mazub_0_0, 0.12);
+	    facade.advanceWorldTime(theWorld, 0.17);
 	assertTrue(facade.isGameOver(theWorld));
 	assertFalse(facade.didPlayerWin(theWorld));
 	actualScore += 6;
     }
 
     @Test
+    public void advanceTime_IllegalTime() throws Exception {
+	maximumScore += 3;
+	facade.addGameObject(mazub_100_0, world_250_400);
+	facade.startMoveLeft(mazub_100_0);
+	facade.startJump(mazub_100_0);
+	facade.startDuck(mazub_100_0);
+	assertThrows(ModelException.class, () -> facade.advanceWorldTime(world_250_400, Double.NaN));
+	assertThrows(ModelException.class, () -> facade.advanceWorldTime(world_250_400, -3.0));
+	assertThrows(ModelException.class, () -> facade.advanceWorldTime(world_250_400, Double.POSITIVE_INFINITY));
+	actualScore += 3;
+    }
+
+    @Test
     void advanceWorldTime_SimpleScenario() {
-	maximumScore += 60;
-	facade.setGeologicalFeature(world_250_400, 50, 995, SOLID_GROUND);
-	facade.setGeologicalFeature(world_250_400, 100, 995, SOLID_GROUND);
-	facade.setGeologicalFeature(world_250_400, 150, 995, SOLID_GROUND);
-	final Mazub jumpingMazub = facade.createMazub(200, 1075, mazubSprites);
-	final Sneezewort plant1 = facade.createSneezewort(55, 1380, plantSprites);
-	final Sneezewort plant2 = facade.createSneezewort(210, 1010, plantSprites);
-	facade.setGeologicalFeature(world_250_400, 200, 1070, SOLID_GROUND);
-	facade.setGeologicalFeature(world_250_400, 15, 1315, MAGMA);
-	facade.setGeologicalFeature(world_250_400, 95, 1020, WATER);
-	facade.setGeologicalFeature(world_250_400, 100, 1020, WATER);
-	facade.addGameObject(mazub_0_1000, world_250_400);
-	facade.addGameObject(mazub_100_1000, world_250_400);
-	facade.addGameObject(jumpingMazub, world_250_400);
-	facade.addGameObject(plant1, world_250_400);
-	facade.addGameObject(plant2, world_250_400);
-	assertEquals(5, facade.getAllGameObjects(world_250_400).size());
-	facade.startGame(world_250_400);
-	facade.startMoveRight(mazub_0_1000);
-	facade.startMoveLeft(jumpingMazub);
-	facade.startJump(jumpingMazub);
-	// After 0.0489 seconds, the player mazub will bump against the stationary
-	// mazub.
-	facade.advanceWorldTime(world_250_400, 0.11);
-	assertEquals(0.1, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
-	assertEquals(100, facade.getHitPoints(mazub_0_1000));
-	if (facade.isTeamSolution()) {
-	    assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_0_1000));
-	    assertEquals(mazubSprites[0], facade.getCurrentSprite(mazub_100_1000));
-	}
-	assertArrayEquals(new double[] { 2.0 - 0.1154, 10.75 + 0.8195 }, facade.getActualPosition(jumpingMazub),
-		LOW_PRECISION);
-	if (facade.isTeamSolution())
-	    assertEquals(mazubSprites[5], facade.getCurrentSprite(jumpingMazub));
-	assertEquals(0.5, facade.getActualPosition(plant1)[0], LOW_PRECISION);
-	if (facade.isTeamSolution())
-	    assertEquals(plantSprites[0], facade.getCurrentSprite(plant1));
-	assertEquals(2.05, facade.getActualPosition(plant2)[0], LOW_PRECISION);
-	if (facade.isTeamSolution())
-	    assertEquals(plantSprites[0], facade.getCurrentSprite(plant2));
-	// After another 0.16 seconds, the stationary mazub will have eaten the second
-	// plant, and the player mazub will have lost 2 hit points because of its
-	// contact with water.
-	facade.advanceWorldTime(world_250_400, 0.16);
+	maximumScore += 40;
+	final Mazub playerMazub = facade.createMazub(200, 1075, mazubSprites);
+	facade.startMoveRight(playerMazub);
+	facade.startJump(playerMazub);
+	facade.addGameObject(playerMazub, world_250_400);
+	final int mazubWidth = facade.getCurrentSprite(playerMazub).getWidth();
+	final double mazubOldXPos = facade.getActualPosition(playerMazub)[0];
+	final double mazubOldYPos = facade.getActualPosition(playerMazub)[1];
+	final int mazubOldHitPoints = facade.getHitPoints(playerMazub);
+	final Sneezewort sneeze = facade.createSneezewort(200 + mazubWidth + 5, 1080, sneezewortSprites);
+	facade.addGameObject(sneeze, world_250_400);
+	final double sneezeOldXPos = facade.getActualPosition(sneeze)[0];
+	final Skullcab skull = facade.createSkullcab(210, 1180, skullcabSprites);
+	facade.addGameObject(skull, world_250_400);
+	final double skullOldYpos = facade.getActualPosition(skull)[1];
+	final int skullOldHitPoints = facade.getHitPoints(skull);
+	final Slime slime = facade.createSlime(10, 210, 1350, someSchool, slimeSprites);
+	final int slimeOldHitPoints = facade.getHitPoints(slime);
+	final int slimeWidth = facade.getCurrentSprite(slime).getWidth();
+	facade.changeActualPosition(slime, new double[] { 2.16 - slimeWidth / 100.0 - 0.1, 13.5 });
+	final double slimeOldXPos = facade.getActualPosition(slime)[0];
+	facade.addGameObject(slime, world_250_400);
 	assertEquals(4, facade.getAllGameObjects(world_250_400).size());
-	assertEquals(0.1, facade.getActualPosition(mazub_0_1000)[0], LOW_PRECISION);
-	assertEquals(98, facade.getHitPoints(mazub_0_1000));
-	if (facade.isTeamSolution())
-	    assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_0_1000));
-	assertEquals(148, facade.getHitPoints(mazub_100_1000));
-	assertTrue(facade.isTerminatedGameObject(plant2));
-	assertArrayEquals(new double[] { 2.0 - 0.3028, 10.75 + 1.7955 }, facade.getActualPosition(jumpingMazub),
-		LOW_PRECISION);
-	assertEquals(0.55 - 0.135, facade.getActualPosition(plant1)[0], LOW_PRECISION);
-	// After a total playing time of 0.5 seconds, plant1 switches direction.
-	facade.advanceWorldTime(world_250_400, 0.13);
+	facade.startGame(world_250_400);
 	facade.advanceWorldTime(world_250_400, 0.15);
-	assertEquals(96, facade.getHitPoints(mazub_0_1000));
-	if (facade.isTeamSolution())
-	    assertEquals(mazubSprites[2], facade.getCurrentSprite(mazub_0_1000));
-	assertArrayEquals(new double[] { 2.0 - 0.6861, 10.75 + 2.8875 }, facade.getActualPosition(jumpingMazub),
-		LOW_PRECISION);
-	assertEquals(0.55 - 0.225, facade.getActualPosition(plant1)[0], LOW_PRECISION);
-	// After about 1 second of total playing time, the jumping mazub will have eaten
-	// the other plant.
-	for (int i = 1; i <= 3; i++)
+	// Because Mazub is advanced first, it will eat the skullcab for the first time,
+	// it will not overlap with the sneezewort nor with the slime.
+	assertArrayEquals(new double[] { mazubOldXPos + 0.16, mazubOldYPos + 1.0875 },
+		facade.getActualPosition(playerMazub), LOW_PRECISION);
+	assertEquals(mazubOldHitPoints + 50, facade.getHitPoints(playerMazub));
+	assertEquals(skullOldYpos + 0.075, facade.getActualPosition(skull)[1]);
+	assertEquals(skullOldHitPoints - 1, facade.getHitPoints(skull));
+	assertEquals(sneezeOldXPos - 0.075, facade.getActualPosition(sneeze)[0], LOW_PRECISION);
+	assertFalse(facade.isDeadGameObject(sneeze));
+	assertEquals(slimeOldXPos + 0.007875, facade.getActualPosition(slime)[0], LOW_PRECISION);
+	// Mazub stops moving right now. The slime will bounce against the mazub after
+	// 0.6 seconds.
+	facade.endMove(playerMazub);
+	for (int i = 0; i < 3; i++)
 	    facade.advanceWorldTime(world_250_400, 0.15);
-	assertEquals(3, facade.getAllGameObjects(world_250_400).size());
-	assertArrayEquals(new double[] { 2.0 - 1.45, 10.75 + 3.0 }, facade.getActualPosition(jumpingMazub),
-		LOW_PRECISION);
-	assertEquals(150, facade.getHitPoints(jumpingMazub));
-	assertTrue(facade.isTerminatedGameObject(plant1));
-	// After another 0.2 seconds, jumping mazub falls into magma
-	for (int i = 1; i <= 2; i++)
-	    facade.advanceWorldTime(world_250_400, 0.1);
-	assertArrayEquals(new double[] { 2.0 - 1.848, 10.75 + 2.4 }, facade.getActualPosition(jumpingMazub),
-		LOW_PRECISION);
-	assertEquals(100, facade.getHitPoints(jumpingMazub));
-	// After 1.272 seconds of total playing time, the jumping mazub falls out of its
-	// world.
-	facade.advanceWorldTime(world_250_400, 0.1);
-	assertEquals(2, facade.getAllGameObjects(world_250_400).size());
-	assertTrue(facade.isTerminatedGameObject(jumpingMazub));
-	assertNull(facade.getWorld(jumpingMazub));
-	assertFalse(facade.getAllGameObjects(world_250_400).contains(jumpingMazub));
-	assertEquals(100 - 6 * 2, facade.getHitPoints(mazub_0_1000));
-	// After 10 seconds in contact with water, the player will have no hit points
-	// left.
-	for (int i = 1; i <= 87; i++)
-	    facade.advanceWorldTime(world_250_400, 0.1);
-	facade.advanceWorldTime(world_250_400, 0.1);
-	assertTrue(facade.isDeadGameObject(mazub_0_1000));
-	// After another 0.6 seconds of playing time, the player must have been removed
-	// from the game world, and the game has been lost.
-	for (int i = 1; i <= 4; i++)
-	    facade.advanceWorldTime(world_250_400, 0.15);
-	assertTrue(facade.isTerminatedGameObject(mazub_0_1000));
-	assertNull(facade.getWorld(mazub_0_1000));
-	assertTrue(facade.isGameOver(world_250_400));
-	assertFalse(facade.didPlayerWin(world_250_400));
-	actualScore += 60;
+	assertArrayEquals(new double[] { mazubOldXPos + 0.16, mazubOldYPos + 3.0 },
+		facade.getActualPosition(playerMazub), LOW_PRECISION);
+	final double mazubNewXPos = facade.getActualPosition(playerMazub)[0];
+	assertEquals(mazubOldHitPoints + 50, facade.getHitPoints(playerMazub));
+	assertEquals(mazubNewXPos - slimeWidth / 100.0, facade.getActualPosition(slime)[0], LOW_PRECISION);
+	assertEquals(slimeOldHitPoints - 30, facade.getHitPoints(slime));
+	assertEquals(skullOldYpos + 0.2, facade.getActualPosition(skull)[1]);
+	assertEquals(skullOldHitPoints - 1, facade.getHitPoints(skull));
+	assertEquals(sneezeOldXPos - 0.2, facade.getActualPosition(sneeze)[0], LOW_PRECISION);
+	actualScore += 40;
+    }
+
+    /***********
+     * SCHOOL *
+     ***********/
+
+    @Test
+    void createSchool_LegalCases() throws ModelException {
+	maximumScore += 8;
+	// School not in a world
+	School newSchool = facade.createSchool(null);
+	assertTrue(facade.getAllSlimes(newSchool).isEmpty());
+	assertNull(facade.getWorld(newSchool));
+	// School in world
+	newSchool = facade.createSchool(world_250_400);
+	assertTrue(facade.getAllSlimes(newSchool).isEmpty());
+	assertEquals(world_250_400, facade.getWorld(newSchool));
+	assertEquals(1, facade.getAllSchools(world_250_400).size());
+	assertTrue(facade.getAllSchools(world_250_400).contains(newSchool));
+	actualScore += 8;
+    }
+
+    @Test
+    void createSchool_TooManySchoolsInWorld() throws ModelException {
+	maximumScore += 8;
+	for (int i = 0; i < 10; i++)
+	    facade.createSchool(world_250_400);
+	assertThrows(ModelException.class, () -> facade.createSchool(world_250_400));
+	actualScore += 8;
+    }
+
+    @Test
+    void addAsSlime_LegalCase() throws ModelException {
+	maximumScore += 6;
+	final School someSchool = facade.createSchool(world_250_400);
+	final Slime slime1 = facade.createSlime(10, 20, 30, someSchool, slimeSprites);
+	facade.addGameObject(slime1, world_250_400);
+	final Slime slime2 = facade.createSlime(20, 120, 30, someSchool, slimeSprites);
+	facade.addGameObject(slime2, world_250_400);
+	final Slime slime3 = facade.createSlime(30, 20, 120, someSchool, slimeSprites);
+	facade.addGameObject(slime3, world_250_400);
+	final Slime slimeToBeAdded = facade.createSlime(40, 120, 120, null, slimeSprites);
+	facade.addGameObject(slimeToBeAdded, world_250_400);
+	facade.addAsSlime(someSchool, slimeToBeAdded);
+	assertEquals(4, facade.getAllSlimes(someSchool).size());
+	assertTrue(facade.getAllSlimes(someSchool).contains(slimeToBeAdded));
+	assertEquals(someSchool, facade.getSchool(slimeToBeAdded));
+	actualScore += 6;
+    }
+
+    @Test
+    void addAsSlime_IllegalCases() throws ModelException {
+	maximumScore += 6;
+	// Slime already in school.
+	final School someSchool = facade.createSchool(world_250_400);
+	final Slime someSlime = facade.createSlime(10, 20, 30, someSchool, slimeSprites);
+	facade.addGameObject(someSlime, world_250_400);
+	final School otherSchool = facade.createSchool(world_250_400);
+	assertThrows(ModelException.class, () -> facade.addAsSlime(otherSchool, someSlime));
+	// Terminated slime
+	final Slime terminatedSlime = facade.createSlime(20, 20, 30, null, slimeSprites);
+	facade.terminateGameObject(terminatedSlime);
+	assertThrows(ModelException.class, () -> facade.addAsSlime(otherSchool, terminatedSlime));
+	// Terminated school
+	facade.terminateSchool(someSchool);
+	final Slime freeSlime = facade.createSlime(30, 20, 30, null, slimeSprites);
+	assertThrows(ModelException.class, () -> facade.addAsSlime(someSchool, freeSlime));
+	actualScore += 6;
+    }
+
+    @Test
+    void removeAsSlime_LegalCase() throws ModelException {
+	maximumScore += 6;
+	final School someSchool = facade.createSchool(world_250_400);
+	final Slime slime1 = facade.createSlime(10, 20, 30, someSchool, slimeSprites);
+	facade.addGameObject(slime1, world_250_400);
+	final Slime slime2 = facade.createSlime(20, 120, 30, someSchool, slimeSprites);
+	facade.addGameObject(slime2, world_250_400);
+	final Slime slime3 = facade.createSlime(30, 20, 120, someSchool, slimeSprites);
+	facade.addGameObject(slime3, world_250_400);
+	facade.removeAsSlime(someSchool, slime2);
+	assertEquals(2, facade.getAllSlimes(someSchool).size());
+	assertFalse(facade.getAllSlimes(someSchool).contains(slime2));
+	assertNull(facade.getSchool(slime2));
+	actualScore += 6;
+    }
+
+    @Test
+    void removeAsSlime_IllegalCases() throws ModelException {
+	maximumScore += 4;
+	// Slime in other school.
+	final School someSchool = facade.createSchool(world_250_400);
+	final Slime someSlime = facade.createSlime(10, 20, 30, someSchool, slimeSprites);
+	facade.addGameObject(someSlime, world_250_400);
+	final School otherSchool = facade.createSchool(world_250_400);
+	assertThrows(ModelException.class, () -> facade.removeAsSlime(otherSchool, someSlime));
+	// Slime not in a school.
+	final Slime freeSlime = facade.createSlime(30, 20, 30, null, slimeSprites);
+	assertThrows(ModelException.class, () -> facade.removeAsSlime(someSchool, freeSlime));
+	actualScore += 4;
+
+    }
+
+    @Test
+    void getAllSlimes_LeakTest() throws ModelException {
+	maximumScore += 8;
+	final School someSchool = facade.createSchool(world_250_400);
+	final Slime slime1 = facade.createSlime(10, 20, 30, someSchool, slimeSprites);
+	facade.addGameObject(slime1, world_250_400);
+	final Slime slime2 = facade.createSlime(20, 120, 30, someSchool, slimeSprites);
+	facade.addGameObject(slime2, world_250_400);
+	final Slime slime3 = facade.createSlime(30, 20, 120, someSchool, slimeSprites);
+	facade.addGameObject(slime3, world_250_400);
+	final Collection<? extends Slime> someSchoolSlimes = facade.getAllSlimes(someSchool);
+	assert someSchoolSlimes != facade.getAllSlimes(someSchool);
+	someSchoolSlimes.add(null);
+	assertFalse(facade.getAllSlimes(someSchool).contains(null));
+	someSchoolSlimes.remove(slime1);
+	assertEquals(3, someSchoolSlimes.size());
+	assertEquals(3, facade.getAllSlimes(someSchool).size());
+	assertTrue(facade.getAllSlimes(someSchool).contains(slime1));
+	actualScore += 8;
+    }
+
+    @Test
+    void switchSchool_LegalCase() throws ModelException {
+	maximumScore += 12;
+	final School oldSchool = facade.createSchool(world_250_400);
+	final Slime switchingSlime = facade.createSlime(10, 20, 30, oldSchool, slimeSprites);
+	facade.addGameObject(switchingSlime, world_250_400);
+	final Slime oldMate1 = facade.createSlime(20, 120, 30, oldSchool, slimeSprites);
+	facade.addGameObject(oldMate1, world_250_400);
+	final Slime oldMate2 = facade.createSlime(30, 20, 120, oldSchool, slimeSprites);
+	facade.addGameObject(oldMate2, world_250_400);
+	final School newSchool = facade.createSchool(world_100_200);
+	final Slime newMate1 = facade.createSlime(40, 20, 30, newSchool, slimeSprites);
+	facade.addGameObject(newMate1, world_100_200);
+	final Slime newMate2 = facade.createSlime(50, 120, 30, newSchool, slimeSprites);
+	facade.addGameObject(newMate2, world_100_200);
+	final Slime newMate3 = facade.createSlime(60, 20, 120, newSchool, slimeSprites);
+	facade.addGameObject(newMate3, world_100_200);
+	final Slime newMate4 = facade.createSlime(70, 120, 120, newSchool, slimeSprites);
+	facade.addGameObject(newMate4, world_100_200);
+	facade.switchSchool(newSchool, switchingSlime);
+	assertEquals(2, facade.getAllSlimes(oldSchool).size());
+	assertFalse(facade.getAllSlimes(oldSchool).contains(switchingSlime));
+	assertEquals(5, facade.getAllSlimes(newSchool).size());
+	assertTrue(facade.getAllSlimes(newSchool).contains(switchingSlime));
+	assertEquals(100 - 2 + 4, facade.getHitPoints(switchingSlime));
+	assertEquals(100 + 1, facade.getHitPoints(oldMate1));
+	assertEquals(100 - 1, facade.getHitPoints(newMate2));
+	actualScore += 12;
+    }
+
+    @Test
+    void switchSchool_IllegalCases() throws ModelException {
+	maximumScore += 8;
+	// Slime not in a school.
+	final School someSchool = facade.createSchool(world_250_400);
+	final School otherSchool = facade.createSchool(world_250_400);
+	final Slime freeSlime = facade.createSlime(30, 20, 30, null, slimeSprites);
+	assertThrows(ModelException.class, () -> facade.switchSchool(someSchool, freeSlime));
+	// No school to switch to.
+	final Slime someSlime = facade.createSlime(10, 20, 30, someSchool, slimeSprites);
+	facade.addGameObject(someSlime, world_250_400);
+	assertThrows(ModelException.class, () -> facade.switchSchool(null, someSlime));
+	// Terminated slime
+	final Slime terminatedSlime = facade.createSlime(20, 20, 30, someSchool, slimeSprites);
+	facade.terminateGameObject(terminatedSlime);
+	assertThrows(ModelException.class, () -> facade.switchSchool(otherSchool, terminatedSlime));
+	// Terminated school.
+	facade.terminateSchool(otherSchool);
+	assertThrows(ModelException.class, () -> facade.switchSchool(otherSchool, someSlime));
+	actualScore += 8;
     }
 
 }

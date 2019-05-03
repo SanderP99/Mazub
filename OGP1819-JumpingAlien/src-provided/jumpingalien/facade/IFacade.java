@@ -95,6 +95,13 @@ public interface IFacade {
     boolean isTeamSolution();
 
     /**
+     * Return a boolean indicating whether the code at stake is the effort of an
+     * late team split (split after May 5). In that case, the code must include
+     * sharks.
+     */
+    boolean isLateTeamSplit();
+
+    /**
      * Create an instance of Mazub with given pixel position and given sprites. The
      * actual position of the new Mazub will correspond with the coordinates of the
      * left-bottom corner of the left-bottom pixel occupied by the new Mazub. The
@@ -478,6 +485,11 @@ public interface IFacade {
      * Return the identification of the given slime.
      */
     long getIdentification(Slime slime) throws ModelException;
+
+    /**
+     * Clean all identification used for slimes created so far.
+     */
+    void cleanAllSlimeIds();
 
     /**
      * Create an instance of School belonging to the given world and with no slimes
