@@ -24,7 +24,7 @@ public class Sneezewort extends Plant {
      *       Math.abs(getHorizontalSpeedPixels())), getXPositionPixel() }
      */
     @Override
-    public void setBoundaries() {
+    protected void setBoundaries() {
 	boundaries = new int[] { (int) (getXPositionPixel() - 0.5 * Math.abs(getHorizontalSpeedPixels())),
 		getXPositionPixel() };
     }

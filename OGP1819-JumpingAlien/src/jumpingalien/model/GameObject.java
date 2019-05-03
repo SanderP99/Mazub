@@ -973,6 +973,11 @@ public abstract class GameObject {
 		    return true;
 	    }
 
+	final GameObject newObject = new Mazub(getXPositionActual(), getYPositionActual() - 0.01, 1, 1, 0, 0, 0, 0,
+		false, getSpriteArray());
+	if (!getWorld().canPlaceGameObjectAdvanceTime(newObject, this))
+	    return true;
+
 	return false;
     }
 

@@ -879,8 +879,6 @@ public class World {
 
     }
 
-    private final int nbOfSchools = 0;
-
     private final Set<School> allSchools = new HashSet<>();
 
     public int getNbOfSchools() {

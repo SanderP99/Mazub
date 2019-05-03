@@ -18,7 +18,7 @@ public class Skullcab extends Plant {
     }
 
     @Override
-    public void setBoundaries() {
+    protected void setBoundaries() {
 	boundaries = new int[] { getYPositionPixel(),
 		(int) (getYPositionPixel() + 0.5 * (int) (100 * Math.abs(getVerticalSpeedMeters()))) };
 
@@ -35,7 +35,7 @@ public class Skullcab extends Plant {
 	return timeSinceContactWithMazub;
     }
 
-    void setTimeSinceContactWithMazub(double time) {
+    protected void setTimeSinceContactWithMazub(double time) {
 	timeSinceContactWithMazub = time;
     }
 

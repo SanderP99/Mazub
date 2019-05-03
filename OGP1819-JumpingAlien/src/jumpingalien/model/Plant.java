@@ -87,7 +87,7 @@ public abstract class Plant extends GameObject {
      */
     public abstract int[] getBoundaries();
 
-    public abstract void setBoundaries();
+    protected abstract void setBoundaries();
 
     /**
      * Returns whether an array of sprites has valid dimensions
