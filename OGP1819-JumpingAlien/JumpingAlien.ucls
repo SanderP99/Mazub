@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<class-diagram version="1.2.3" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
-  associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
+<class-diagram version="1.2.3" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
+  realizations="true" associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
   <package id="1" language="java" name="jumpingalien.facade" project="OGP1819-JumpingAlien" 
     file="/OGP1819-JumpingAlien/src/jumpingalien/facade" binary="false" corner="BOTTOM_RIGHT">    
     <position height="2210" width="2631" x="712" y="68"/>    
@@ -228,7 +228,7 @@
   <association id="39">    
     <end type="SOURCE" refId="10" navigable="false">      
       <attribute id="40" name="objects">        
-        <position height="20" width="54" x="1944" y="1081"/>      
+        <position height="20" width="54" x="1923" y="1133"/>      
       </attribute>      
       <multiplicity id="41" minimum="0" maximum="2147483647">        
         <position height="18" width="25" x="1976" y="1166"/>      
@@ -255,7 +255,7 @@
     <bendpoint x="1311" y="1250"/>    
     <end type="SOURCE" refId="2" navigable="false">      
       <attribute id="46" name="world">        
-        <position height="20" width="42" x="1290" y="1348"/>      
+        <position height="20" width="42" x="1286" y="1221"/>      
       </attribute>      
       <multiplicity id="47" minimum="0" maximum="1">        
         <position height="0" width="0" x="0" y="0"/>      
