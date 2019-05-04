@@ -1,101 +1,145 @@
 package jumpingalien.model;
 
-import be.kuleuven.cs.som.annotate.Basic;
+import java.util.List;
+
 import jumpingalien.util.Sprite;
 
 public class Shark extends GameObject {
 
+    private double timeSinceDeath;
+    private double timeToRest;
+    private double timeToMove;
+
     public Shark(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
-	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, boolean tempObject,
-	    Sprite[] sprites) {
+	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, double horizontalSpeed,
+	    double verticalSpeed, boolean tempObject, Sprite[] sprites) {
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
-	setSprite(getSpriteArray()[0]);
+	setOrientation(-1);
 	setTimeToMove(0.5);
-	setTimeToRest(0.0);
+	setTimeToRest(0);
+
     }
 
     @Override
     public void advanceTime(double dt, double timeStep) {
-	while (dt > timeStep && !isDead() && !isTerminated())
-	    if (getTimeToRest() <= 0) {
-		setTimeToRest(1.0);
-		while (getTimeToMove() > 0.0)
+	if (!isDead())
+	    while (dt >= timeStep && !isDead() && !isTerminated()) {
+		if (getTimeToMove() > 0)
 		    if (getTimeToMove() > timeStep) {
 			updatePosition(timeStep);
 			dt -= timeStep;
 			setTimeToMove(getTimeToMove() - timeStep);
-		    } else if (getTimeToMove() == timeStep) {
-			updatePosition(timeStep);
-			dt -= timeStep;
-			setTimeToMove(0.0);
 		    } else {
 			updatePosition(getTimeToMove());
 			dt -= getTimeToMove();
 			setTimeToMove(0.0);
+			setTimeToRest(1.0);
 		    }
-	    } else {
-		setTimeToMove(0.5);
-		while (getTimeToRest() > 0.0)
-		    if (getTimeToRest() > timeStep) {
+		if (getTimeToRest() > 0)
+		    if (getTimeToRest() >= timeStep) {
+			stayInPosition();
 			dt -= timeStep;
 			setTimeToRest(getTimeToRest() - timeStep);
-		    } else if (getTimeToRest() == timeStep) {
-			dt -= timeStep;
-			setTimeToRest(0.0);
 		    } else {
+			stayInPosition();
 			dt -= getTimeToRest();
 			setTimeToRest(0.0);
-		    }
+			setTimeToMove(0.5);
+		    } // TODO nog resterende dt vooruitzetten?
 	    }
+	else if (getTimeSinceDeath() < 0.6)
+	    if (getTimeSinceDeath() + dt < 0.6)
+		timeSinceDeath += dt;
+	    else {
+		timeSinceDeath += dt;
+		getWorld().removeObject(this);
+		terminate();
+	    }
+	else if (getWorld() != null) {
+	    getWorld().removeObject(this);
+	    terminate();
+	} else if (isTerminated())
+	    dt = 0;
+
     }
 
-    private void updatePosition(double dt) {
-	setXPositionActual(getXPositionActual() + 0.02 * dt);
+    private void stayInPosition() {
+	setSprite(getSpriteArray()[0]);
 
     }
 
-    private double timeMoving;
-    private double timeResting;
-    private double timeToMove;
-    private double timeToRest;
-
-    @Basic
-    public double getTimeMoving() {
-	return timeMoving;
-    }
-
-    private void setTimeMoving(double time) {
-	timeMoving = time;
-    }
-
-    @Basic
-    public double getTimeResting() {
-	return timeResting;
-    }
-
-    private void setTimeResting(double time) {
-	timeResting = time;
-    }
-
-    @Basic
-    public double getTimeToMove() {
-	return timeToMove;
-    }
-
-    private void setTimeToMove(double time) {
-	timeToMove = time;
-    }
-
-    @Basic
-    public double getTimeToRest() {
+    private double getTimeToRest() {
 	return timeToRest;
     }
 
-    private void setTimeToRest(double time) {
-	timeToRest = time;
+    private void setTimeToRest(double d) {
+	timeToRest = d;
+
     }
 
+    private void setTimeToMove(double d) {
+	timeToMove = d;
+    }
+
+    private double getTimeToMove() {
+	return timeToMove;
+    }
+
+    private void updatePosition(double dt) {
+	if (getTimeToMove() == 0.5)
+	    if (isInWater())
+		startJump();
+	final double newPosX = getXPositionActual() + getHorizontalSpeedMeters() * dt
+		+ 0.5 * getHorizontalAcceleration() * dt * dt;
+	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
+		+ 0.5 * getVerticalAcceleration() * dt * dt;
+	final double newSpeedX = getHorizontalSpeedMeters() + getHorizontalAcceleration() * dt;
+	final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
+	final int xSize = getXsize();
+	final int ySize = getYsize();
+
+	new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10, 0, 2, 1.5, -10.0, newSpeedX,
+		newSpeedY, true, getSpriteArray());
+    }
+
+    private double getTimeSinceDeath() {
+	return timeSinceDeath;
+    }
+
+    private void startJump() {
+	setMaxSpeed();
+	setVerticalSpeedMeters(maxVerticalSpeed);
+	setVerticalAcceleration(maxVerticalAcceleration);
+	isJumping = true;
+    }
+
+    private void endJump() {
+	if (isJumping()) {
+	    if (getVerticalSpeedMeters() > 0)
+		setVerticalSpeedMeters(0.0);
+	    isJumping = false;
+	}
+    }
+
+    private boolean isJumping() {
+	return isJumping;
+    }
+
+    private boolean isJumping;
+
+    private boolean isInWater() {
+	if (getWorld() == null)
+	    return false;
+
+	final List<int[]> tiles = getAllOverlappingTiles();
+
+	for (final int[] tile : tiles)
+	    if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
+		return true;
+
+	return false;
+    }
 }

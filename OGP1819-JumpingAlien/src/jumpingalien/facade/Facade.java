@@ -596,7 +596,7 @@ public class Facade implements IFacade {
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
 	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100, 100, 10, 10, 0,
-		2, 1.5, -10.0, false, sprites);
+		2, 1.5, -10.0, 0, 0, false, sprites);
     }
 
     @Override

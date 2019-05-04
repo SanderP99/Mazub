@@ -53,7 +53,7 @@ public abstract class Plant extends GameObject {
 	    double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, Sprite... sprites) {
 
 	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, hitpoints, hitpoints, maxHorizontalSpeedRunning,
-		maxHorizontalSpeedDucking, minHorizontalSpeed, 0, horizontalAcceleration, verticalAcceleration, false,
+		maxHorizontalSpeedDucking, minHorizontalSpeed, 0.5, horizontalAcceleration, verticalAcceleration, false,
 		sprites);
 
     }

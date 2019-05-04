@@ -97,6 +97,7 @@ public abstract class GameObject {
 	setSpriteArray(sprites);
 	setMaxHitpoints(maxHitpoints);
 	setHitpoints(hitpoints);
+	setMaxVerticalSpeed(maxVerticalSpeed);
 	setMaxSpeed();
 	setOrientation(0);
 	setHorizontalSpeedMeters(0);
@@ -693,6 +694,11 @@ public abstract class GameObject {
 	return maxVerticalSpeed;
     }
 
+    private void setMaxVerticalSpeed(double maxVerticalSpeed) {
+	this.maxVerticalSpeed = maxVerticalSpeed;
+
+    }
+
     /**
      * Returns the vertical speed of a given GameObject in meters per second.
      */
@@ -756,7 +762,7 @@ public abstract class GameObject {
     /**
      * A variable to store the maximum vertical speed of the GameObject
      */
-    protected final static double maxVerticalSpeed = 8.0;
+    protected double maxVerticalSpeed;
 
     /**
      * Returns whether the given speed is a valid vertical speed
@@ -1008,4 +1014,5 @@ public abstract class GameObject {
     private static Set<Long> getAllIDs() {
 	return allIDs;
     }
+
 }
