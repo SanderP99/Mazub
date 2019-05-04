@@ -571,7 +571,7 @@ public class World {
     /**
      * A variable to store the playable Mazub of this world
      */
-    GameObject player;
+    Mazub player;
 
     /**
      * A boolean to store if the world has a playable Mazub
@@ -725,7 +725,7 @@ public class World {
 		throw new RuntimeException();
 
 	if (!hasPlayer() && gameObject instanceof Mazub)
-	    setPlayer(gameObject);
+	    setPlayer((Mazub) gameObject);
 
 	objects.add(gameObject);
 	gameObject.world = this;
@@ -783,9 +783,9 @@ public class World {
      * @post ... | new.hasPlayer == true
      * @post ... | new.gameObject.isPlayer == true
      */
-    void setPlayer(GameObject gameObject) {
+    void setPlayer(Mazub gameObject) {
 	player = gameObject;
-	((Mazub) gameObject).isPlayer = true;
+	gameObject.isPlayer = true;
 	hasPlayer = true;
 	advanceVisibleWindow();
     }
