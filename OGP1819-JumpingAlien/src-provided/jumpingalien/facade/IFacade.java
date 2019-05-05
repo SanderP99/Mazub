@@ -544,7 +544,7 @@ public interface IFacade {
 	 * their own may stick to the default implementation. 
 	 */
 	default Shark createShark(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-		if (isTeamSolution()) {
+		if (!isTeamSolution()) {
 			return null;
 		}
 		throw new NoSuchMethodError("Teams of 2 students should implement this method.");
