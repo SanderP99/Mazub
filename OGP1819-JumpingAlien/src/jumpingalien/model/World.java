@@ -78,16 +78,10 @@ public class World {
 	setVisibleWindowPosition(new int[] { 0, 0 });
 	initializeGeologicalFeatures(nbTilesX, nbTilesY, geologicalFeatures);
 	setMaxNbOfObjects(maxNbOfObjects);
-	setMaxNbOfSchools(10);
 
     }
 
-    private int maxNbOfSchools;
-
-    private void setMaxNbOfSchools(int i) {
-	maxNbOfSchools = i;
-
-    }
+    private static final int maxNbOfSchools = 10;
 
     public int getMaxNbOfSchools() {
 	return maxNbOfSchools;
@@ -255,13 +249,13 @@ public class World {
      * @post this.maxNbOfObjects == maxNbOfObjects
      */
     private void setMaxNbOfObjects(int maxNbOfObjects) {
-	this.maxNbOfObjects = maxNbOfObjects;
+	World.maxNbOfObjects = maxNbOfObjects;
     }
 
     /**
      * A variable to store the maximum number of objects
      */
-    private int maxNbOfObjects;
+    private static int maxNbOfObjects;
 
     /**
      * Returns the horizontal size of the world in pixels

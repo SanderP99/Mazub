@@ -14,17 +14,6 @@ public class Sneezewort extends Plant {
 	setHorizontalSpeedMeters(-1 * Math.abs(horizontalSpeed));
 	setOrientation(-1);
 	setSecondsToLive(secondsToLive);
-	setBoundaries();
-    }
-
-    /**
-     * Sets the boundaries in which the plant will move
-     * 
-     * @post ... | new.boundaries == int[] { (int) (getXPositionPixel() - 0.5 *
-     *       Math.abs(getHorizontalSpeedPixels())), getXPositionPixel() }
-     */
-    @Override
-    protected void setBoundaries() {
 	boundaries = new int[] { (int) (getXPositionPixel() - 0.5 * Math.abs(getHorizontalSpeedPixels())),
 		getXPositionPixel() };
     }
@@ -32,7 +21,7 @@ public class Sneezewort extends Plant {
     /**
      * A list to store the boundaries in which the plant will move
      */
-    int[] boundaries;
+    final int[] boundaries;
 
     @Override
     public void advanceTime(double dt, double timeStep) {

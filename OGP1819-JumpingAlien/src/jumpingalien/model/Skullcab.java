@@ -14,20 +14,14 @@ public class Skullcab extends Plant {
 	setVerticalSpeedMeters(Math.abs(verticalSpeed));
 	setOrientation(1);
 	setSecondsToLive(secondsToLive);
-	setBoundaries();
-    }
-
-    @Override
-    protected void setBoundaries() {
 	boundaries = new int[] { getYPositionPixel(),
 		(int) (getYPositionPixel() + 0.5 * (int) (100 * Math.abs(getVerticalSpeedMeters()))) };
-
     }
 
     /**
      * A list to store the boundaries in which the plant will move
      */
-    int[] boundaries;
+    final int[] boundaries;
 
     private double timeSinceContactWithMazub = 0.6;
 

@@ -17,11 +17,11 @@ import java.util.TreeSet;
 public class School {
 
     private long minID;
+    private Slime minIDSlime;
     private long maxID;
+    private Slime maxIDSlime;
     private World world = null;
     private TreeSet<Slime> slimes;
-    private Slime minIDSlime;
-    private Slime maxIDSlime;
     private boolean isTerminated;
 
     public School(World world) {
