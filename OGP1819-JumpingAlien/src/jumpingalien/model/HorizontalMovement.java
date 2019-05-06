@@ -4,8 +4,6 @@ public interface HorizontalMovement {
 
     public void setXPositionActual(double X_pos);
 
-    public boolean isValidPixelPosition(int X_pos);
-
     public boolean isValidActualXPosition(double X_pos);
 
     public int getXPositionPixel();

@@ -495,7 +495,7 @@ public class Facade implements IFacade {
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
 	return new Sneezewort(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0,
-		0.5, 0.5, 0.5, 0, 0, sprites);
+		sprites);
     }
 
     @Override
@@ -507,8 +507,8 @@ public class Facade implements IFacade {
 	for (final Sprite sprite : sprites)
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
-	return new Skullcab(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 3, 12.0, 0.5,
-		0.5, 0.5, 0, 0, sprites);
+	return new Skullcab(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 3, 12.0,
+		sprites);
     }
 
     @Override
@@ -539,7 +539,7 @@ public class Facade implements IFacade {
     @Override
     public School createSchool(World world) throws ModelException {
 	if (world != null)
-	    if (world.getMaxNbOfSchools() == world.getNbOfSchools())
+	    if (World.maxNbOfSchools == world.getNbOfSchools())
 		throw new ModelException("Maximum number of schools reached");
 	return new School(world);
     }

@@ -1,15 +1,49 @@
 package jumpingalien.model;
 
+import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 import jumpingalien.util.Sprite;
 
-public class Sneezewort extends Plant {
+/**
+ * A class that implements Sneezewort
+ * 
+ * @author Warre Dreesen
+ * @author Sander Prenen
+ * 
+ * @version 1
+ * 
+ * @invar The sprites are valid sprites | spriteArray.lenght == 2 &&
+ *        isValidSpriteArray()
+ * @invar ... | this.getVerticalSpeed() == 0
+ */
+public class Sneezewort extends Plant implements HorizontalMovement {
 
+    /**
+     * Creates a new Sneezewort
+     * 
+     * @param positionLeftX   The x position of the left most pixel of Sneezewort
+     * @param positionBottomY The y position of the bottom most pixel of Sneezewort
+     * @param pixelSizeX      The width in pixels of Sneezewort
+     * @param pixelSizeY      The height in pixels of Sneezewort
+     * @param verticalSpeed   The vertical speed of Sneezewort
+     * @param hitpoints       The hitpoints of Sneezewort
+     * @param secondsToLive   The maximum time Sneezewort lives
+     * @param sprites         The sprites of Sneezewort
+     * 
+     * @post ... | new.getSecondsToLive() == secondsToLive
+     * @post ... | new.getBoundaries() == new int[] { positionLeftX), (int)
+     *       (positionLeftX + 0.5 * (int) (100 * Math.abs(horizonalSpeed)))
+     * @post ... | new.getOrientation() == -1
+     * @post ... | new.getVerticalSpeedMeters() == Math.abs(horizontalSpeed)
+     * 
+     * @effect super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY,
+     *         horizontalSpeed, hitpoints, secondsToLive, 10, 0, 0, 0, 0, sprites)
+     */
+    @Raw
     public Sneezewort(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, double horizontalSpeed,
-	    int hitpoints, double secondsToLive, double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking,
-	    double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, Sprite[] sprites) {
-	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, horizontalSpeed, hitpoints, secondsToLive,
-		maxHorizontalSpeedRunning, maxHorizontalSpeedDucking, minHorizontalSpeed, horizontalAcceleration,
-		verticalAcceleration, sprites);
+	    int hitpoints, double secondsToLive, Sprite[] sprites) {
+	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, horizontalSpeed, hitpoints, secondsToLive, 10, 0,
+		0, 0, 0, sprites);
 
 	setHorizontalSpeedMeters(-1 * Math.abs(horizontalSpeed));
 	setOrientation(-1);
@@ -108,6 +142,7 @@ public class Sneezewort extends Plant {
      * Returns the boundaries in which the plant will move.
      */
     @Override
+    @Immutable
     public int[] getBoundaries() {
 	return boundaries;
     }

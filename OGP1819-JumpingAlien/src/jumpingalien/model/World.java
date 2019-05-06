@@ -51,8 +51,14 @@ public class World {
      *                          !
      *                          canHaveAsVisibleWindowHeight(this.getVisibleWindowHeight())
      * 
-     * @post The visibleWindowWidth of this new World is equal to the given
-     *       visibleWindowWidth. | new.getVisibleWindowWidth() == visibleWindowWidth
+     * @post ... | new.getVisibleWindowWidth() == visibleWindowWidth
+     * @post ... | new.getVisibleWindowHeight() == visibleWindowHeight
+     * @post ... | new.getTileLenght() == tileLenght
+     * @post ... | new.getWorldSizeX() == nbTilesX * tileLenght
+     * @post ... | new.getWorldSizeY() == nbTilesY * tileLenght
+     * @post ... | new.getTargetTileX() == targetTileX * tileLenght
+     * @post ... | new.getTargetTileY() == targetTileY * tileLenght
+     * @post ... | new.getMaxNbOfObjects() == maxNbOfObjects
      * 
      * @throws RuntimeException This new World cannot have the given
      *                          visibleWindowWidth as its visibleWindowWidth. | !
@@ -60,7 +66,9 @@ public class World {
      * 
      * @effect The visibleWindowPosition of this new World is set to (0,0). |
      *         this.setVisibleWindowPosition(new int[] {0, 0})
-     */ // TODO postcondities!
+     * @effect ... | initializeGeologicalFeatures(nbTilesX, nbTilesY,
+     *         geologicalFeatures)
+     */
     public World(int nbTilesX, int nbTilesY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth,
 	    int visibleWindowHeight, int maxNbOfObjects, int... geologicalFeatures) throws RuntimeException {
 
@@ -81,11 +89,10 @@ public class World {
 
     }
 
-    private static final int maxNbOfSchools = 10;
-
-    public int getMaxNbOfSchools() {
-	return maxNbOfSchools;
-    }
+    /**
+     * A variable to store the maximum number of schools
+     */
+    public static final int maxNbOfSchools = 10;
 
     /**
      * Check whether this World can have the given visisbleWindowHeigth as its
@@ -694,6 +701,7 @@ public class World {
      *       true and setPlayer(gameObject)
      * @post ... | new.gameObject.world == this
      */
+    @Raw
     public void addGameObject(GameObject gameObject) throws RuntimeException {
 	if (getAllObjects().size() == getMaxNbOfObjects() && !(gameObject instanceof Mazub))
 	    throw new RuntimeException();
@@ -741,6 +749,7 @@ public class World {
      * @post ... | if getPlayer() == gameObject then new.player == null and
      *       new.hasPlayer == false
      */
+    @Raw
     public void removeObject(GameObject gameObject) {
 	objects.remove(gameObject);
 	gameObject.world = null;
@@ -777,6 +786,7 @@ public class World {
      * @post ... | new.hasPlayer == true
      * @post ... | new.gameObject.isPlayer == true
      */
+    @Raw
     void setPlayer(Mazub gameObject) {
 	player = gameObject;
 	gameObject.isPlayer = true;
@@ -873,22 +883,54 @@ public class World {
 
     }
 
+    /**
+     * A set to store all the schools in the world.
+     */
     private final Set<School> allSchools = new HashSet<>();
 
+    /**
+     * Returns the current number of schools in this world.
+     */
     public int getNbOfSchools() {
 	return allSchools.size();
     }
 
-    void addSchool(School school) {
-	if (getNbOfSchools() == getMaxNbOfSchools())
+    /**
+     * Adds a school to the world
+     * 
+     * @param school The school to add
+     * 
+     * @throws RuntimeException If new.getNbOfSchools() > maxNbOfSchools
+     * 
+     * @post ... | new.getAllSchools().contains(school)
+     * @post ... | new.school.getWorld() == this
+     */
+    @Raw
+    void addSchool(School school) throws RuntimeException {
+	if (getNbOfSchools() == maxNbOfSchools)
 	    throw new RuntimeException();
 	allSchools.add(school);
+	school.world = this;
     }
 
+    /**
+     * Removes the school from the world
+     * 
+     * @param school The school to remove
+     * 
+     * @post ... | !new.getAllSchools().contains(school)
+     * @post ... | new.school.getWorld() == null
+     */
+    @Raw
     void removeSchool(School school) {
 	allSchools.remove(school);
+	school.world = null;
     }
 
+    /**
+     * Returns all the schools in the world.
+     */
+    @Basic
     public Set<School> getAllSchools() {
 	return allSchools;
     }

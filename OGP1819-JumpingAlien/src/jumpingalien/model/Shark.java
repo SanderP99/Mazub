@@ -4,7 +4,19 @@ import java.util.List;
 
 import jumpingalien.util.Sprite;
 
-public class Shark extends GameObject {
+/**
+ * A class that implements sharks
+ * 
+ * @author Warre Dreesen
+ * @author Sander Prenen
+ * 
+ * @version 1
+ * 
+ * @invar The sprites are valid sprites | spriteArray.lenght == 3 &&
+ *        isValidSpriteArray()
+ *
+ */
+public class Shark extends GameObject implements HorizontalMovement, VerticalMovement {
 
     private double timeSinceDeath;
     private double timeToRest;

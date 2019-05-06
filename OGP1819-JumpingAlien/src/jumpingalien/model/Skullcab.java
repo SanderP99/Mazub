@@ -1,15 +1,51 @@
 package jumpingalien.model;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 import jumpingalien.util.Sprite;
 
-public class Skullcab extends Plant {
+/**
+ * A class that implements Skullcab
+ * 
+ * @author Warre Dreesen
+ * @author Sander Prenen
+ * 
+ * @version 1
+ *
+ * @invar The sprites are valid sprites | spriteArray.lenght == 2 &&
+ *        isValidSpriteArray()
+ * @invar ... | this.getHorizontalSpeed() == 0
+ *
+ */
+public class Skullcab extends Plant implements VerticalMovement {
 
+    /**
+     * Creates a new Skullcab
+     * 
+     * @param positionLeftX   The x position of the left most pixel of Skullcab
+     * @param positionBottomY The y position of the bottom most pixel of Skullcab
+     * @param pixelSizeX      The width in pixels of Skullcab
+     * @param pixelSizeY      The height in pixels of Skullcab
+     * @param verticalSpeed   The vertical speed of Skullcab
+     * @param hitpoints       The hitpoints of Skullcab
+     * @param secondsToLive   The maximum time Skullcab lives
+     * @param sprites         The sprites of Skullcab
+     * 
+     * @post ... | new.getSecondsToLive() == secondsToLive
+     * @post ... | new.getBoundaries() == new int[] { positionBottomY), (int)
+     *       (positionBottomY + 0.5 * (int) (100 * Math.abs(verticalSpeed)))
+     * @post ... | new.getOrientation() == 1
+     * @post ... | new.getVerticalSpeedMeters() == Math.abs(verticalSpeed)
+     * 
+     * @effect super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY,
+     *         verticalSpeed, hitpoints, secondsToLive, 0, 0, 0, 0, 0, sprites)
+     */
+    @Raw
     public Skullcab(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, double verticalSpeed,
-	    int hitpoints, double secondsToLive, double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking,
-	    double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, Sprite[] sprites) {
-	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, verticalSpeed, hitpoints, secondsToLive,
-		maxHorizontalSpeedRunning, maxHorizontalSpeedDucking, minHorizontalSpeed, horizontalAcceleration,
-		verticalAcceleration, sprites);
+	    int hitpoints, double secondsToLive, Sprite[] sprites) {
+	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, verticalSpeed, hitpoints, secondsToLive, 0, 0, 0,
+		0, 0, sprites);
 
 	setVerticalSpeedMeters(Math.abs(verticalSpeed));
 	setOrientation(1);
@@ -23,12 +59,24 @@ public class Skullcab extends Plant {
      */
     final int[] boundaries;
 
+    /**
+     * A variable to store the time since the last contact with Mazub
+     */
     private double timeSinceContactWithMazub = 0.6;
 
+    /**
+     * Returns the time since the last contact with Mazub
+     */
+    @Basic
     public double getTimeSinceContactWithMazub() {
 	return timeSinceContactWithMazub;
     }
 
+    /**
+     * Sets the time since the last contact with Mazub to the given time
+     * 
+     * @param time The time to set
+     */
     protected void setTimeSinceContactWithMazub(double time) {
 	timeSinceContactWithMazub = time;
     }
@@ -156,7 +204,9 @@ public class Skullcab extends Plant {
      * Returns the boundaries in which the plant will move.
      */
     @Override
+    @Immutable
     public int[] getBoundaries() {
 	return boundaries;
     }
+
 }

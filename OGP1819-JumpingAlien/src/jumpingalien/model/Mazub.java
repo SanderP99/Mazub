@@ -15,7 +15,7 @@ import jumpingalien.util.Sprite;
  * 
  * @version 3
  */
-public class Mazub extends GameObject {
+public class Mazub extends GameObject implements HorizontalMovement, VerticalMovement {
 
     private double timeBeforeSpriteChange;
 

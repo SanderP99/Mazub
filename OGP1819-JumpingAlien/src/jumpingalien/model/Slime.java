@@ -13,7 +13,7 @@ import jumpingalien.util.Sprite;
  * @version 1
  *
  */
-public class Slime extends GameObject implements Comparable<Slime> {
+public class Slime extends GameObject implements Comparable<Slime>, HorizontalMovement, VerticalMovement {
 
     private final long id;
     School school;
@@ -94,4 +94,5 @@ public class Slime extends GameObject implements Comparable<Slime> {
 	// TODO Auto-generated method stub
 
     }
+
 }

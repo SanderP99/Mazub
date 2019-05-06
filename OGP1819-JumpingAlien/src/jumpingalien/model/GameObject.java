@@ -31,11 +31,9 @@ import jumpingalien.util.Sprite;
  * @invar The GameObject has a valid orientation | isValidOrientation() == true
  * @invar The sprites are valid sprites | isValidSpriteArray() == true
  * @invar The sprites in an array are all valid | for (sprite :
- *        getSpriteArray()) | isValidSprie(sprite) == true
+ *        getSpriteArray()) | isValidSprite(sprite) == true
  */
 public abstract class GameObject {
-
-    protected static Set<Long> allIDs = new HashSet<Long>();
 
     /**
      * Creates a new GameObject
@@ -613,7 +611,7 @@ public abstract class GameObject {
      *       absolute value. | if (speed > getMaxSpeedMeters() && speed < 0) then
      *       new.horizontalSpeed == (this.getMaxSpeedMeters())*-1
      */
-    protected void setHorizontalSpeedMeters(double speed) {
+    public void setHorizontalSpeedMeters(double speed) {
 	if (Math.abs(speed) >= getMinSpeedMeters() && Math.abs(speed) <= getMaxSpeed())
 	    horizontalSpeed = speed;
 	else if (Math.abs(speed) <= getMinSpeedMeters() && speed < 0)
@@ -694,7 +692,7 @@ public abstract class GameObject {
 	return maxVerticalSpeed;
     }
 
-    private void setMaxVerticalSpeed(double maxVerticalSpeed) {
+    public void setMaxVerticalSpeed(double maxVerticalSpeed) {
 	this.maxVerticalSpeed = maxVerticalSpeed;
 
     }
@@ -727,7 +725,7 @@ public abstract class GameObject {
      *       && verticalSpeedMeters > 0 then new.verticalSpeed = -1*
      *       getMaxVerticalSpeedMeters()
      */
-    protected void setVerticalSpeedMeters(double verticalSpeedMeters) {
+    public void setVerticalSpeedMeters(double verticalSpeedMeters) {
 	if (verticalSpeedMeters <= getMaxVerticalSpeedMeters())
 	    verticalSpeed = verticalSpeedMeters;
 	else
@@ -746,7 +744,7 @@ public abstract class GameObject {
     /**
      * Returns whether the given speed is a valid speed
      */
-    protected boolean isValidHorizontalSpeed() {
+    public boolean isValidHorizontalSpeed() {
 	if (getHorizontalSpeedMeters() != 0)
 	    if (Math.abs(getHorizontalSpeedMeters()) < getMinSpeedMeters()
 		    || Math.abs(getHorizontalSpeedMeters()) > getMaxSpeed())
@@ -767,7 +765,7 @@ public abstract class GameObject {
     /**
      * Returns whether the given speed is a valid vertical speed
      */
-    protected boolean isValidVerticalSpeed() {
+    public boolean isValidVerticalSpeed() {
 	if (getVerticalSpeedMeters() > getMaxVerticalSpeedMeters())
 	    return false;
 	return true;
@@ -827,7 +825,7 @@ public abstract class GameObject {
      *       acceleration | new.getHorizontalAcceleration() ==
      *       horizontalAcceleration
      */
-    protected void setHorizontalAcceleration(double horizontalAcceleration) {
+    public void setHorizontalAcceleration(double horizontalAcceleration) {
 	if (Math.abs(horizontalAcceleration) == 0 || Math.abs(horizontalAcceleration) == maxHorizontalAcceleration)
 	    this.horizontalAcceleration = horizontalAcceleration;
 	this.horizontalAcceleration = horizontalAcceleration;
@@ -965,7 +963,7 @@ public abstract class GameObject {
     }
 
     /**
-     * Returns whether the GameObject is standing on the ground
+     * Returns whether the GameObject is standing on impassable terrain
      */
     public boolean isStandingOnImpassableTerrain() {
 	if (getWorld() == null)
@@ -993,7 +991,7 @@ public abstract class GameObject {
      * @post The new acceleration is equal to the given maximum vertical
      *       acceleration. | new.VerticalAcceleration == maxVerticalAcceleration
      */
-    protected void fall() {
+    public void fall() {
 	if (getYPositionActual() > 0 || getWorld() == null)
 	    setVerticalAcceleration(maxVerticalAcceleration);
 	if (getWorld() != null)
@@ -1005,12 +1003,25 @@ public abstract class GameObject {
 	    setVerticalAcceleration(0);
     }
 
+    /**
+     * Returns whether a given ID has been taken
+     * 
+     * @param id The ID to check
+     */
     public static boolean hasSlimeWithID(long id) {
 	if (getAllIDs().contains(id))
 	    return true;
 	return false;
     }
 
+    /**
+     * A set to store all IDs that are taken.
+     */
+    protected static Set<Long> allIDs = new HashSet<Long>();
+
+    /**
+     * Returns a set with all IDs that are taken.
+     */
     private static Set<Long> getAllIDs() {
 	return allIDs;
     }
