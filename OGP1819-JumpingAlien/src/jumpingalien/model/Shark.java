@@ -181,15 +181,13 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	final int xSize = getXsize();
 	final int ySize = getYsize();
 
-	final Shark newSharkX = new Shark((int) (newPosX * 100), getYPositionPixel(), xSize, ySize, 1, 1, 10, 10, 0, 10,
-		0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
-	final Shark newSharkY = new Shark(getXPositionPixel(), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10, 0, 10,
-		0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
+	new Shark((int) (newPosX * 100), getYPositionPixel(), xSize, ySize, 1, 1, 10, 10, 0, 10, 0, 0, newSpeedX,
+		newSpeedY, true, getSpriteArray());
+	new Shark(getXPositionPixel(), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10, 0, 10, 0, 0, newSpeedX,
+		newSpeedY, true, getSpriteArray());
 	final Shark newSharkBoth = new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10,
 		0, 10, 0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
 
-	getWorld().canPlaceGameObjectAdvanceTime(newSharkX, this);
-	getWorld().canPlaceGameObjectAdvanceTime(newSharkY, this);
 	final boolean canPlaceBothShark = getWorld().canPlaceGameObjectAdvanceTime(newSharkBoth, this);
 
 	if (canPlaceBothShark) {
