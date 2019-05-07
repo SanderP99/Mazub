@@ -2372,6 +2372,8 @@ class FullFacadeTest {
 	    }
 	    facade.advanceWorldTime(theTallWorld, 0.15);
 	    final double expectedYpos = 10.0 - sharkHeight / 100.0;
+	    System.out.println(facade.getActualPosition(theShark)[1]);
+	    System.out.println(expectedYpos);
 	    assertTrue(facade.getActualPosition(theShark)[1] >= expectedYpos - 0.01 - LOW_PRECISION);
 	    assertTrue(facade.getActualPosition(theShark)[1] <= expectedYpos + LOW_PRECISION);
 	    // After some time, the shark will start to move horizontally.

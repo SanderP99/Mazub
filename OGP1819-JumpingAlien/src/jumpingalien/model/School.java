@@ -205,7 +205,7 @@ public class School {
     public boolean hasSlime(Slime slime) {
 	if (slime.getIdentification() == getMaxID() || slime.getIdentification() == getMinID())
 	    return true;
-	if (getAllSlimes().contains(slime))
+	if (slimes.contains(slime))
 	    return true;
 	return false;
     }

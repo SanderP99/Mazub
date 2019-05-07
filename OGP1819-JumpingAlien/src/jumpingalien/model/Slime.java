@@ -2,6 +2,8 @@ package jumpingalien.model;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
 import jumpingalien.util.Sprite;
 
 /**
@@ -48,10 +50,13 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 
     }
 
+    @Basic
+    @Immutable
     public long getIdentification() {
 	return id;
     }
 
+    @Basic
     public School getSchool() {
 	return school;
     }

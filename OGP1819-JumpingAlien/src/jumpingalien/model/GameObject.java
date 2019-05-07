@@ -826,8 +826,8 @@ public abstract class GameObject {
      *       horizontalAcceleration
      */
     public void setHorizontalAcceleration(double horizontalAcceleration) {
-	if (Math.abs(horizontalAcceleration) == 0 || Math.abs(horizontalAcceleration) == maxHorizontalAcceleration)
-	    this.horizontalAcceleration = horizontalAcceleration;
+//	if (Math.abs(horizontalAcceleration) == 0 || Math.abs(horizontalAcceleration) == maxHorizontalAcceleration)
+//	    this.horizontalAcceleration = horizontalAcceleration;
 	this.horizontalAcceleration = horizontalAcceleration;
     }
 
