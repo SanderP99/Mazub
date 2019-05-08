@@ -2033,6 +2033,7 @@ class FullFacadeTest {
 	facade.advanceWorldTime(world_250_400, 0.02);
 	facade.endMove(mazoubToBounceWith);
 	assertEquals(2.0 + 0.02018, facade.getActualPosition(mazoubToBounceWith)[0], LOW_PRECISION);
+	System.out.println(facade.getVelocity(movingSlime)[0]);
 	assertTrue(facade.getVelocity(movingSlime)[0] > 0.0);
 	// The slime needs 0.2401 seconds to collide with mazub again.
 	// The collision has no effect, because no 0.6 seconds have passed since the

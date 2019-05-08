@@ -150,13 +150,11 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	else
 	    setSprite(getSpriteArray()[0]);
 	if (getTimeToMove() == 0.5 && (isInWater() || isStandingOnImpassableTerrain())) {
-	    // setMaxSpeed();
-	    setVerticalSpeedMeters(getMaxVerticalSpeedMeters());
-	    if (isUnderWater()) {
+	    setMaxSpeed();
+	    setVerticalSpeedMeters(2);
+	    if (isUnderWater())
 		setVerticalAcceleration(0.0);
-		setVerticalSpeedMeters(0);
-	    }
-
+//		setVerticalSpeedMeters(0);
 	    else
 		setVerticalAcceleration(maxVerticalAcceleration);
 	} else if (isInWater())

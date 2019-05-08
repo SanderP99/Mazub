@@ -729,6 +729,10 @@ public class World {
 	if (!hasPlayer() && gameObject instanceof Mazub)
 	    setPlayer((Mazub) gameObject);
 
+	if (gameObject instanceof Slime && ((Slime) gameObject).getSchool() != null
+		&& !getAllSchools().contains(((Slime) gameObject).getSchool()))
+	    allSchools.add(((Slime) gameObject).getSchool());
+
 	objects.add(gameObject);
 	gameObject.world = this;
     }
@@ -771,7 +775,7 @@ public class World {
      * Returns the player for this world
      */
     @Basic
-    public GameObject getPlayer() {
+    public Mazub getPlayer() {
 	return player;
     }
 

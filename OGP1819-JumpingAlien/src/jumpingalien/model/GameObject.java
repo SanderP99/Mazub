@@ -208,8 +208,10 @@ public abstract class GameObject {
 	    isDead = true;
 	    setHitpoints(0);
 	    removeWorld();
-	    if (this instanceof Slime)
+	    if (this instanceof Slime) {
 		((Slime) this).removeSchool();
+		allIDs.remove(((Slime) this).getIdentification());
+	    }
 
 	}
     }
@@ -511,6 +513,7 @@ public abstract class GameObject {
      */
     protected void changeHitPoints(int change) {
 	setHitpoints(getHitpoints() + change);
+
     }
 
     /**
@@ -1025,5 +1028,7 @@ public abstract class GameObject {
     private static Set<Long> getAllIDs() {
 	return allIDs;
     }
+
+    private double timeToBlockMovement;
 
 }

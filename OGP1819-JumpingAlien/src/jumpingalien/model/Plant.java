@@ -80,7 +80,7 @@ public abstract class Plant extends GameObject {
     /**
      * A timer to keep track how long the plant has left to live.
      */
-    private static double secondsToLive;
+    private double secondsToLive;
 
     /**
      * Returns the boundaries in which the plant will move.

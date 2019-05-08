@@ -311,7 +311,7 @@ public class Facade implements IFacade {
     public Mazub getMazub(World world) throws ModelException {
 	if (world.getPlayer() == null)
 	    return null;
-	return (Mazub) world.getPlayer();
+	return world.getPlayer();
     }
 
     @Override

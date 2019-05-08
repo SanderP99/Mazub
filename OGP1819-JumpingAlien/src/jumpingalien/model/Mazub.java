@@ -662,4 +662,15 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      */
     boolean isPlayer;
 
+    private double timeToBlockMovement;
+
+    private double getTimeToBlockMovement() {
+	return timeToBlockMovement;
+    }
+
+    public void setTimeToBlockMovement(double dt) {
+	timeToBlockMovement = dt;
+
+    }
+
 }
