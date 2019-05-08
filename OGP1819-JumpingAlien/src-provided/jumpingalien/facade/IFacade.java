@@ -92,6 +92,14 @@ public interface IFacade {
 	 * late team split (split after May 5). In that case, the code must include sharks.
 	 */
 	boolean isLateTeamSplit();
+	
+	/**
+	 * Return a boolean indicating whether the code at stake has implemented the
+	 * positioning of the world's window.
+	 * This is especially meant for students that started in a team,
+	 * but ended up working individually.
+	 */
+	boolean hasImplementedWorldWindow();
 
 	/**
 	 * Create an instance of Mazub with given pixel position and given sprites.

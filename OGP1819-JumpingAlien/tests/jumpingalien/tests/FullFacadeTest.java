@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 
 import jumpingalien.facade.Facade;
 import jumpingalien.facade.IFacade;
+import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
 import jumpingalien.model.*;
 import jumpingalien.util.Sprite;
 import jumpingalien.util.ModelException;
@@ -82,6 +83,12 @@ class FullFacadeTest {
 		sharkSprites = new Sprite[] { new Sprite("Shark Resting", 70, 30),
 				new Sprite("Shark Moving Left", 70, 30),
 				new Sprite("Shark Moving Right", 70, 30) };
+//		// Instruction to see to it that the default sprite for all game objects has the
+//		// proper size for the test suite.
+		JumpingAlienSprites.setDefaultMazubSprite(mazubSprites[0]);
+		JumpingAlienSprites.setDefaultPlantSprite(sneezewortSprites[0]);
+		JumpingAlienSprites.setDefaultSlimeSprite(slimeSprites[0]);
+		JumpingAlienSprites.setDefaultSharkSprite(sharkSprites[0]);
 	}
 
 	@AfterAll
@@ -223,10 +230,12 @@ class FullFacadeTest {
 		assertNull(facade.getWorld(someSlime));
 		assertFalse(facade.hasAsSlime(someSchool, someSlime));
 		// Shark
-		Shark someShark = facade.createShark(10, 20, sharkSprites);
-		facade.terminateGameObject(someShark);
-		assertTrue(facade.isTerminatedGameObject(someShark));
-		assertNull(facade.getWorld(someShark));
+		if ( shouldImplementSharks() ) {
+			Shark someShark = facade.createShark(10, 20, sharkSprites);
+			facade.terminateGameObject(someShark);
+			assertTrue(facade.isTerminatedGameObject(someShark));
+			assertNull(facade.getWorld(someShark));
+		}
 		actualScore += 15;
 	}
 
@@ -738,9 +747,9 @@ class FullFacadeTest {
 	}
 
 	@Test
-	public void advanceTime_MazubCollidingWithSharkAtRightSide() throws Exception {
+	public void advanceTime_MazubCollidingWithObjectAtRightSide() throws Exception {
 		maximumScore += 10;
-		Shark sharkToCollideWith = null;
+		Object sharkToCollideWith = null;
 		Slime slimeToCollideWith = null;
 		if (shouldImplementSharks()) {
 			sharkToCollideWith= facade.createShark(200, 990,sharkSprites);
@@ -1436,7 +1445,8 @@ class FullFacadeTest {
 			facade.advanceTime(theEatingMazub, 0.15);
 		assertEquals(250, facade.getHitPoints(theEatingMazub));
 		assertEquals(0, facade.getHitPoints(theScullcab));
-		// After another 0.6 seconds, the scullcab will have been removed from the world.
+		// After at least another 0.6 seconds, the scullcab will have been removed
+		// from the world.
 		for (int i = 1; i <= 8; i++)
 			facade.advanceTime(theScullcab, 0.15);
 		assertTrue(facade.isTerminatedGameObject(theScullcab));
@@ -2063,7 +2073,7 @@ class FullFacadeTest {
 			facade.advanceWorldTime(world_250_400, 0.15);
 			timeToReachSlime -= 0.15;
 		}
-		facade.advanceWorldTime(world_250_400, timeToReachSlime);
+		facade.advanceWorldTime(world_250_400, timeToReachSlime+0.02);
 		assertEquals(100 + (100 - slimeWidth), facade.getPixelPosition(movingSlime)[0]);
 		// The slime to bounce against will not change its position.
 		assertEquals(200, facade.getPixelPosition(slimeToBounceWith)[0]);
@@ -2106,7 +2116,7 @@ class FullFacadeTest {
 		assertEquals(100 + (100 - slimeWidth), facade.getPixelPosition(movingSlime)[0]);
 		assertEquals(100 - 30, facade.getHitPoints(movingSlime));
 		assertEquals(100, facade.getHitPoints(mazoubToBounceWith));
-		assertEquals(0.0, facade.getVelocity(movingSlime)[0]);
+		assertEquals(0.0, facade.getVelocity(movingSlime)[0],LOW_PRECISION);
 		// Both objects are now stationary.
 		facade.advanceWorldTime(world_250_400, 0.1);
 		assertEquals(100 + (100 - slimeWidth), facade.getPixelPosition(movingSlime)[0]);
@@ -2260,7 +2270,7 @@ class FullFacadeTest {
 
 	@Test
 	void createShark_IllegalSprites() throws Exception {
-		if (facade.isTeamSolution()) {
+		if (shouldImplementSharks()) {
 			maximumScore += 4;
 			// Array of sprites must be effective.
 			assertThrows(ModelException.class,
@@ -2393,7 +2403,7 @@ class FullFacadeTest {
 			// After another 0.09 seconds, the shark stops moving to the left
 			facade.advanceWorldTime(world_250_400, 0.11);
 			assertTrue(facade.getActualPosition(theShark)[0] <= sharkInitXpos-0.1261+LOW_PRECISION);
-			assertTrue(facade.getActualPosition(theShark)[0] >= sharkInitXpos-0.1875+LOW_PRECISION);
+			assertTrue(facade.getActualPosition(theShark)[0] >= sharkInitXpos-0.1875-LOW_PRECISION);
 			assertTrue(facade.getActualPosition(theShark)[1] >= 0.99-LOW_PRECISION);
 			assertTrue(facade.getActualPosition(theShark)[1] <= 1.0+LOW_PRECISION);
 			actualScore += 10;
@@ -2596,7 +2606,7 @@ class FullFacadeTest {
 			facade.advanceWorldTime(world_100_200, 0.18);
 			assertTrue(facade.getActualPosition(theShark)[1] >= 2.9-LOW_PRECISION);
 			assertTrue(facade.getActualPosition(theShark)[1] <= 3.0+LOW_PRECISION);
-			assertEquals(slimeInitXPos+0.01134,facade.getActualPosition(theSlime)[0]);
+			assertEquals(slimeInitXPos+0.01134,facade.getActualPosition(theSlime)[0],LOW_PRECISION);
 			actualScore += 14;
 		}
 	}
@@ -2611,21 +2621,27 @@ class FullFacadeTest {
 			Mazub theMazub = facade.createMazub(30, 240, mazubSprites);
 			int mazubHeight = facade.getCurrentSprite(theMazub).getHeight();
 			facade.addGameObject(theMazub, world_100_200);
-			// When the shark lands on the mazub, it stops falling and looses 50 hit points.
+			// When the shark lands on the mazub, it stops falling and looses 50 hit points
+			// because of the contact with the mazub, and 6 because the shark is not
+			// in contacgt with water.
 			double timeToLandOnMazub = Math.sqrt(2.0*(60.0-mazubHeight)/1000.0);
+			System.out.println(timeToLandOnMazub);
 			while (timeToLandOnMazub > 0.1) {
 				facade.advanceTime(theShark, 0.1);
+				System.out.println("Time advanced with 0.1 s");
 				timeToLandOnMazub -= 0.1;
 			}
 			facade.advanceTime(theShark,timeToLandOnMazub+0.1);
-			assertEquals(100-50,facade.getHitPoints(theShark));
+			System.out.println("Time advanced with " + (timeToLandOnMazub+0.1));
+			assertEquals(100-50-6,facade.getHitPoints(theShark));
 			assertTrue(facade.getActualPosition(theShark)[1] >= 2.4+(mazubHeight/100.0)-LOW_PRECISION);
 			assertTrue(facade.getActualPosition(theShark)[1] <= 2.4+(mazubHeight/100.0)+LOW_PRECISION);
 			// After another 0.3 seconds, the shark is still in contact with the mazub,
 			// but has not lost any additional hit points.
+			System.out.println("Further advancing time");
 			facade.advanceTime(theShark, 0.15);
 			facade.advanceTime(theShark, 0.15);
-			assertEquals(100-50,facade.getHitPoints(theShark));
+			assertFalse(facade.isDeadGameObject(theShark));
 			assertTrue(facade.getActualPosition(theShark)[1] >= 2.4+(mazubHeight/100.0)-LOW_PRECISION);
 			assertTrue(facade.getActualPosition(theShark)[1] <= 2.4+(mazubHeight/100.0)+LOW_PRECISION);
 			actualScore += 14;
@@ -2762,15 +2778,19 @@ class FullFacadeTest {
 		facade.addGameObject(someSkullcab, world_100_200);
 		Slime someSlime = facade.createSlime(10, 10, 100, someSchool, slimeSprites);
 		facade.addGameObject(someSlime, world_100_200);
-		Shark someShark = facade.createShark(200, 10, sharkSprites);
-		facade.addGameObject(someShark, world_100_200);
+		Object someShark = null;
+		if (shouldImplementSharks()) {
+			someShark = facade.createShark(200, 10, sharkSprites);
+			facade.addGameObject(someShark, world_100_200);
+		}
 		facade.terminateWorld(world_100_200);
 		assertTrue(facade.getAllGameObjects(world_100_200).isEmpty());
 		assertNull(facade.getWorld(someMazub));
 		assertNull(facade.getWorld(someSneezeWort));
 		assertNull(facade.getWorld(someSkullcab));
 		assertNull(facade.getWorld(someSlime));
-		assertNull(facade.getWorld(someShark));
+		if (shouldImplementSharks())
+			assertNull(facade.getWorld(someShark));
 		actualScore += 12;
 	}
 
@@ -2832,12 +2852,14 @@ class FullFacadeTest {
 		assertEquals(4, facade.getAllGameObjects(world_100_200).size());
 		assertTrue(facade.getAllGameObjects(world_100_200).contains(someSlime));
 		assertEquals(world_100_200, facade.getWorld(someSlime));
-		Shark someShark = facade.createShark(200, 10, sharkSprites);
-		facade.addGameObject(someShark, world_100_200);
-		assertTrue(facade.hasAsGameObject(someShark, world_100_200));
-		assertEquals(5, facade.getAllGameObjects(world_100_200).size());
-		assertTrue(facade.getAllGameObjects(world_100_200).contains(someShark));
-		assertEquals(world_100_200, facade.getWorld(someShark));
+		if (shouldImplementSharks()) {
+			Shark someShark = facade.createShark(200, 10, sharkSprites);
+			facade.addGameObject(someShark, world_100_200);
+			assertTrue(facade.hasAsGameObject(someShark, world_100_200));
+			assertEquals(5, facade.getAllGameObjects(world_100_200).size());
+			assertTrue(facade.getAllGameObjects(world_100_200).contains(someShark));
+			assertEquals(world_100_200, facade.getWorld(someShark));
+		}
 		actualScore += 25;
 	}
 
@@ -2907,10 +2929,12 @@ class FullFacadeTest {
 		facade.addGameObject(
 				facade.createSlime(20, 225, 530 - slimeHeight, someSchool, slimeSprites),
 				world_100_200);
-		facade.addGameObject(facade.createShark(225, 540, sharkSprites), world_100_200);
+		if (shouldImplementSharks())
+			facade.addGameObject(facade.createShark(225, 540, sharkSprites), world_100_200);
 		// Overlapping with top row of impassable terrain.
 		facade.setGeologicalFeature(world_100_200, 220, 630, SOLID_GROUND);
-		facade.addGameObject(facade.createShark(225, 639, sharkSprites), world_100_200);
+		if (shouldImplementSharks())
+			facade.addGameObject(facade.createShark(225, 639, sharkSprites), world_100_200);
 		actualScore += 10;
 	}
 
@@ -2933,9 +2957,10 @@ class FullFacadeTest {
 				() -> facade.addGameObject(
 						facade.createMazub(225, 330 - height + 2, mazubSprites),
 						world_100_200));
-		assertThrows(ModelException.class,
-				() -> facade.addGameObject(facade.createShark(225, 338, mazubSprites),
-						world_100_200));
+		if (shouldImplementSharks())
+			assertThrows(ModelException.class,
+					() -> facade.addGameObject(facade.createShark(225, 338, mazubSprites),
+							world_100_200));
 		assertThrows(ModelException.class,
 				() -> facade.addGameObject(facade.createMazub(505, 503, mazubSprites),
 						world_100_200));
@@ -2971,14 +2996,16 @@ class FullFacadeTest {
 		facade.addGameObject(
 				facade.createSlime(10, 140 - slimeWidth, 270, someSchool, slimeSprites),
 				world_100_200);
-		facade.addGameObject(facade.createShark(140 + mazubWidth, 270, sharkSprites),
+		if (shouldImplementSharks())
+			facade.addGameObject(facade.createShark(140 + mazubWidth, 270, sharkSprites),
 				world_100_200);
 		// Adjacent top and bottom
 		facade.addGameObject(
 				facade.createSlime(20, 180, 450 - slimeHeight, someSchool, slimeSprites),
 				world_100_200);
-		facade.addGameObject(facade.createShark(60, 450 + mazubHeight, sharkSprites),
-				world_100_200);
+		if (shouldImplementSharks())
+			facade.addGameObject(facade.createShark(60, 450 + mazubHeight, sharkSprites),
+					world_100_200);
 		actualScore += 10;
 	}
 
@@ -2994,17 +3021,19 @@ class FullFacadeTest {
 		assertThrows(ModelException.class,
 				() -> facade.addGameObject(facade.createSlime(10, 140 - slimeWidth + 2,
 						270, someSchool, slimeSprites), world_100_200));
-		assertThrows(ModelException.class,
-				() -> facade.addGameObject(
-						facade.createShark(140 + mazubWidth - 2, 270, sharkSprites),
-						world_100_200));
+		if (shouldImplementSharks())
+			assertThrows(ModelException.class,
+					() -> facade.addGameObject(
+							facade.createShark(140 + mazubWidth - 2, 270, sharkSprites),
+							world_100_200));
 		assertThrows(ModelException.class,
 				() -> facade.addGameObject(facade.createSlime(20, 170,
 						250 - slimeHeight + 2, someSchool, slimeSprites), world_100_200));
-		assertThrows(ModelException.class,
-				() -> facade.addGameObject(
-						facade.createShark(170, 250 + mazubHeight - 2, mazubSprites),
-						world_100_200));
+		if (shouldImplementSharks())
+			assertThrows(ModelException.class,
+					() -> facade.addGameObject(
+							facade.createShark(170, 250 + mazubHeight - 2, mazubSprites),
+							world_100_200));
 		actualScore += 8;
 	}
 
@@ -3024,12 +3053,19 @@ class FullFacadeTest {
 		maximumScore += 12;
 		World bigWorld = facade.createWorld(5, 200, 200, new int[] { 10, 20 }, 50, 40);
 		for (int i = 0; i <= 99; i++)
-			facade.addGameObject(
-					facade.createShark((i % 10) * 100, (i / 10) * 50, sharkSprites),
-					bigWorld);
+			if (shouldImplementSharks())
+				facade.addGameObject(
+						facade.createShark((i % 10) * 100, (i / 10) * 50, sharkSprites),
+						bigWorld);
+			else
+				facade.addGameObject(facade.createSneezewort(10, 20, sneezewortSprites), bigWorld);
 		// No more than 100 other game objects in a world.
-		assertThrows(ModelException.class, () -> facade
+		if (shouldImplementSharks())
+			assertThrows(ModelException.class, () -> facade
 				.addGameObject(facade.createShark(0, 800, sharkSprites), bigWorld));
+		else
+			assertThrows(ModelException.class, () -> facade
+				.addGameObject(facade.createSkullcab(100, 200, skullcabSprites), bigWorld));
 		// Adding a mazub must still be possible.
 		facade.addGameObject(facade.createMazub(100, 800, mazubSprites), bigWorld);
 		actualScore += 12;
@@ -3079,13 +3115,18 @@ class FullFacadeTest {
 		maximumScore += 5;
 		Mazub mazub = facade.createMazub(300, 150, mazubSprites);
 		facade.addGameObject(mazub, world_100_200);
-		Shark shark = facade.createShark(600, 150, sharkSprites);
-		facade.addGameObject(shark, world_100_200);
+		Object shark = null;
+		if (shouldImplementSharks()) {
+			shark = facade.createShark(600, 150, sharkSprites);
+			facade.addGameObject(shark, world_100_200);
+		}
 		Slime slime = facade.createSlime(10, 500, 550, someSchool, slimeSprites);
 		facade.addGameObject(slime, world_100_200);
-		assertEquals(3, facade.getAllGameObjects(world_100_200).size());
+		int expectedNbGameObjects = shouldImplementSharks() ? 3 : 2;
+		assertEquals(expectedNbGameObjects, facade.getAllGameObjects(world_100_200).size());
 		assertTrue(facade.getAllGameObjects(world_100_200).contains(mazub));
-		assertTrue(facade.getAllGameObjects(world_100_200).contains(shark));
+		if (shouldImplementSharks())
+			assertTrue(facade.getAllGameObjects(world_100_200).contains(shark));
 		assertTrue(facade.getAllGameObjects(world_100_200).contains(slime));
 		actualScore += 5;
 	}
@@ -3095,8 +3136,15 @@ class FullFacadeTest {
 		maximumScore += 15;
 		Mazub mazub = facade.createMazub(300, 150, mazubSprites);
 		facade.addGameObject(mazub, world_100_200);
-		Shark shark = facade.createShark(600, 150, sharkSprites);
-		facade.addGameObject(shark, world_100_200);
+		if (shouldImplementSharks()) {
+			Shark shark = facade.createShark(600, 150, sharkSprites);
+			facade.addGameObject(shark, world_100_200);
+		}
+		else {
+			Slime slime = facade.createSlime(10,600, 150, null, slimeSprites);
+			facade.addGameObject(slime, world_100_200);
+			
+		}
 		Set<? extends Object> allGameObjects = facade.getAllGameObjects(world_100_200);
 		allGameObjects.add(null);
 		assertEquals(2, facade.getAllGameObjects(world_100_200).size());
@@ -3178,7 +3226,7 @@ class FullFacadeTest {
 			int[] windowPixelPosition = facade.getVisibleWindowPosition(theWorld);
 			int mazubPixelPositionX = facade.getPixelPosition(theMazub)[0];
 			int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
-			if (facade.isTeamSolution()) {
+			if (facade.isTeamSolution() || facade.hasImplementedWorldWindow()) {
 				assertTrue(windowPixelPosition[0] + 200 <= mazubPixelPositionX);
 				assertTrue(windowPixelPosition[0] + windowWidth +
 						200 >= mazubPixelPositionX + mazubWidth);
@@ -3215,7 +3263,7 @@ class FullFacadeTest {
 			int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
 			int mazubWidth = facade.getCurrentSprite(theMazub).getWidth();
 			int mazubHeight = facade.getCurrentSprite(theMazub).getHeight();
-			if (facade.isTeamSolution()) {
+			if (facade.isTeamSolution() || facade.hasImplementedWorldWindow()) {
 				assertTrue(((windowLeft >= mazubPixelPositionX) &&
 						(windowLeft < mazubPixelPositionX + mazubWidth)) ||
 						((windowRight > mazubPixelPositionX) &&
@@ -3260,7 +3308,7 @@ class FullFacadeTest {
 			int windowTop = facade.getVisibleWindowPosition(theWorld)[1] + windowHeight;
 			int mazubPixelPositionX = facade.getPixelPosition(theMazub)[0];
 			int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
-			if (facade.isTeamSolution()) {
+			if (facade.isTeamSolution() || facade.hasImplementedWorldWindow()) {
 				assertEquals(worldWidth - windowWidth, windowLeft);
 				assertEquals(worldWidth, windowRight);
 				assertEquals(worldHeight - windowHeight, windowBottom);
@@ -3293,7 +3341,7 @@ class FullFacadeTest {
 		int mazubPixelPositionY = facade.getPixelPosition(theMazub)[1];
 		int mazubWidth = facade.getCurrentSprite(theMazub).getWidth();
 		int mazubHeight = facade.getCurrentSprite(theMazub).getHeight();
-		if (facade.isTeamSolution()) {
+		if (facade.isTeamSolution() || facade.hasImplementedWorldWindow()) {
 			assertTrue(((windowLeft >= mazubPixelPositionX) &&
 					(windowLeft < mazubPixelPositionX + mazubWidth)) ||
 					((windowRight > mazubPixelPositionX) &&
@@ -3405,7 +3453,7 @@ class FullFacadeTest {
 		assertArrayEquals(new double[] { mazubOldXPos + 0.16, mazubOldYPos + 1.0875 },
 				facade.getActualPosition(playerMazub), LOW_PRECISION);
 		assertEquals(mazubOldHitPoints + 50, facade.getHitPoints(playerMazub));
-		assertEquals(skullOldYpos + 0.075, facade.getActualPosition(skull)[1]);
+		assertEquals(skullOldYpos + 0.075, facade.getActualPosition(skull)[1],LOW_PRECISION);
 		assertEquals(skullOldHitPoints - 1, facade.getHitPoints(skull));
 		assertEquals(sneezeOldXPos - 0.075, facade.getActualPosition(sneeze)[0],
 				LOW_PRECISION);
@@ -3424,7 +3472,7 @@ class FullFacadeTest {
 		assertEquals(mazubNewXPos - (slimeWidth / 100.0),
 				facade.getActualPosition(slime)[0], LOW_PRECISION);
 		assertEquals(slimeOldHitPoints - 30, facade.getHitPoints(slime));
-		assertEquals(skullOldYpos + 0.2, facade.getActualPosition(skull)[1]);
+		assertEquals(skullOldYpos + 0.2, facade.getActualPosition(skull)[1],LOW_PRECISION);
 		assertEquals(skullOldHitPoints - 1, facade.getHitPoints(skull));
 		assertEquals(sneezeOldXPos - 0.2, facade.getActualPosition(sneeze)[0],
 				LOW_PRECISION);
