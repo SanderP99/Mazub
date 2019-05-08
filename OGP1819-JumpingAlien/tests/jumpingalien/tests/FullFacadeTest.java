@@ -1378,6 +1378,7 @@ class FullFacadeTest {
 	for (int i = 0; i < 4; i++)
 	    facade.advanceTime(theEatingMazub, 0.15);
 	assertEquals(200, facade.getHitPoints(theEatingMazub));
+
 	assertEquals(1, facade.getHitPoints(theScullcab));
 	// Mazub will eat the scullCab for a third time
 	// 0.6 seconds after it has eaten it for the second time.
@@ -2033,7 +2034,6 @@ class FullFacadeTest {
 	facade.advanceWorldTime(world_250_400, 0.02);
 	facade.endMove(mazoubToBounceWith);
 	assertEquals(2.0 + 0.02018, facade.getActualPosition(mazoubToBounceWith)[0], LOW_PRECISION);
-	System.out.println(facade.getVelocity(movingSlime)[0]);
 	assertTrue(facade.getVelocity(movingSlime)[0] > 0.0);
 	// The slime needs 0.2401 seconds to collide with mazub again.
 	// The collision has no effect, because no 0.6 seconds have passed since the
@@ -2373,8 +2373,6 @@ class FullFacadeTest {
 	    }
 	    facade.advanceWorldTime(theTallWorld, 0.15);
 	    final double expectedYpos = 10.0 - sharkHeight / 100.0;
-	    System.out.println(facade.getActualPosition(theShark)[1]);
-	    System.out.println(expectedYpos);
 	    assertTrue(facade.getActualPosition(theShark)[1] >= expectedYpos - 0.01 - LOW_PRECISION);
 	    assertTrue(facade.getActualPosition(theShark)[1] <= expectedYpos + LOW_PRECISION);
 	    // After some time, the shark will start to move horizontally.

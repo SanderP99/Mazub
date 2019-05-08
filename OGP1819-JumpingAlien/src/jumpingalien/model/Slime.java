@@ -20,7 +20,7 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
     private final long id;
     School school;
     private double timeSinceDeath;
-    private double timeToBlockMovement = 0;
+    private double timeBeforeNextHitpointsChange = 0.0;
     private boolean contactWithGas;
     private boolean contactWithMagma;
     private boolean contactWithWater;
@@ -101,25 +101,14 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
     @Override
     public void advanceTime(double dt, double timeStep) {
 	if (!isDead()) {
-	    while (dt > timeStep && !isDead() && !isTerminated())
-		if (getTimeToBlockMovement() > timeStep) {
-		    stayInPosition(timeStep);
-		    setTimeToBlockMovement(getTimeToBlockMovement() - timeStep);
-		    dt -= timeStep;
-		} else {
-		    updatePosition(timeStep);
-		    dt -= timeStep;
-		}
-	    if (getTimeToBlockMovement() > dt) {
-		stayInPosition(dt);
-		setTimeToBlockMovement(getTimeToBlockMovement() - dt);
-		dt = 0;
-	    } else {
-		updatePosition(dt);
-		dt = 0;
+	    while (dt > timeStep && !isDead() && !isTerminated()) {
+		updatePosition(timeStep);
+		dt -= timeStep;
 	    }
+	    updatePosition(dt);
+	    dt = 0;
 	} else if (getTimeSinceDeath() < 0.6) {
-	    if (dt < 0.599 - getTimeSinceDeath())
+	    if (dt < 0.6 - getTimeSinceDeath())
 		setTimeSinceDeath(dt + getTimeSinceDeath());
 	    else {
 		setTimeSinceDeath(dt + getTimeSinceDeath());
@@ -127,7 +116,7 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 		terminate();
 	    }
 
-	} else if (dt < 0.599 - getTimeSinceDeath())
+	} else if (dt < 0.6 - getTimeSinceDeath())
 	    setTimeSinceDeath(dt + getTimeSinceDeath());
 	else {
 	    setTimeSinceDeath(dt + getTimeSinceDeath());
@@ -138,17 +127,12 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 
     }
 
-    private void stayInPosition(double timeStep) {
-	// TODO Auto-generated method stub
-
+    private double getTimeBeforeNextHitpointsChange() {
+	return timeBeforeNextHitpointsChange;
     }
 
-    private double getTimeToBlockMovement() {
-	return timeToBlockMovement;
-    }
-
-    public void setTimeToBlockMovement(double dt) {
-	timeToBlockMovement = dt;
+    public void setTimeBeforeNextHitpointsChange(double dt) {
+	timeBeforeNextHitpointsChange = dt;
 
     }
 
@@ -201,21 +185,32 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 			    setOrientation(getOrientation() * -1);
 			    if (getSchool().getAllSlimes().size() < slime.getSchool().getAllSlimes().size())
 				switchSchool(slime.getSchool());
-//			    else if (getSchool().getAllSlimes().size() > slime.getSchool().getAllSlimes().size())
-//				slime.switchSchool(getSchool());
 			}
 		if (getWorld().getPlayer() != null)
 		    if (newSlime.collidesWith(getWorld().getPlayer())) {
-			changeHitPoints(-30);
-			changeSchoolHitPoints();
-//			getWorld().getPlayer().changeHitPoints(-20);
-			getWorld().getPlayer().setTimeToBlockMovement(0.6);
-			setTimeToBlockMovement(0.6);
+			if (getTimeBeforeNextHitpointsChange() <= 0) {
+			    changeHitPoints(-30);
+			    changeSchoolHitPoints();
+			    setTimeBeforeNextHitpointsChange(0.6);
+			}
 			setHorizontalSpeedMeters(0);
 		    }
+		if (ImpassableTerrain.contains(
+			getWorld().getGeologicalFeature(newSlime.getXPositionPixel() + newSlime.getXsize() - 1,
+				newSlime.getYPositionPixel() + newSlime.getYsize() / 2))) {
+		    setOrientation(getOrientation() * -1);
+		    setHorizontalSpeedMeters(0);
+		}
+
+		if (ImpassableTerrain.contains(getWorld().getGeologicalFeature(newSlime.getXPositionPixel(),
+			newSlime.getYPositionPixel() + newSlime.getYsize() / 2))) {
+		    setOrientation(getOrientation() * -1);
+		    setHorizontalSpeedMeters(0);
+		}
 	    }
 	    newSlime.terminate();
 	}
+
 	if (getWorld() != null)
 	    setContactTiles();
 	else {
@@ -254,6 +249,8 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 
 	if (getHitpoints() == 0)
 	    isDead = true;
+
+	setTimeBeforeNextHitpointsChange(getTimeBeforeNextHitpointsChange() - dt);
     }
 
     private void changeSchoolHitPoints() {

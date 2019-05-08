@@ -62,7 +62,7 @@ public class Skullcab extends Plant implements VerticalMovement {
     /**
      * A variable to store the time since the last contact with Mazub
      */
-    private double timeSinceContactWithMazub = 0.6;
+    private double timeSinceContactWithMazub = 0.7;
 
     /**
      * Returns the time since the last contact with Mazub

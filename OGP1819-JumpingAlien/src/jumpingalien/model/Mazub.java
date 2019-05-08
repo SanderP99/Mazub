@@ -491,6 +491,8 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      *       0.5*getVerticalAcceleration()*dt*dt > getMaxYPosition()
      */
     private void updatePosition(double dt) {
+	if (!isStandingOnImpassableTerrain())
+	    setVerticalAcceleration(maxVerticalAcceleration);
 	final double newPosX = getXPositionActual() + getHorizontalSpeedMeters() * dt
 		+ 0.5 * getHorizontalAcceleration() * dt * dt;
 	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
@@ -594,28 +596,43 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 	    if (getHitpoints() == 0)
 		isDead = true;
 
-	    for (final Object object : getWorld().getAllObjects())
-		if (collidesWith((GameObject) object) && object instanceof Sneezewort
+	    for (final Object object : getWorld().getAllObjects()) {
+		if (object instanceof Skullcab)
+		    ((Skullcab) object)
+			    .setTimeSinceContactWithMazub(((Skullcab) object).getTimeSinceContactWithMazub() + dt);
+		if (newMazub.collidesWith((GameObject) object) && object instanceof Sneezewort
 			&& getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()) {
 		    changeHitPoints(50);
 		    ((GameObject) object).terminate();
-		} else if (collidesWith((GameObject) object) && object instanceof Plant
+		} else if (newMazub.collidesWith((GameObject) object) && object instanceof Plant
 			&& ((GameObject) object).isDead()) {
 		    changeHitPoints(-20);
 		    ((GameObject) object).terminate();
-		} else if (collidesWith((GameObject) object) && object instanceof Skullcab
+		}
+		if (newMazub.collidesWith((GameObject) object) && object instanceof Skullcab
 			&& getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()
 			&& ((Skullcab) object).getTimeSinceContactWithMazub() >= 0.6) {
 		    changeHitPoints(50);
 		    ((GameObject) object).changeHitPoints(-1);
+//		    if (((GameObject) object).getHitpoints() <= 0)
+
 		    ((Skullcab) object).setTimeSinceContactWithMazub(0.0);
 		}
+		if (newMazub.collidesWith((GameObject) object) && object instanceof Slime
+			&& !((GameObject) object).isDead() && getTimeBeforeNextHitpointsChange() <= 0) {
+		    changeHitPoints(-20);
+		    setTimeBeforeNextHitpointsChange(0.6);
+		}
+	    }
+	    newMazub.terminate();
 	} else {
 	    setXPositionActual(newPosX);
 	    setYPositionActual(newPosY);
 	    setHorizontalSpeedMeters(newSpeedX);
 	    setVerticalSpeedMeters(newSpeedY);
 	}
+	setTimeBeforeNextHitpointsChange(getTimeBeforeNextHitpointsChange() - dt);
+
     }
 
     private double getTimeBeforeSpriteChange() {
@@ -662,14 +679,14 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      */
     boolean isPlayer;
 
-    private double timeToBlockMovement;
+    private double timeBeforeNextHitpointsChange = 0;
 
-    private double getTimeToBlockMovement() {
-	return timeToBlockMovement;
+    private double getTimeBeforeNextHitpointsChange() {
+	return timeBeforeNextHitpointsChange;
     }
 
-    public void setTimeToBlockMovement(double dt) {
-	timeToBlockMovement = dt;
+    public void setTimeBeforeNextHitpointsChange(double dt) {
+	timeBeforeNextHitpointsChange = dt;
 
     }
 
