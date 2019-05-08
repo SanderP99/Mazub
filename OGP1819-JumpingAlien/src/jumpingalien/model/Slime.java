@@ -195,18 +195,6 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 			}
 			setHorizontalSpeedMeters(0);
 		    }
-		if (ImpassableTerrain.contains(
-			getWorld().getGeologicalFeature(newSlime.getXPositionPixel() + newSlime.getXsize() - 1,
-				newSlime.getYPositionPixel() + newSlime.getYsize() / 2))) {
-		    setOrientation(getOrientation() * -1);
-		    setHorizontalSpeedMeters(0);
-		}
-
-		if (ImpassableTerrain.contains(getWorld().getGeologicalFeature(newSlime.getXPositionPixel(),
-			newSlime.getYPositionPixel() + newSlime.getYsize() / 2))) {
-		    setOrientation(getOrientation() * -1);
-		    setHorizontalSpeedMeters(0);
-		}
 	    }
 	    newSlime.terminate();
 	}
