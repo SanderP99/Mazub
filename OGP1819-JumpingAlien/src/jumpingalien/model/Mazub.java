@@ -493,6 +493,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
     private void updatePosition(double dt) {
 	if (!isStandingOnImpassableTerrain())
 	    setVerticalAcceleration(maxVerticalAcceleration);
+
 	final double newPosX = getXPositionActual() + getHorizontalSpeedMeters() * dt
 		+ 0.5 * getHorizontalAcceleration() * dt * dt;
 	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
@@ -621,6 +622,11 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 		if (newMazub.collidesWith((GameObject) object) && object instanceof Slime
 			&& !((GameObject) object).isDead() && getTimeBeforeNextHitpointsChange() <= 0) {
 		    changeHitPoints(-20);
+		    setTimeBeforeNextHitpointsChange(0.6);
+		}
+		if (newMazub.collidesWith((GameObject) object) && object instanceof Shark
+			&& !((GameObject) object).isDead() && getTimeBeforeNextHitpointsChange() <= 0) {
+		    changeHitPoints(-50);
 		    setTimeBeforeNextHitpointsChange(0.6);
 		}
 	    }

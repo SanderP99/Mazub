@@ -101,9 +101,14 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
     @Override
     public void advanceTime(double dt, double timeStep) {
 	if (!isDead()) {
-	    while (dt > timeStep && !isDead() && !isTerminated()) {
-		updatePosition(timeStep);
-		dt -= timeStep;
+	    double nextTimeStep = timeStep;
+	    while (dt > nextTimeStep && !isDead() && !isTerminated()) {
+		updatePosition(nextTimeStep);
+		dt -= nextTimeStep;
+		if (getWorld() != null)
+		    nextTimeStep = getWorld().getTimeStep(this, dt);
+		else
+		    nextTimeStep = timeStep;
 	    }
 	    updatePosition(dt);
 	    dt = 0;
@@ -146,6 +151,7 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
     }
 
     private void updatePosition(double dt) {
+	setHorizontalAcceleration(0.7);
 	final double newPosX = getXPositionActual() + getOrientation() * Math.abs(getHorizontalSpeedMeters()) * dt
 		+ 0.5 * getOrientation() * Math.abs(getHorizontalAcceleration()) * dt * dt;
 	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
@@ -185,17 +191,18 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 			    setOrientation(getOrientation() * -1);
 			    if (getSchool().getAllSlimes().size() < slime.getSchool().getAllSlimes().size())
 				switchSchool(slime.getSchool());
-			    break;
+
 			}
+
 		if (getWorld().getPlayer() != null)
-		    if (newSlime.collidesWith(getWorld().getPlayer())) {
+		    if (newSlime.collidesWith(getWorld().getPlayer()))
 			if (getTimeBeforeNextHitpointsChange() <= 0) {
 			    changeHitPoints(-30);
 			    changeSchoolHitPoints();
 			    setTimeBeforeNextHitpointsChange(0.6);
 			}
-			setHorizontalSpeedMeters(0);
-		    }
+//			setHorizontalSpeedMeters(0);
+
 	    }
 	    newSlime.terminate();
 	}

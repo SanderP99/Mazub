@@ -1,5 +1,6 @@
 package jumpingalien.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jumpingalien.util.Sprite;
@@ -115,14 +116,19 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 
     private void stayInPosition(double dt) {
 	setSprite(getSpriteArray()[0]);
+	setHorizontalSpeedMeters(0);
+	setHorizontalAcceleration(0);
 	if (!isStandingOnImpassableTerrain() && !isUnderWater()) {
+	    setVerticalAcceleration(maxVerticalAcceleration);
 	    final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
 		    + 0.5 * getVerticalAcceleration() * dt * dt;
 	    final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
 	    setYPositionActual(newPosY);
 	    setVerticalSpeedMeters(newSpeedY);
-	} else
+	} else {
 	    setVerticalSpeedMeters(0);
+	    setVerticalAcceleration(0);
+	}
     }
 
     private double getTimeToRest() {
@@ -142,72 +148,61 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	return timeToMove;
     }
 
-    private void updatePosition(double dt) {
-	if (getOrientation() == -1)
-	    setSprite(getSpriteArray()[1]);
-	else if (getOrientation() == 1)
-	    setSprite(getSpriteArray()[2]);
-	else
-	    setSprite(getSpriteArray()[0]);
-	if (getTimeToMove() == 0.5 && (isInWater() || isStandingOnImpassableTerrain())) {
-	    setMaxSpeed();
-	    setVerticalSpeedMeters(2);
-	    if (isUnderWater())
-		setVerticalAcceleration(0.0);
-//		setVerticalSpeedMeters(0);
-	    else
-		setVerticalAcceleration(maxVerticalAcceleration);
-	} else if (isInWater())
-	    if (isUnderWater())
-		setVerticalAcceleration(0.0);
-	    else
-		setVerticalAcceleration(maxVerticalAcceleration);
-	else if (getTimeToMove() == 0.5 && !isUnderWater())
-	    setVerticalAcceleration(maxVerticalAcceleration);
-	else
-	    setVerticalAcceleration(maxVerticalAcceleration);
-
-	setHorizontalAcceleration(1.5 * getOrientation());
-
-	final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * getOrientation() * dt
-		+ 0.5 * getHorizontalAcceleration() * dt * dt;
-	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
-		+ 0.5 * getVerticalAcceleration() * dt * dt;
-	final double newSpeedX = Math.abs(getHorizontalSpeedMeters()) * getOrientation()
-		+ getHorizontalAcceleration() * dt;
-	final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
-	final int xSize = getXsize();
-	final int ySize = getYsize();
-
-	final Shark newSharkBoth = new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10,
-		0, 10, 0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
-
-	final boolean canPlaceBothShark = getWorld().canPlaceGameObjectAdvanceTime(newSharkBoth, this);
-
-	if (canPlaceBothShark) {
-	    setXPositionActual(newPosX);
-	    setYPositionActual(newPosY);
-	    setHorizontalSpeedMeters(newSpeedX);
-	    setVerticalSpeedMeters(newSpeedY);
-	} else {
-	    setHorizontalSpeedMeters(0);
-	    setVerticalSpeedMeters(0);
-	    setHorizontalAcceleration(0);
-	}
-//	else if (canPlaceXShark) {
-//	    setHorizontalSpeedMeters(newSpeedX);
+//    private void updatePosition(double dt) {
+//	if (getOrientation() == -1)
+//	    setSprite(getSpriteArray()[1]);
+//	else if (getOrientation() == 1)
+//	    setSprite(getSpriteArray()[2]);
+//	else
+//	    setSprite(getSpriteArray()[0]);
+//
+//	if (getTimeToMove() == 0.5 && (isInWater() || isStandingOnImpassableTerrain())) {
+//	    setMaxSpeed();
+//	    setVerticalSpeedMeters(2);
+//	    if (isUnderWater())
+//		setVerticalAcceleration(0.0);
+////		setVerticalSpeedMeters(0);
+//	    else
+//		setVerticalAcceleration(maxVerticalAcceleration);
+//	} else if (isInWater())
+//	    if (isUnderWater())
+//		setVerticalAcceleration(0.0);
+//	    else
+//		setVerticalAcceleration(maxVerticalAcceleration);
+//	else if (getTimeToMove() == 0.5 && !isUnderWater())
+//	    setVerticalAcceleration(maxVerticalAcceleration);
+//	else
+//	    setVerticalAcceleration(maxVerticalAcceleration);
+//
+//	setHorizontalAcceleration(1.5 * getOrientation());
+//
+//	final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * getOrientation() * dt
+//		+ 0.5 * getHorizontalAcceleration() * dt * dt;
+//	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
+//		+ 0.5 * getVerticalAcceleration() * dt * dt;
+//	final double newSpeedX = Math.abs(getHorizontalSpeedMeters()) * getOrientation()
+//		+ getHorizontalAcceleration() * dt;
+//	final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
+//	final int xSize = getXsize();
+//	final int ySize = getYsize();
+//
+//	final Shark newSharkBoth = new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10,
+//		0, 10, 0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
+//
+//	final boolean canPlaceBothShark = getWorld().canPlaceGameObjectAdvanceTime(newSharkBoth, this);
+//
+//	if (canPlaceBothShark) {
 //	    setXPositionActual(newPosX);
-//	    setVerticalSpeedMeters(0);
-//	} else if (canPlaceYShark) {
-//	    setVerticalSpeedMeters(newSpeedY);
 //	    setYPositionActual(newPosY);
-//	    setHorizontalSpeedMeters(0);
+//	    setHorizontalSpeedMeters(newSpeedX);
+//	    setVerticalSpeedMeters(newSpeedY);
 //	} else {
 //	    setHorizontalSpeedMeters(0);
 //	    setVerticalSpeedMeters(0);
 //	    setHorizontalAcceleration(0);
 //	}
-    }
+//
+//    }
 
     private double getTimeSinceDeath() {
 	return timeSinceDeath;
@@ -233,6 +228,9 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     }
 
     private boolean isJumping;
+    private boolean collidesWithWater;
+    private double timeOutOfWater = 0;
+    private double timeBeforeNextHitpointsChange = 0;
 
     private boolean isUnderWater() {
 	if (getWorld() == null)
@@ -256,5 +254,97 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	    if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
 		return true;
 	return false;
+    }
+
+    private void updatePosition(double dt) {
+	if (getOrientation() == -1)
+	    setSprite(getSpriteArray()[1]);
+	else if (getOrientation() == 1)
+	    setSprite(getSpriteArray()[2]);
+	else
+	    setSprite(getSpriteArray()[0]);
+
+	if (getTimeToMove() == 0.5) {
+	    if (isInWater() || isStandingOnImpassableTerrain())
+		setVerticalSpeedMeters(2.0);
+	    if (isUnderWater()) {
+		setVerticalAcceleration(0);
+		if (getVerticalSpeedMeters() < 0)
+		    setVerticalSpeedMeters(0);
+	    } else
+		setVerticalAcceleration(maxVerticalAcceleration);
+	} else if (isUnderWater()) {
+	    setVerticalAcceleration(0);
+	    if (getVerticalSpeedMeters() < 0)
+		setVerticalSpeedMeters(0);
+	} else
+	    setVerticalAcceleration(maxVerticalAcceleration);
+	setHorizontalAcceleration(1.5 * getOrientation());
+
+	final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * getOrientation() * dt
+		+ 0.5 * getHorizontalAcceleration() * dt * dt;
+	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
+		+ 0.5 * getVerticalAcceleration() * dt * dt;
+	final double newSpeedX = Math.abs(getHorizontalSpeedMeters()) * getOrientation()
+		+ getHorizontalAcceleration() * dt;
+	final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
+	final int xSize = getXsize();
+	final int ySize = getYsize();
+
+	final Shark newSharkBoth = new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10,
+		0, 10, 0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
+
+	if (getWorld().canPlaceGameObjectAdvanceTime(newSharkBoth, this)) {
+	    setXPositionActual(newPosX);
+	    setYPositionActual(newPosY);
+	    setHorizontalSpeedMeters(newSpeedX);
+	    setVerticalSpeedMeters(newSpeedY);
+	} else {
+	    setHorizontalSpeedMeters(0);
+	    setVerticalSpeedMeters(0);
+	    setHorizontalAcceleration(0);
+	}
+
+	List<int[]> tiles = new ArrayList<int[]>();
+	tiles = getAllOverlappingTiles();
+
+	collidesWithWater = false;
+
+	for (final int[] tile : tiles)
+	    if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
+		collidesWithWater = true;
+
+	if (!collidesWithWater)
+	    timeOutOfWater += dt;
+	else
+	    timeOutOfWater = 0;
+
+	if (timeOutOfWater >= 0.2) {
+	    timeOutOfWater -= 0.2;
+	    changeHitPoints(-6);
+	}
+
+	if (getWorld() != null)
+	    for (final Object gameObject : getWorld().getAllObjects()) {
+		if (newSharkBoth.collidesWith((GameObject) gameObject) && gameObject instanceof Slime)
+		    changeHitPoints(10);
+
+		if (newSharkBoth.collidesWith((GameObject) gameObject) && gameObject instanceof Mazub)
+		    if (getTimeBeforeNextHitpointsChange() <= 0) {
+			changeHitPoints(-50);
+			setTimeBeforeNextHitpointsChange(0.6);
+		    }
+	    }
+
+	setTimeBeforeNextHitpointsChange(getTimeBeforeNextHitpointsChange() - dt);
+	newSharkBoth.terminate();
+    }
+
+    private double getTimeBeforeNextHitpointsChange() {
+	return timeBeforeNextHitpointsChange;
+    }
+
+    private void setTimeBeforeNextHitpointsChange(double dt) {
+	timeBeforeNextHitpointsChange = dt;
     }
 }
