@@ -185,6 +185,7 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 			    setOrientation(getOrientation() * -1);
 			    if (getSchool().getAllSlimes().size() < slime.getSchool().getAllSlimes().size())
 				switchSchool(slime.getSchool());
+			    break;
 			}
 		if (getWorld().getPlayer() != null)
 		    if (newSlime.collidesWith(getWorld().getPlayer())) {
@@ -198,6 +199,11 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 	    }
 	    newSlime.terminate();
 	}
+
+	if (getOrientation() == 1)
+	    setSprite(getSpriteArray()[0]);
+	if (getOrientation() == -1)
+	    setSprite(getSpriteArray()[1]);
 
 	if (getWorld() != null)
 	    setContactTiles();

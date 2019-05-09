@@ -102,6 +102,13 @@ public interface IFacade {
     boolean isLateTeamSplit();
 
     /**
+     * Return a boolean indicating whether the code at stake has implemented the
+     * positioning of the world's window. This is especially meant for students that
+     * started in a team, but ended up working individually.
+     */
+    boolean hasImplementedWorldWindow();
+
+    /**
      * Create an instance of Mazub with given pixel position and given sprites. The
      * actual position of the new Mazub will correspond with the coordinates of the
      * left-bottom corner of the left-bottom pixel occupied by the new Mazub. The
@@ -540,7 +547,7 @@ public interface IFacade {
      * on their own may stick to the default implementation.
      */
     default Shark createShark(int pixelLeftX, int pixelBottomY, Sprite... sprites) throws ModelException {
-	if (isTeamSolution())
+	if (!isTeamSolution())
 	    return null;
 	throw new NoSuchMethodError("Teams of 2 students should implement this method.");
     }

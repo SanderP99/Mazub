@@ -308,13 +308,6 @@ public class Facade implements IFacade {
     }
 
     @Override
-    public Mazub getMazub(World world) throws ModelException {
-	if (world.getPlayer() == null)
-	    return null;
-	return world.getPlayer();
-    }
-
-    @Override
     public void addGameObject(Object object, World world) throws ModelException {
 	try {
 	    if (!((GameObject) object).isValidGameObject())
@@ -617,6 +610,19 @@ public class Facade implements IFacade {
     @Override
     public void cleanAllSlimeIds() {
 	Slime.cleanAllIds();
+
+    }
+
+    @Override
+    public boolean hasImplementedWorldWindow() {
+	return true;
+    }
+
+    @Override
+    public Mazub getMazub(World world) throws ModelException {
+	if (world.getPlayer() == null)
+	    return null;
+	return world.getPlayer();
 
     }
 
