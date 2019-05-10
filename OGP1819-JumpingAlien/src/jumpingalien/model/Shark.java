@@ -55,11 +55,11 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 		    }
 		if (getTimeToRest() > 0)
 		    if (getTimeToRest() >= timeStep) {
-			stayInPosition(timeStep);
+			rest(timeStep);
 			dt -= timeStep;
 			setTimeToRest(getTimeToRest() - timeStep);
 		    } else {
-			stayInPosition(getTimeToRest());
+			rest(getTimeToRest());
 			dt -= getTimeToRest();
 			setTimeToRest(0.0);
 			setTimeToMove(0.5);
@@ -77,18 +77,18 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 		dt -= getTimeToMove();
 		setTimeToMove(0);
 		setTimeToRest(1);
-		stayInPosition(dt);
+		rest(dt);
 		setTimeToRest(getTimeToRest() - dt);
 		dt = 0;
 
 	    }
 
 	    else if (getTimeToRest() > dt) {
-		stayInPosition(dt);
+		rest(dt);
 		setTimeToRest(getTimeToRest() - dt);
 		dt = 0;
 	    } else {
-		stayInPosition(dt);
+		rest(dt);
 		dt -= getTimeToRest();
 		setTimeToMove(0.5);
 		if (!switched)
@@ -114,7 +114,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 
     }
 
-    private void stayInPosition(double dt) {
+    private void rest(double dt) {
 	setSprite(getSpriteArray()[0]);
 	setHorizontalSpeedMeters(0);
 	setHorizontalAcceleration(0);

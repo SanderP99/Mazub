@@ -516,18 +516,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 		setVerticalSpeedMeters(0);
 		setHorizontalAcceleration(0);
 
-		if (getOrientation() == -1 && !isDucking())
-		    setSprite(getSpriteArray()[3]);
-		else if (getOrientation() == 0 && !isDucking())
-		    setSprite(getSpriteArray()[0]);
-		else if (!isDucking())
-		    setSprite(getSpriteArray()[2]);
-		else if (getOrientation() == -1)
-		    setSprite(getSpriteArray()[7]);
-		else if (getOrientation() == 1)
-		    setSprite(getSpriteArray()[6]);
-		else
-		    setSprite(getSpriteArray()[1]);
+		setCorrectSprite();
 
 		isMoving = false;
 		setHorizontalSpeedMeters(0);
@@ -541,96 +530,14 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 	    else
 		fall();
 
-	    List<int[]> tiles = new ArrayList<int[]>();
-	    tiles = getAllOverlappingTiles();
-	    collidesWithMagma = false;
-	    collidesWithWater = false;
-	    collidesWithGas = false;
-	    for (final int[] tile : tiles) {
-		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.MAGMA.getValue())
-		    collidesWithMagma = true;
-		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
-		    collidesWithWater = true;
-		if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.GAS.getValue())
-		    collidesWithGas = true;
-	    }
+	    updateHitpointsGeologicalFeatures(dt);
+	    updateHitpointsContactWithOtherGameObjects(dt, newMazub);
 
-	    if (collidesWithWater)
-		timeInWater += dt;
-	    else
-		timeInWater = 0;
-
-	    if (timeInWater >= 0.2) {
-		timeInWater -= 0.2;
-		if (!collidesWithMagma)
-		    changeHitPoints(-2);
-	    }
-	    if (collidesWithMagma) {
-		timeInWater = 0;
-		timeInGas = 0;
-		if (timeInMagma == 0) {
-		    changeHitPoints(-50);
-		    timeInMagma += dt;
-		} else
-		    timeInMagma += dt;
-		if (timeInMagma >= 0.2) {
-		    changeHitPoints(-50);
-		    timeInMagma -= 0.2;
-		}
-	    } else
-		timeInMagma = 0;
-	    if (collidesWithGas) {
-		timeInWater = 0;
-		if (timeInGas == 0) {
-		    if (!collidesWithMagma) {
-			changeHitPoints(-4);
-			timeInGas += dt;
-		    }
-		} else
-		    timeInGas += dt;
-		if (timeInGas >= 0.2) {
-		    if (!collidesWithMagma)
-			changeHitPoints(-4);
-		    timeInGas -= 0.2;
-		}
-	    }
 	    if (getHitpoints() == 0)
 		isDead = true;
 
-	    for (final Object object : getWorld().getAllObjects()) {
-		if (object instanceof Skullcab)
-		    ((Skullcab) object)
-			    .setTimeSinceContactWithMazub(((Skullcab) object).getTimeSinceContactWithMazub() + dt);
-		if (newMazub.collidesWith((GameObject) object) && object instanceof Sneezewort
-			&& getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()) {
-		    changeHitPoints(50);
-		    ((GameObject) object).terminate();
-		} else if (newMazub.collidesWith((GameObject) object) && object instanceof Plant
-			&& ((GameObject) object).isDead()) {
-		    changeHitPoints(-20);
-		    ((GameObject) object).terminate();
-		}
-		if (newMazub.collidesWith((GameObject) object) && object instanceof Skullcab
-			&& getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()
-			&& ((Skullcab) object).getTimeSinceContactWithMazub() >= 0.6) {
-		    changeHitPoints(50);
-		    ((GameObject) object).changeHitPoints(-1);
-//		    if (((GameObject) object).getHitpoints() <= 0)
-
-		    ((Skullcab) object).setTimeSinceContactWithMazub(0.0);
-		}
-		if (newMazub.collidesWith((GameObject) object) && object instanceof Slime
-			&& !((GameObject) object).isDead() && getTimeBeforeNextHitpointsChange() <= 0) {
-		    changeHitPoints(-20);
-		    setTimeBeforeNextHitpointsChange(0.6);
-		}
-		if (newMazub.collidesWith((GameObject) object) && object instanceof Shark
-			&& !((GameObject) object).isDead() && getTimeBeforeNextHitpointsChange() <= 0) {
-		    changeHitPoints(-50);
-		    setTimeBeforeNextHitpointsChange(0.6);
-		}
-	    }
 	    newMazub.terminate();
+
 	} else {
 	    setXPositionActual(newPosX);
 	    setYPositionActual(newPosY);
@@ -639,6 +546,113 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 	}
 	setTimeBeforeNextHitpointsChange(getTimeBeforeNextHitpointsChange() - dt);
 
+    }
+
+    private void setCorrectSprite() {
+	if (getOrientation() == -1 && !isDucking())
+	    setSprite(getSpriteArray()[3]);
+	else if (getOrientation() == 0 && !isDucking())
+	    setSprite(getSpriteArray()[0]);
+	else if (!isDucking())
+	    setSprite(getSpriteArray()[2]);
+	else if (getOrientation() == -1)
+	    setSprite(getSpriteArray()[7]);
+	else if (getOrientation() == 1)
+	    setSprite(getSpriteArray()[6]);
+	else
+	    setSprite(getSpriteArray()[1]);
+    }
+
+    private void updateHitpointsGeologicalFeatures(double dt) {
+	List<int[]> tiles = new ArrayList<int[]>();
+	tiles = getAllOverlappingTiles();
+	collidesWithMagma = false;
+	collidesWithWater = false;
+	collidesWithGas = false;
+	for (final int[] tile : tiles) {
+	    if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.MAGMA.getValue())
+		collidesWithMagma = true;
+	    if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
+		collidesWithWater = true;
+	    if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.GAS.getValue())
+		collidesWithGas = true;
+	}
+
+	if (collidesWithWater)
+	    timeInWater += dt;
+	else
+	    timeInWater = 0;
+
+	if (timeInWater >= 0.2) {
+	    timeInWater -= 0.2;
+	    if (!collidesWithMagma)
+		changeHitPoints(-2);
+	}
+	if (collidesWithMagma) {
+	    timeInWater = 0;
+	    timeInGas = 0;
+	    if (timeInMagma == 0) {
+		changeHitPoints(-50);
+		timeInMagma += dt;
+	    } else
+		timeInMagma += dt;
+	    if (timeInMagma >= 0.2) {
+		changeHitPoints(-50);
+		timeInMagma -= 0.2;
+	    }
+	} else
+	    timeInMagma = 0;
+	if (collidesWithGas) {
+	    timeInWater = 0;
+	    if (timeInGas == 0) {
+		if (!collidesWithMagma) {
+		    changeHitPoints(-4);
+		    timeInGas += dt;
+		}
+	    } else
+		timeInGas += dt;
+	    if (timeInGas >= 0.2) {
+		if (!collidesWithMagma)
+		    changeHitPoints(-4);
+		timeInGas -= 0.2;
+	    }
+	}
+    }
+
+    private void updateHitpointsContactWithOtherGameObjects(double dt, final Mazub mazub) {
+	for (final Object object : getWorld().getAllObjects()) {
+	    if (object instanceof Skullcab)
+		((Skullcab) object)
+			.setTimeSinceContactWithMazub(((Skullcab) object).getTimeSinceContactWithMazub() + dt);
+	    if (mazub.collidesWith((GameObject) object) && object instanceof Sneezewort
+		    && getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()) {
+		changeHitPoints(50);
+		((GameObject) object).terminate();
+	    } else if (mazub.collidesWith((GameObject) object) && object instanceof Plant
+		    && ((GameObject) object).isDead()) {
+		changeHitPoints(-20);
+		((GameObject) object).terminate();
+	    }
+	    if (mazub.collidesWith((GameObject) object) && object instanceof Skullcab
+		    && getHitpoints() != getMaxHitpoints() && !((GameObject) object).isDead()
+		    && ((Skullcab) object).getTimeSinceContactWithMazub() >= 0.6) {
+		changeHitPoints(50);
+		((GameObject) object).changeHitPoints(-1);
+//		    if (((GameObject) object).getHitpoints() <= 0)
+
+		((Skullcab) object).setTimeSinceContactWithMazub(0.0);
+	    }
+	    if (mazub.collidesWith((GameObject) object) && object instanceof Slime && !((GameObject) object).isDead()
+		    && getTimeBeforeNextHitpointsChange() <= 0) {
+		changeHitPoints(-20);
+		setTimeBeforeNextHitpointsChange(0.6);
+	    }
+	    if (mazub.collidesWith((GameObject) object) && object instanceof Shark && !((GameObject) object).isDead()
+		    && getTimeBeforeNextHitpointsChange() <= 0) {
+		changeHitPoints(-50);
+		setTimeBeforeNextHitpointsChange(0.6);
+	    }
+	}
     }
 
     private double getTimeBeforeSpriteChange() {

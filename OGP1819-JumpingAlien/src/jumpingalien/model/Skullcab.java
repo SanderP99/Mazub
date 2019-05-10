@@ -92,9 +92,7 @@ public class Skullcab extends Plant implements VerticalMovement {
 			    final double newPosY = getYPositionActual() - Math.abs(getVerticalSpeedMeters()) * timeStep;
 			    final double actualPosY = (double) getBoundaries()[0] / 100
 				    + Math.abs(newPosY - (double) getBoundaries()[0] / 100);
-			    setYPositionActual(actualPosY);
-			    checkCollision(timeStep);
-			    setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
+			    updatePosition(timeStep, actualPosY);
 
 			    setOrientation(1);
 			    setSprite(getSpriteArray()[0]);
@@ -113,9 +111,7 @@ public class Skullcab extends Plant implements VerticalMovement {
 			final double newPosY = getYPositionActual() + Math.abs(getVerticalSpeedMeters()) * timeStep;
 			final double actualPosY = (double) getBoundaries()[1] / 100
 				- Math.abs(newPosY - (double) getBoundaries()[1] / 100);
-			setYPositionActual(actualPosY);
-			checkCollision(timeStep);
-			setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
+			updatePosition(timeStep, actualPosY);
 
 			setOrientation(-1);
 			setSprite(getSpriteArray()[1]);
@@ -186,6 +182,12 @@ public class Skullcab extends Plant implements VerticalMovement {
 	    terminate();
 	}
 
+    }
+
+    private void updatePosition(double timeStep, final double actualPosY) {
+	setYPositionActual(actualPosY);
+	checkCollision(timeStep);
+	setTimeSinceContactWithMazub(getTimeSinceContactWithMazub() + timeStep);
     }
 
     private void checkCollision(double timeStep) {
