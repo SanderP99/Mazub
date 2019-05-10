@@ -117,7 +117,7 @@ public abstract class GameObject {
      * 
      * @param sprite The sprite to check
      */
-    public boolean isValidSprite(Sprite sprite) {
+    public static boolean isValidSprite(Sprite sprite) {
 	return sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
 		&& sprite.canHaveAsName(sprite.getName());
     }
@@ -336,7 +336,7 @@ public abstract class GameObject {
      * 
      * @param X_pos The coordinate to check in pixels.
      */
-    public boolean isValidPixelXPosition(int X_pos) {
+    public static boolean isValidPixelXPosition(int X_pos) {
 	return X_pos >= 0 && X_pos <= Double.POSITIVE_INFINITY;
     }
 
@@ -345,7 +345,7 @@ public abstract class GameObject {
      * 
      * @param X_pos The coordinate to check in meters.
      */
-    public boolean isValidActualXPosition(double X_pos) {
+    public static boolean isValidActualXPosition(double X_pos) {
 	return X_pos <= Double.POSITIVE_INFINITY && X_pos >= 0;
     }
 
@@ -389,7 +389,7 @@ public abstract class GameObject {
      * 
      * @param Y_pos The given coordinate to check in meters.
      */
-    public boolean isValidActualYPosition(double Y_pos) {
+    public static boolean isValidActualYPosition(double Y_pos) {
 	return Y_pos <= Double.POSITIVE_INFINITY && Y_pos >= -0.01;
     }
 
@@ -398,7 +398,7 @@ public abstract class GameObject {
      * 
      * @param Y_pos The given coordinate to check in pixels.
      */
-    public boolean isValidPixelYPosition(int Y_pos) {
+    public static boolean isValidPixelYPosition(int Y_pos) {
 	return Y_pos >= 0 && Y_pos <= Double.POSITIVE_INFINITY;
     }
 
@@ -539,7 +539,7 @@ public abstract class GameObject {
      * 
      * @param orientation The orientation to check
      */
-    public boolean isValidOrientation(int orientation) {
+    public static boolean isValidOrientation(int orientation) {
 	return orientation == -1 || orientation == 0 || orientation == 1;
 
     }
@@ -1028,7 +1028,5 @@ public abstract class GameObject {
     private static Set<Long> getAllIDs() {
 	return allIDs;
     }
-
-    private double timeToBlockMovement;
 
 }

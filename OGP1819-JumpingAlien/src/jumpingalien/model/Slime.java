@@ -41,8 +41,8 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 	addID(id);
     }
 
-    private void addID(long id2) {
-	GameObject.allIDs.add(id2);
+    private static void addID(long id) {
+	GameObject.allIDs.add(id);
 
     }
 
@@ -106,7 +106,7 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 		updatePosition(nextTimeStep);
 		dt -= nextTimeStep;
 		if (getWorld() != null)
-		    nextTimeStep = getWorld().getTimeStep(this, dt);
+		    nextTimeStep = World.getTimeStep(this, dt);
 		else
 		    nextTimeStep = timeStep;
 	    }

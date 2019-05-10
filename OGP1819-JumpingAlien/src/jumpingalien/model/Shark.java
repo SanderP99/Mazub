@@ -148,86 +148,10 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	return timeToMove;
     }
 
-//    private void updatePosition(double dt) {
-//	if (getOrientation() == -1)
-//	    setSprite(getSpriteArray()[1]);
-//	else if (getOrientation() == 1)
-//	    setSprite(getSpriteArray()[2]);
-//	else
-//	    setSprite(getSpriteArray()[0]);
-//
-//	if (getTimeToMove() == 0.5 && (isInWater() || isStandingOnImpassableTerrain())) {
-//	    setMaxSpeed();
-//	    setVerticalSpeedMeters(2);
-//	    if (isUnderWater())
-//		setVerticalAcceleration(0.0);
-////		setVerticalSpeedMeters(0);
-//	    else
-//		setVerticalAcceleration(maxVerticalAcceleration);
-//	} else if (isInWater())
-//	    if (isUnderWater())
-//		setVerticalAcceleration(0.0);
-//	    else
-//		setVerticalAcceleration(maxVerticalAcceleration);
-//	else if (getTimeToMove() == 0.5 && !isUnderWater())
-//	    setVerticalAcceleration(maxVerticalAcceleration);
-//	else
-//	    setVerticalAcceleration(maxVerticalAcceleration);
-//
-//	setHorizontalAcceleration(1.5 * getOrientation());
-//
-//	final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * getOrientation() * dt
-//		+ 0.5 * getHorizontalAcceleration() * dt * dt;
-//	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
-//		+ 0.5 * getVerticalAcceleration() * dt * dt;
-//	final double newSpeedX = Math.abs(getHorizontalSpeedMeters()) * getOrientation()
-//		+ getHorizontalAcceleration() * dt;
-//	final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
-//	final int xSize = getXsize();
-//	final int ySize = getYsize();
-//
-//	final Shark newSharkBoth = new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10,
-//		0, 10, 0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
-//
-//	final boolean canPlaceBothShark = getWorld().canPlaceGameObjectAdvanceTime(newSharkBoth, this);
-//
-//	if (canPlaceBothShark) {
-//	    setXPositionActual(newPosX);
-//	    setYPositionActual(newPosY);
-//	    setHorizontalSpeedMeters(newSpeedX);
-//	    setVerticalSpeedMeters(newSpeedY);
-//	} else {
-//	    setHorizontalSpeedMeters(0);
-//	    setVerticalSpeedMeters(0);
-//	    setHorizontalAcceleration(0);
-//	}
-//
-//    }
-
     private double getTimeSinceDeath() {
 	return timeSinceDeath;
     }
 
-    private void startJump() {
-	setMaxSpeed();
-	setVerticalSpeedMeters(maxVerticalSpeed);
-	setVerticalAcceleration(maxVerticalAcceleration);
-	isJumping = true;
-    }
-
-    private void endJump() {
-	if (isJumping()) {
-	    if (getVerticalSpeedMeters() > 0)
-		setVerticalSpeedMeters(0.0);
-	    isJumping = false;
-	}
-    }
-
-    private boolean isJumping() {
-	return isJumping;
-    }
-
-    private boolean isJumping;
     private boolean collidesWithWater;
     private double timeOutOfWater = 0;
     private double timeBeforeNextHitpointsChange = 0;

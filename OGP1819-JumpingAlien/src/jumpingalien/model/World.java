@@ -1,6 +1,8 @@
 package jumpingalien.model;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
@@ -119,7 +121,7 @@ public class World {
     @Basic
     @Raw
     @Immutable
-    public int getVisibleWindowHeight() {
+    public static int getVisibleWindowHeight() {
 	return visibleWindowHeight;
     }
 
@@ -130,7 +132,7 @@ public class World {
      * 
      * @post ... | new.visibleWindowHeight == visibleWindowHeight
      */
-    private void setVisibleWindowHeight(int visibleWindowHeight) {
+    private static void setVisibleWindowHeight(int visibleWindowHeight) {
 	World.visibleWindowHeight = visibleWindowHeight;
 
     }
@@ -164,7 +166,7 @@ public class World {
     @Basic
     @Raw
     @Immutable
-    public int getVisibleWindowWidth() {
+    public static int getVisibleWindowWidth() {
 	return visibleWindowWidth;
     }
 
@@ -175,7 +177,7 @@ public class World {
      * 
      * @post ... | new.visibleWindowWidth == visibleWindowWidth
      */
-    private void setVisibleWindowWidth(int visibleWindowWidth) {
+    private static void setVisibleWindowWidth(int visibleWindowWidth) {
 	World.visibleWindowWidth = visibleWindowWidth;
 
     }
@@ -244,7 +246,7 @@ public class World {
      * Returns the maximum number of objects in the world
      */
     @Basic
-    private int getMaxNbOfObjects() {
+    private static int getMaxNbOfObjects() {
 	return maxNbOfObjects;
     }
 
@@ -255,7 +257,7 @@ public class World {
      * 
      * @post this.maxNbOfObjects == maxNbOfObjects
      */
-    private void setMaxNbOfObjects(int maxNbOfObjects) {
+    private static void setMaxNbOfObjects(int maxNbOfObjects) {
 	World.maxNbOfObjects = maxNbOfObjects;
     }
 
@@ -450,7 +452,7 @@ public class World {
      * 
      * @param geologicalFeature The geological feature to set
      */
-    private boolean isValidGeologicalFeature(int geologicalFeature) {
+    private static boolean isValidGeologicalFeature(int geologicalFeature) {
 //	return geologicalFeature == AIR || geologicalFeature == SOLID_GROUND || geologicalFeature == WATER
 //		|| geologicalFeature == MAGMA || geologicalFeature == GAS || geologicalFeature == ICE;
 
@@ -603,7 +605,14 @@ public class World {
 	return true;
     }
 
-    public boolean canPlaceGameObjectAdvanceTime(GameObject gameObject, GameObject other) {
+    public <T> boolean canPlaceGameObjectAdvanceTime(T Object, GameObject other) {
+	GameObject gameObject;
+	try {
+	    gameObject = (GameObject) Object;
+	} catch (final ClassCastException e) {
+	    throw new IllegalArgumentException();
+	}
+
 	if (!(gameObject instanceof Plant)) {
 	    for (final Object object : getAllObjects())
 		if (gameObject.collidesWith((GameObject) object) && !(object instanceof Plant) && gameObject != object
@@ -804,7 +813,7 @@ public class World {
      * @param gameObject The gameObject to advance time for
      * @param deltaT     The total time to advance
      */
-    public double getTimeStep(GameObject gameObject, double deltaT) {
+    public static double getTimeStep(GameObject gameObject, double deltaT) {
 	final double velocityRoot = Math.sqrt(
 		Math.pow(gameObject.getHorizontalSpeedMeters(), 2) + Math.pow(gameObject.getVerticalSpeedMeters(), 2));
 	final double accelerationRoot = Math.sqrt(Math.pow(gameObject.getHorizontalAcceleration(), 2)
@@ -936,6 +945,30 @@ public class World {
      */
     @Basic
     public Set<School> getAllSchools() {
-	return allSchools;
+	final Set<School> allTheSchools = new HashSet<>();
+
+	getIteratorAllSchools().forEachRemaining((school) -> allTheSchools.add(school));
+
+	return allTheSchools;
+    }
+
+    private Iterator<School> getIteratorAllSchools() {
+	return new Iterator<School>() {
+
+	    private int index = 0;
+
+	    @Override
+	    public boolean hasNext() {
+		return index < allSchools.size();
+	    }
+
+	    @Override
+	    public School next() {
+		if (!hasNext())
+		    throw new NoSuchElementException();
+		index += 1;
+		return (School) allSchools.toArray()[index - 1];
+	    }
+	};
     }
 }

@@ -92,7 +92,7 @@ public abstract class Plant extends GameObject {
      * 
      * @param sprites The array to check
      */
-    public boolean isValidSpriteArray(Sprite... sprites) {
+    public static boolean isValidSpriteArray(Sprite... sprites) {
 	return sprites.length == 2;
     }
 

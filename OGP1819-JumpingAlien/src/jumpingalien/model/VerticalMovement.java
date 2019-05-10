@@ -4,8 +4,6 @@ public interface VerticalMovement {
 
     public void setYPositionActual(double Y_pos);
 
-    public boolean isValidActualYPosition(double Y_pos);
-
     public int getYPositionPixel();
 
     public double getYPositionActual();
@@ -13,8 +11,6 @@ public interface VerticalMovement {
     public int getMaxYPosition();
 
     public void setOrientation(int orientation);
-
-    public boolean isValidOrientation(int orientation);
 
     public int getOrientation();
 

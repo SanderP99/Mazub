@@ -655,7 +655,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * 
      * @param sprites The array to check
      */
-    public boolean isValidSpriteArray(Sprite... sprites) {
+    public static boolean isValidSpriteArray(Sprite... sprites) {
 	return sprites.length >= 10 && sprites.length % 2 == 0;
     }
 
@@ -664,10 +664,11 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * either right or left)
      * 
      * @param sprites The array to get the loop length from
+     * 
      * @throws RuntimeException When the spriteArray is not valid |
      *                          !isValidSpriteArray(sprites)
      */
-    private int getSpriteLoopSize(Sprite... sprites) throws RuntimeException {
+    private static int getSpriteLoopSize(Sprite... sprites) throws RuntimeException {
 	if (!isValidSpriteArray(sprites))
 	    throw new RuntimeException();
 	return (sprites.length - 10) / 2;
