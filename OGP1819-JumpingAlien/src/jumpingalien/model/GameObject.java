@@ -1029,4 +1029,13 @@ public abstract class GameObject {
 	return allIDs;
     }
 
+    /**
+     * Checks if the array of sprites is valid for the GameObject
+     * 
+     * @param sprites The sprites of the GameObject
+     * 
+     * @post ... | for sprite in sprites : sprite.isValidSprite()
+     */
+    public abstract boolean isValidSpriteArray(Sprite[] sprites);
+
 }

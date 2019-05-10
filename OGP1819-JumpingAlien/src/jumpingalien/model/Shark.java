@@ -31,6 +31,8 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
+	if (!isValidSpriteArray(sprites))
+	    throw new RuntimeException();
 	setOrientation(-1);
 	setTimeToMove(0.5);
 	setTimeToRest(0);
@@ -270,5 +272,13 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 
     private void setTimeBeforeNextHitpointsChange(double dt) {
 	timeBeforeNextHitpointsChange = dt;
+    }
+
+    /**
+     * @post sprites.lenght == 3
+     */
+    @Override
+    public boolean isValidSpriteArray(Sprite[] sprites) {
+	return sprites.length == 3;
     }
 }

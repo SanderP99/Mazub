@@ -34,6 +34,8 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
 		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
 		verticalAcceleration, tempObject, sprites);
+	if (!isValidSpriteArray(sprites))
+	    throw new RuntimeException();
 	this.id = id;
 	setSchool(school);
 	setOrientation(1);
@@ -275,5 +277,13 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 		contactWithWater = true;
 	}
 
+    }
+
+    /**
+     * @post ... | sprites.length == 2
+     */
+    @Override
+    public boolean isValidSpriteArray(Sprite[] sprites) {
+	return sprites.length == 2;
     }
 }

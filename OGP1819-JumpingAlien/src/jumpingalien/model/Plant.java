@@ -56,6 +56,8 @@ public abstract class Plant extends GameObject {
 		maxHorizontalSpeedDucking, minHorizontalSpeed, 0.5, horizontalAcceleration, verticalAcceleration, false,
 		sprites);
 
+	if (!isValidSpriteArray(sprites))
+	    throw new RuntimeException();
     }
 
     /**
@@ -88,11 +90,10 @@ public abstract class Plant extends GameObject {
     public abstract int[] getBoundaries();
 
     /**
-     * Returns whether an array of sprites has valid dimensions
-     * 
-     * @param sprites The array to check
+     * @post sprites.length == 2
      */
-    public static boolean isValidSpriteArray(Sprite... sprites) {
+    @Override
+    public boolean isValidSpriteArray(Sprite[] sprites) {
 	return sprites.length == 2;
     }
 
