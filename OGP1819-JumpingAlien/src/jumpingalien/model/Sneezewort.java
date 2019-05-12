@@ -57,6 +57,15 @@ public class Sneezewort extends Plant implements HorizontalMovement {
      */
     final int[] boundaries;
 
+    /**
+     * Returns the boundaries in which the plant will move.
+     */
+    @Override
+    @Immutable
+    public int[] getBoundaries() {
+        return boundaries;
+    }
+
     @Override
     public void advanceTime(double dt, double timeStep) {
 	if (!isDead()) {
@@ -136,14 +145,5 @@ public class Sneezewort extends Plant implements HorizontalMovement {
 	    terminate();
 	}
 
-    }
-
-    /**
-     * Returns the boundaries in which the plant will move.
-     */
-    @Override
-    @Immutable
-    public int[] getBoundaries() {
-	return boundaries;
     }
 }

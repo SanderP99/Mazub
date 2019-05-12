@@ -210,6 +210,11 @@ public class World {
     }
 
     /**
+     * Variable registering the visibleWindowPosition of this World.
+     */
+    private int[] visibleWindowPosition;
+
+    /**
      * Return the visibleWindowPosition of this World.
      */
     @Basic
@@ -238,9 +243,9 @@ public class World {
     }
 
     /**
-     * Variable registering the visibleWindowPosition of this World.
+     * A variable to store the maximum number of objects
      */
-    private int[] visibleWindowPosition;
+    private static int maxNbOfObjects;
 
     /**
      * Returns the maximum number of objects in the world
@@ -262,9 +267,9 @@ public class World {
     }
 
     /**
-     * A variable to store the maximum number of objects
+     * A variable to store the width of the world
      */
-    private static int maxNbOfObjects;
+    private int worldSizeX;
 
     /**
      * Returns the horizontal size of the world in pixels
@@ -291,9 +296,9 @@ public class World {
     }
 
     /**
-     * A variable to store the width of the world
+     * A variable to store the height of the world
      */
-    private int worldSizeX;
+    private int worldSizeY;
 
     /**
      * Returns the vertical size of the world in pixels
@@ -320,9 +325,9 @@ public class World {
     }
 
     /**
-     * A variable to store the height of the world
+     * A variable to store the length of the tiles.
      */
-    private int worldSizeY;
+    private int tileLength;
 
     /**
      * Returns the length of a tile in pixels
@@ -349,9 +354,9 @@ public class World {
     }
 
     /**
-     * A variable to store the length of the tiles.
+     * A variable to store the target tile x coordinate
      */
-    private int tileLength;
+    private int targetTileX;
 
     /**
      * Returns the tile x coordinate of the target tile.
@@ -376,9 +381,9 @@ public class World {
     }
 
     /**
-     * A variable to store the target tile x coordinate
+     * A variable to store the target tile y coordinate
      */
-    private int targetTileX;
+    private int targetTileY;
 
     /**
      * Returns the tile y coordinate of the target tile.
@@ -403,20 +408,20 @@ public class World {
     }
 
     /**
-     * A variable to store the target tile y coordinate
-     */
-    private int targetTileY;
-
-    /**
      * Returns if the given position is a position in the target tile
      * 
      * @param pixelX The x coordinate
      * @param pixelY The y coordinate
      */
     public boolean isPositionInTargetTile(int pixelX, int pixelY) {
-	return pixelX >= getTargetTileX() && pixelX < getTargetTileX() + getTileLength() && pixelY >= getTargetTileY()
-		&& pixelY < getTargetTileY() + getTileLength();
+        return pixelX >= getTargetTileX() && pixelX < getTargetTileX() + getTileLength() && pixelY >= getTargetTileY()
+        	&& pixelY < getTargetTileY() + getTileLength();
     }
+
+    /**
+     * A boolean to store if the given world is terminated
+     */
+    private boolean isTerminated;
 
     /**
      * Check whether this world is terminated.
@@ -441,11 +446,6 @@ public class World {
 	for (final School school : getAllSchools())
 	    school.terminate();
     }
-
-    /**
-     * A boolean to store if the given world is terminated
-     */
-    private boolean isTerminated;
 
     /**
      * Returns whether the geological feature to set is valid

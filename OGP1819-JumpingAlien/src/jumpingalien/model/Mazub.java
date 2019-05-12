@@ -40,6 +40,20 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * @param maxSpeedDuckingMeters The maximal horizontal speed of Mazub while
      *                              ducking given in meters/second
      * @param sprites               The sprites needed to represent Mazub
+     * 
+     * @pre ... | sprites.length >= 10
+     * @pre ... | sprites.length % 2 == 0
+     * 
+     * @post ... | isDucking == false
+     * @post ... | timeInWater == 0
+     * @post ... | timeInMagma == 0
+     * @post ... | timeInGas == 0
+     * @post ... | timeSinceDeath == 0
+     * @post ... | getTimeBeforeSpriteChange() == frameRate
+     * 
+     * @effect ... | super(X_pos, Y_pos, X_size, Y_size, 100, 500,
+     *         maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0,
+     *         0.9, -10.0, advanceTime, sprites)
      */
     public Mazub(double X_pos, double Y_pos, int X_size, int Y_size, double horizontalSpeedMeters,
 	    double minSpeedMeters, double maxSpeedRunningMeters, double maxSpeedDuckingMeters, boolean advanceTime,
@@ -73,6 +87,20 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * @param maxSpeedDuckingMeters The maximal horizontal speed of Mazub while
      *                              ducking given in meters/second
      * @param sprites               The sprites needed to represent Mazub
+     * 
+     * @pre ... | sprites.length >= 10
+     * @pre ... | sprites.length % 2 == 0
+     * 
+     * @post ... | isDucking == false
+     * @post ... | timeInWater == 0
+     * @post ... | timeInMagma == 0
+     * @post ... | timeInGas == 0
+     * @post ... | timeSinceDeath == 0
+     * @post ... | getTimeBeforeSpriteChange() == frameRate
+     * 
+     * @effect ... | super(X_pos, Y_pos, X_size, Y_size, 100, 500,
+     *         maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0,
+     *         0.9, -10.0, advanceTime, sprites)
      */
     public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, double minSpeedMeters,
 	    double maxSpeedRunningMeters, double maxSpeedDuckingMeters, boolean advanceTime, Sprite... sprites) {
@@ -670,6 +698,10 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      */
     @Override
     public boolean isValidSpriteArray(Sprite[] sprites) {
+	for (final Sprite sprite : sprites)
+	    if (!sprite.canHaveAsHeight(sprite.getHeight()) || !sprite.canHaveAsName(sprite.getName())
+		    || !sprite.canHaveAsWidth(sprite.getWidth()))
+		return false;
 	return sprites.length >= 10 && sprites.length % 2 == 0;
     }
 

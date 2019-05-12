@@ -19,11 +19,35 @@ import jumpingalien.util.Sprite;
  */
 public class Shark extends GameObject implements HorizontalMovement, VerticalMovement {
 
-    private double timeSinceDeath;
-    private double timeToRest;
-    private double timeToMove;
-    private boolean switched;
-
+    /**
+     * Creates a new shark
+     * 
+     * @param pixelLeftX                The x coordinate of the most left pixel
+     * @param pixelBottomY              The y coordinate of the bottom most pixel
+     * @param pixelSizeX                The width of the shark in pixels
+     * @param pixelSizeY                The height of the shark in pixels
+     * @param hitpoints                 The hitpoints of the shark
+     * @param maxHitpoints              The maximum hitpoints of the shark
+     * @param maxHorizontalSpeedRunning The maximum horizontalSpeed of the shark
+     * @param maxHorizontalSpeedDucking The maximum horizontalSpeed of the shark
+     * @param minHorizontalSpeed        The minimum horizontalSpeed of the shark
+     * @param maxVerticalSpeed          The maximum verticalSpeed of the shark
+     * @param horizontalAcceleration    The horizontal acceleration of the shark
+     * @param verticalAcceleration      The vertical acceleration of the shark
+     * @param tempObject                A boolean to store if the object is a
+     *                                  temporary object
+     * @param sprites                   The sprites of the shark
+     * 
+     * @effect super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints,
+     *         maxHitpoints, maxHorizontalSpeedRunning, maxHorizontalSpeedDucking,
+     *         minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
+     *         verticalAcceleration, tempObject, sprites)
+     * @effect setOrientation(1)
+     * @effect setTimeToMove(0.5)
+     * @effect setTimeToRest(0.0)
+     * 
+     * @pre ... | sprites.length == 3
+     */
     public Shark(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
 	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, double horizontalSpeed,
@@ -42,7 +66,6 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     @Override
     public void advanceTime(double dt, double timeStep) {
 	if (!isDead()) {
-	    switched = false;
 	    while (dt >= timeStep && !isDead() && !isTerminated()) {
 		if (getTimeToMove() > 0)
 		    if (getTimeToMove() > timeStep) {
@@ -66,7 +89,6 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 			setTimeToRest(0.0);
 			setTimeToMove(0.5);
 			setOrientation(getOrientation() * -1);
-			switched = true;
 		    }
 	    }
 	    if (getTimeToMove() > dt) {
@@ -93,8 +115,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 		rest(dt);
 		dt -= getTimeToRest();
 		setTimeToMove(0.5);
-		if (!switched)
-		    setOrientation(getOrientation() * -1);
+		setOrientation(getOrientation() * -1);
 		setTimeToRest(0);
 		updatePosition(dt);
 		setTimeToMove(getTimeToMove() - dt);
@@ -116,6 +137,90 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 
     }
 
+    private void updatePosition(double dt) {
+        if (getOrientation() == -1)
+            setSprite(getSpriteArray()[1]);
+        else if (getOrientation() == 1)
+            setSprite(getSpriteArray()[2]);
+        else
+            setSprite(getSpriteArray()[0]);
+    
+        if (getTimeToMove() == 0.5) {
+            if (isInWater() || isStandingOnImpassableTerrain())
+        	setVerticalSpeedMeters(2.0);
+            if (isUnderWater()) {
+        	setVerticalAcceleration(0);
+        	if (getVerticalSpeedMeters() < 0)
+        	    setVerticalSpeedMeters(0);
+            } else
+        	setVerticalAcceleration(maxVerticalAcceleration);
+        } else if (isUnderWater()) {
+            setVerticalAcceleration(0);
+            if (getVerticalSpeedMeters() < 0)
+        	setVerticalSpeedMeters(0);
+        } else
+            setVerticalAcceleration(maxVerticalAcceleration);
+        setHorizontalAcceleration(1.5 * getOrientation());
+    
+        final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * getOrientation() * dt
+        	+ 0.5 * getHorizontalAcceleration() * dt * dt;
+        final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
+        	+ 0.5 * getVerticalAcceleration() * dt * dt;
+        final double newSpeedX = Math.abs(getHorizontalSpeedMeters()) * getOrientation()
+        	+ getHorizontalAcceleration() * dt;
+        final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
+        final int xSize = getXsize();
+        final int ySize = getYsize();
+    
+        final Shark newSharkBoth = new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10,
+        	0, 10, 0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
+    
+        if (getWorld().canPlaceGameObjectAdvanceTime(newSharkBoth, this)) {
+            setXPositionActual(newPosX);
+            setYPositionActual(newPosY);
+            setHorizontalSpeedMeters(newSpeedX);
+            setVerticalSpeedMeters(newSpeedY);
+        } else {
+            setHorizontalSpeedMeters(0);
+            setVerticalSpeedMeters(0);
+            setHorizontalAcceleration(0);
+        }
+    
+        List<int[]> tiles = new ArrayList<int[]>();
+        tiles = getAllOverlappingTiles();
+    
+        collidesWithWater = false;
+    
+        for (final int[] tile : tiles)
+            if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
+        	collidesWithWater = true;
+    
+        if (!collidesWithWater)
+            timeOutOfWater += dt;
+        else
+            timeOutOfWater = 0;
+    
+        if (timeOutOfWater >= 0.2) {
+            timeOutOfWater -= 0.2;
+            changeHitPoints(-6);
+        }
+    
+        if (getWorld() != null)
+            for (final Object gameObject : getWorld().getAllObjects()) {
+        	if (newSharkBoth.collidesWith((GameObject) gameObject) && gameObject instanceof Slime)
+        	    changeHitPoints(10);
+    
+        	if (newSharkBoth.collidesWith((GameObject) gameObject) && gameObject instanceof Mazub)
+        	    if (getTimeBeforeNextHitpointsChange() <= 0) {
+        		changeHitPoints(-50);
+        		setTimeBeforeNextHitpointsChange(0.6);
+        	    }
+            }
+    
+        setTimeBeforeNextHitpointsChange(getTimeBeforeNextHitpointsChange() - dt);
+        newSharkBoth.terminate();
+    }
+
     private void rest(double dt) {
 	setSprite(getSpriteArray()[0]);
 	setHorizontalSpeedMeters(0);
@@ -133,31 +238,78 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	}
     }
 
+    /**
+     * A variable to store how long the shark needs to rest
+     */
+    private double timeToRest;
+
+    /**
+     * Returns the time left to rest
+     */
     private double getTimeToRest() {
 	return timeToRest;
     }
 
+    /**
+     * Sets the time left to rest
+     * 
+     * @param d The time to set
+     * 
+     * @post ... | new.getTimeToRest() == d
+     */
     private void setTimeToRest(double d) {
 	timeToRest = d;
 
     }
 
+    /**
+     * A variable to store how long the shark needs to move
+     */
+    private double timeToMove;
+
+    /**
+     * Returns the time left to move
+     */
+    private double getTimeToMove() {
+        return timeToMove;
+    }
+
+    /**
+     * Sets the time left to move
+     * 
+     * @param d The time to set
+     * 
+     * @post ... | new.getTimeToMove() == d
+     */
     private void setTimeToMove(double d) {
 	timeToMove = d;
     }
 
-    private double getTimeToMove() {
-	return timeToMove;
-    }
+    /**
+     * A variable to store the time since the shark has died
+     */
+    private double timeSinceDeath;
 
+    /**
+     * Returns the time since the death of the shark
+     */
     private double getTimeSinceDeath() {
 	return timeSinceDeath;
     }
 
+    /**
+     * A boolean to store if the shark is in contact with water
+     */
     private boolean collidesWithWater;
-    private double timeOutOfWater = 0;
-    private double timeBeforeNextHitpointsChange = 0;
 
+    /**
+     * A timer to store the time since the shark has left the water
+     */
+    private double timeOutOfWater = 0;
+
+    /**
+     * Returns whether the shark is fully underwater
+     */
     private boolean isUnderWater() {
 	if (getWorld() == null)
 	    return false;
@@ -170,6 +322,9 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	return false;
     }
 
+    /**
+     * Returns if the shark is in contact with water
+     */
     private boolean isInWater() {
 	if (getWorld() == null)
 	    return false;
@@ -182,94 +337,26 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	return false;
     }
 
-    private void updatePosition(double dt) {
-	if (getOrientation() == -1)
-	    setSprite(getSpriteArray()[1]);
-	else if (getOrientation() == 1)
-	    setSprite(getSpriteArray()[2]);
-	else
-	    setSprite(getSpriteArray()[0]);
+    /*
+     * A timer to record how long it will take before the shark can change it's
+     * hitpoints again
+     */
+    private double timeBeforeNextHitpointsChange = 0;
 
-	if (getTimeToMove() == 0.5) {
-	    if (isInWater() || isStandingOnImpassableTerrain())
-		setVerticalSpeedMeters(2.0);
-	    if (isUnderWater()) {
-		setVerticalAcceleration(0);
-		if (getVerticalSpeedMeters() < 0)
-		    setVerticalSpeedMeters(0);
-	    } else
-		setVerticalAcceleration(maxVerticalAcceleration);
-	} else if (isUnderWater()) {
-	    setVerticalAcceleration(0);
-	    if (getVerticalSpeedMeters() < 0)
-		setVerticalSpeedMeters(0);
-	} else
-	    setVerticalAcceleration(maxVerticalAcceleration);
-	setHorizontalAcceleration(1.5 * getOrientation());
-
-	final double newPosX = getXPositionActual() + Math.abs(getHorizontalSpeedMeters()) * getOrientation() * dt
-		+ 0.5 * getHorizontalAcceleration() * dt * dt;
-	final double newPosY = getYPositionActual() + getVerticalSpeedMeters() * dt
-		+ 0.5 * getVerticalAcceleration() * dt * dt;
-	final double newSpeedX = Math.abs(getHorizontalSpeedMeters()) * getOrientation()
-		+ getHorizontalAcceleration() * dt;
-	final double newSpeedY = getVerticalSpeedMeters() + getVerticalAcceleration() * dt;
-	final int xSize = getXsize();
-	final int ySize = getYsize();
-
-	final Shark newSharkBoth = new Shark((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 10, 10,
-		0, 10, 0, 0, newSpeedX, newSpeedY, true, getSpriteArray());
-
-	if (getWorld().canPlaceGameObjectAdvanceTime(newSharkBoth, this)) {
-	    setXPositionActual(newPosX);
-	    setYPositionActual(newPosY);
-	    setHorizontalSpeedMeters(newSpeedX);
-	    setVerticalSpeedMeters(newSpeedY);
-	} else {
-	    setHorizontalSpeedMeters(0);
-	    setVerticalSpeedMeters(0);
-	    setHorizontalAcceleration(0);
-	}
-
-	List<int[]> tiles = new ArrayList<int[]>();
-	tiles = getAllOverlappingTiles();
-
-	collidesWithWater = false;
-
-	for (final int[] tile : tiles)
-	    if (getWorld().getGeologicalFeatureTile(tile) == PassableTerrain.WATER.getValue())
-		collidesWithWater = true;
-
-	if (!collidesWithWater)
-	    timeOutOfWater += dt;
-	else
-	    timeOutOfWater = 0;
-
-	if (timeOutOfWater >= 0.2) {
-	    timeOutOfWater -= 0.2;
-	    changeHitPoints(-6);
-	}
-
-	if (getWorld() != null)
-	    for (final Object gameObject : getWorld().getAllObjects()) {
-		if (newSharkBoth.collidesWith((GameObject) gameObject) && gameObject instanceof Slime)
-		    changeHitPoints(10);
-
-		if (newSharkBoth.collidesWith((GameObject) gameObject) && gameObject instanceof Mazub)
-		    if (getTimeBeforeNextHitpointsChange() <= 0) {
-			changeHitPoints(-50);
-			setTimeBeforeNextHitpointsChange(0.6);
-		    }
-	    }
-
-	setTimeBeforeNextHitpointsChange(getTimeBeforeNextHitpointsChange() - dt);
-	newSharkBoth.terminate();
-    }
-
+    /**
+     * Returns the time before the next hitpoints change
+     */
     private double getTimeBeforeNextHitpointsChange() {
 	return timeBeforeNextHitpointsChange;
     }
 
+    /**
+     * Sets the time before the next hitpoints change
+     * 
+     * @param dt The time to set
+     * 
+     * @post ... | new.getTimeBeforeNextHitpointsChange() == dt
+     */
     private void setTimeBeforeNextHitpointsChange(double dt) {
 	timeBeforeNextHitpointsChange = dt;
     }
@@ -279,6 +366,10 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
      */
     @Override
     public boolean isValidSpriteArray(Sprite[] sprites) {
+	for (final Sprite sprite : sprites)
+	    if (!sprite.canHaveAsHeight(sprite.getHeight()) || !sprite.canHaveAsName(sprite.getName())
+		    || !sprite.canHaveAsWidth(sprite.getWidth()))
+		return false;
 	return sprites.length == 3;
     }
 }

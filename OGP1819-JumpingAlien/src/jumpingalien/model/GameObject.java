@@ -64,6 +64,9 @@ public abstract class GameObject {
      *         setHorizontalSpeedMeters(0) && setVerticalAcceleration(0) &&
      *         setHorizontalAcceleration(0) && setOverlappingTiles()
      * 
+     * @pre ... | sprites.length > 0
+     * @pre ... |
+     * 
      * @post ... | this.maxHorizontalAcceleration == horizontalAcceleration
      * @post ... | this.maxVerticalAcceleration == verticalAcceleration
      * @post ... | this.minSpeed == minHorizontalSpeed
@@ -989,7 +992,7 @@ public abstract class GameObject {
     }
 
     /**
-     * Makes a Mazub fall
+     * Makes a GameObject fall
      * 
      * @post The new acceleration is equal to the given maximum vertical
      *       acceleration. | new.VerticalAcceleration == maxVerticalAcceleration
@@ -1034,8 +1037,18 @@ public abstract class GameObject {
      * 
      * @param sprites The sprites of the GameObject
      * 
+     * 
+     * @post ... | sprites.length > 0
      * @post ... | for sprite in sprites : sprite.isValidSprite()
      */
-    public abstract boolean isValidSpriteArray(Sprite[] sprites);
+    public boolean isValidSpriteArray(Sprite[] sprites) {
+	if (sprites.length <= 0)
+	    return false;
+	for (final Sprite sprite : sprites)
+	    if (!sprite.canHaveAsHeight(sprite.getHeight()) || !sprite.canHaveAsName(sprite.getName())
+		    || !sprite.canHaveAsWidth(sprite.getWidth()))
+		return false;
+	return true;
+    }
 
 }

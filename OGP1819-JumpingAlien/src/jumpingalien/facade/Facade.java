@@ -66,7 +66,7 @@ public class Facade implements IFacade {
 		throw new ModelException("New position on impassable terrain");
 	if (getWorld(alien) != null && !getWorld(alien).canPlaceObject(alien))
 	    throw new ModelException("Can't place new alien");
-	if (!alien.isValidActualXPosition(newPosition[0]) || !alien.isValidActualYPosition(newPosition[1]))
+	if (!GameObject.isValidActualXPosition(newPosition[0]) || !GameObject.isValidActualYPosition(newPosition[1]))
 	    alien.terminate();
 	if (getWorld(alien) != null
 		&& !alien.isPositionInWorld((int) (newPosition[0] * 100), (int) (newPosition[1] * 100)))
@@ -289,7 +289,7 @@ public class Facade implements IFacade {
 
     @Override
     public int[] getVisibleWindowDimension(World world) throws ModelException {
-	return new int[] { world.getVisibleWindowWidth(), world.getVisibleWindowHeight() };
+	return new int[] { World.getVisibleWindowWidth(), World.getVisibleWindowHeight() };
     }
 
     @Override
@@ -465,10 +465,10 @@ public class Facade implements IFacade {
     public void advanceTime(Object gameObject, double dt) throws ModelException {
 	if (dt != dt)
 	    throw new ModelException("The time is not valid");
-	if (((GameObject) gameObject).getWorld() != null)
-	    ((GameObject) gameObject).advanceTime(dt,
-		    ((GameObject) gameObject).getWorld().getTimeStep((GameObject) gameObject, dt));
-	else
+	if (((GameObject) gameObject).getWorld() != null) {
+	    ((GameObject) gameObject).getWorld();
+	    ((GameObject) gameObject).advanceTime(dt, World.getTimeStep((GameObject) gameObject, dt));
+	} else
 	    ((GameObject) gameObject).advanceTime(dt, 0.002);
     }
 
@@ -588,8 +588,8 @@ public class Facade implements IFacade {
 	for (final Sprite sprite : sprites)
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
-	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100, 100, 10, 10, 0,
-		2, 1.5, -10.0, 0, 0, false, sprites);
+	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100,
+		Integer.MAX_VALUE, 10, 10, 0, 2, 1.5, -10.0, 0, 0, false, sprites);
     }
 
     @Override

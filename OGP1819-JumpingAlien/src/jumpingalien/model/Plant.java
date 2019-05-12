@@ -43,6 +43,8 @@ public abstract class Plant extends GameObject {
      * @effect setBoundaries();
      * @effect setSecondsToLive(secondsToLive);
      * 
+     * @pre ... | sprites.length == 2
+     * 
      * @post ... | new.getSecondsToLive() == secondsToLive
      * @post ... | new.getBoundaries == int[] { (int) (getXPositionPixel() - 0.5 *
      *       Math.abs(getHorizontalSpeedPixels())), getXPositionPixel() }
@@ -59,6 +61,11 @@ public abstract class Plant extends GameObject {
 	if (!isValidSpriteArray(sprites))
 	    throw new RuntimeException();
     }
+
+    /**
+     * A timer to keep track how long the plant has left to live.
+     */
+    private double secondsToLive;
 
     /**
      * Returns how many seconds the plant has left to live.
@@ -80,11 +87,6 @@ public abstract class Plant extends GameObject {
     }
 
     /**
-     * A timer to keep track how long the plant has left to live.
-     */
-    private double secondsToLive;
-
-    /**
      * Returns the boundaries in which the plant will move.
      */
     public abstract int[] getBoundaries();
@@ -94,8 +96,17 @@ public abstract class Plant extends GameObject {
      */
     @Override
     public boolean isValidSpriteArray(Sprite[] sprites) {
+	for (final Sprite sprite : sprites)
+	    if (!sprite.canHaveAsHeight(sprite.getHeight()) || !sprite.canHaveAsName(sprite.getName())
+		    || !sprite.canHaveAsWidth(sprite.getWidth()))
+		return false;
 	return sprites.length == 2;
     }
+
+    /**
+     * A timer to keep track of how long ago the plant died.
+     */
+    double timeSinceDeath;
 
     /**
      * Returns the time since death
@@ -118,10 +129,5 @@ public abstract class Plant extends GameObject {
 
     @Override
     public abstract void advanceTime(double dt, double timeStep);
-
-    /**
-     * A timer to keep track of how long ago the plant died.
-     */
-    double timeSinceDeath;
 
 }
