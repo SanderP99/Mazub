@@ -20,30 +20,22 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
     /**
      * Creates a new slime
      * 
-     * @param pixelLeftX                The x coordinate of the most left pixel
-     * @param pixelBottomY              The y coordinate of the bottom most pixel
-     * @param pixelSizeX                The width of the slime in pixels
-     * @param pixelSizeY                The height of the slime in pixels
-     * @param hitpoints                 The hitpoints of the slime
-     * @param maxHitpoints              The maximum hitpoints of the slime
-     * @param maxHorizontalSpeedRunning The maximum horizontalSpeed of the slime
-     * @param maxHorizontalSpeedDucking The maximum horizontalSpeed of the slime
-     * @param minHorizontalSpeed        The minimum horizontalSpeed of the slime
-     * @param maxVerticalSpeed          The maximum verticalSpeed of the slime
-     * @param horizontalAcceleration    The horizontal acceleration of the slime
-     * @param verticalAcceleration      The vertical acceleration of the slime
-     * @param tempObject                A boolean to store if the object is a
-     *                                  temporary object
-     * @param id                        The unique id of the slime
-     * @param school                    The school of the slime
-     * @param sprites                   The sprites of the slime
+     * @param pixelLeftX   The x coordinate of the most left pixel
+     * @param pixelBottomY The y coordinate of the bottom most pixel
+     * @param pixelSizeX   The width of the slime in pixels
+     * @param pixelSizeY   The height of the slime in pixels
+     * @param tempObject   A boolean to store if the object is a temporary object
+     * @param id           The unique id of the slime
+     * @param school       The school of the slime
+     * @param sprites      The sprites of the slime
      * 
      * @pre ... | sprites.length == 2
      * 
-     * @effect super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints,
-     *         maxHitpoints, maxHorizontalSpeedRunning, maxHorizontalSpeedDucking,
-     *         minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
-     *         verticalAcceleration, tempObject, sprites)
+     * @effect super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY,
+     *         Constants.slimeHitPoints, Constants.slimeMaxHitPoints,
+     *         Constants.slimeMaxHorizontalSpeed, 0, 0,
+     *         Constants.slimeMaxVerticalSpeed,
+     *         Constants.slimeHorizontalAcceleration, 0, tempObject, sprites)
      * @effect addID(id)
      * 
      * @post ... | new.getSchool() == school
@@ -51,13 +43,11 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
      * @post ... | new.getOrientation() == 1
      * @post ... | new.getHorizontalAcceleration() == 0.7
      */
-    public Slime(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
-	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
-	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, boolean tempObject,
-	    long id, School school, Sprite[] sprites) {
-	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, hitpoints, maxHitpoints, maxHorizontalSpeedRunning,
-		maxHorizontalSpeedDucking, minHorizontalSpeed, maxVerticalSpeed, horizontalAcceleration,
-		verticalAcceleration, tempObject, sprites);
+    public Slime(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, boolean tempObject, long id,
+	    School school, Sprite[] sprites) {
+	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, Constants.slimeHitPoints, Constants.slimeMaxHitPoints,
+		Constants.slimeMaxHorizontalSpeed, 0, 0, Constants.slimeMaxVerticalSpeed,
+		Constants.slimeHorizontalAcceleration, 0, tempObject, sprites);
 	if (!isValidSpriteArray(sprites))
 	    throw new RuntimeException();
 	this.id = id;
@@ -292,8 +282,8 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
 	    long id = 1;
 	    while (hasSlimeWithID(id))
 		id += 1;
-	    final Slime newSlime = new Slime((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, 1, 1, 0, 0, 0,
-		    0, 0, 0, true, id, null, getSpriteArray());
+	    final Slime newSlime = new Slime((int) (newPosX * 100), (int) (newPosY * 100), xSize, ySize, true, id, null,
+		    getSpriteArray());
 	    if (getWorld().canPlaceGameObjectAdvanceTime(newSlime, this)) {
 		setXPositionActual(newPosX);
 		setYPositionActual(newPosY);

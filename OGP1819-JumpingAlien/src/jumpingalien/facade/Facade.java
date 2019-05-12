@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import jumpingalien.model.Constants;
 import jumpingalien.model.GameObject;
 import jumpingalien.model.ImpassableTerrain;
 import jumpingalien.model.Mazub;
@@ -35,8 +36,8 @@ public class Facade implements IFacade {
 	if (pixelLeftX < 0 || pixelBottomY < 0)
 	    throw new ModelException("Mazub not in universe");
 	final Sprite sprite = sprites[0];
-	final Mazub mazub = new Mazub(pixelLeftX, pixelBottomY, sprite.getWidth(), sprite.getHeight(), 0.0, 1.0, 3.0,
-		1.0, false, sprites);
+	final Mazub mazub = new Mazub(pixelLeftX, pixelBottomY, sprite.getWidth(), sprite.getHeight(), 0.0, false,
+		sprites);
 	return mazub;
     }
 
@@ -253,7 +254,7 @@ public class Facade implements IFacade {
 	    if (targetTileCoordinate.length != 2)
 		throw new ModelException("Target tile not valid");
 	    final World world = new World(nbTilesX, nbTilesY, tileSize, targetTileCoordinate[0],
-		    targetTileCoordinate[1], visibleWindowWidth, visibleWindowHeight, 100, geologicalFeatures);
+		    targetTileCoordinate[1], visibleWindowWidth, visibleWindowHeight, geologicalFeatures);
 	    return world;
 	} catch (final RuntimeException e) {
 	    throw new ModelException("The window is not valid");
@@ -487,8 +488,7 @@ public class Facade implements IFacade {
 	for (final Sprite sprite : sprites)
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
-	return new Sneezewort(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 1, 10.0,
-		sprites);
+	return new Sneezewort(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), sprites);
     }
 
     @Override
@@ -500,8 +500,7 @@ public class Facade implements IFacade {
 	for (final Sprite sprite : sprites)
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
-	return new Skullcab(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 0.5, 3, 12.0,
-		sprites);
+	return new Skullcab(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), sprites);
     }
 
     @Override
@@ -520,8 +519,8 @@ public class Facade implements IFacade {
 	if (GameObject.hasSlimeWithID(id))
 	    throw new ModelException("ID is already in use");
 
-	return new Slime(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100,
-		Integer.MAX_VALUE, 2.5, 2.5, 0.0, 0.0, 0.7, -10.0, false, id, school, sprites);
+	return new Slime(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), false, id, school,
+		sprites);
     }
 
     @Override
@@ -532,7 +531,7 @@ public class Facade implements IFacade {
     @Override
     public School createSchool(World world) throws ModelException {
 	if (world != null)
-	    if (World.maxNbOfSchools == world.getNbOfSchools())
+	    if (Constants.worldMaxSchools == world.getNbOfSchools())
 		throw new ModelException("Maximum number of schools reached");
 	return new School(world);
     }
@@ -588,8 +587,7 @@ public class Facade implements IFacade {
 	for (final Sprite sprite : sprites)
 	    if (sprite == null)
 		throw new ModelException("The sprites are not valid");
-	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), 100,
-		Integer.MAX_VALUE, 10, 10, 0, 2, 1.5, -10.0, 0, 0, false, sprites);
+	return new Shark(pixelLeftX, pixelBottomY, sprites[0].getWidth(), sprites[0].getHeight(), false, sprites);
     }
 
     @Override

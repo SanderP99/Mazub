@@ -55,8 +55,8 @@ public abstract class Plant extends GameObject {
 	    double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, Sprite... sprites) {
 
 	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, hitpoints, hitpoints, maxHorizontalSpeedRunning,
-		maxHorizontalSpeedDucking, minHorizontalSpeed, 0.5, horizontalAcceleration, verticalAcceleration, false,
-		sprites);
+		maxHorizontalSpeedDucking, minHorizontalSpeed, 0.5, Constants.plantHorizontalAcceleration,
+		Constants.plantVerticalAcceleration, false, sprites);
 
 	if (!isValidSpriteArray(sprites))
 	    throw new RuntimeException();

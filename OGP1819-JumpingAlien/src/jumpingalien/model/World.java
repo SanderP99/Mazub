@@ -60,7 +60,7 @@ public class World {
      * @post ... | new.getWorldSizeY() == nbTilesY * tileLenght
      * @post ... | new.getTargetTileX() == targetTileX * tileLenght
      * @post ... | new.getTargetTileY() == targetTileY * tileLenght
-     * @post ... | new.getMaxNbOfObjects() == maxNbOfObjects
+     * @post ... | new.getMaxNbOfObjects() == Constants.worldMaxObjects
      * 
      * @throws RuntimeException This new World cannot have the given
      *                          visibleWindowWidth as its visibleWindowWidth. | !
@@ -72,7 +72,7 @@ public class World {
      *         geologicalFeatures)
      */
     public World(int nbTilesX, int nbTilesY, int tileLength, int targetTileX, int targetTileY, int visibleWindowWidth,
-	    int visibleWindowHeight, int maxNbOfObjects, int... geologicalFeatures) throws RuntimeException {
+	    int visibleWindowHeight, int... geologicalFeatures) throws RuntimeException {
 
 	setTileLength(tileLength);
 	setWorldSizeX(nbTilesX * getTileLength());
@@ -87,14 +87,9 @@ public class World {
 	setVisibleWindowWidth(visibleWindowWidth);
 	setVisibleWindowPosition(new int[] { 0, 0 });
 	initializeGeologicalFeatures(nbTilesX, nbTilesY, geologicalFeatures);
-	setMaxNbOfObjects(maxNbOfObjects);
+	setMaxNbOfObjects(Constants.worldMaxObjects);
 
     }
-
-    /**
-     * A variable to store the maximum number of schools
-     */
-    public static final int maxNbOfSchools = 10;
 
     /**
      * Check whether this World can have the given visisbleWindowHeigth as its
@@ -414,8 +409,8 @@ public class World {
      * @param pixelY The y coordinate
      */
     public boolean isPositionInTargetTile(int pixelX, int pixelY) {
-        return pixelX >= getTargetTileX() && pixelX < getTargetTileX() + getTileLength() && pixelY >= getTargetTileY()
-        	&& pixelY < getTargetTileY() + getTileLength();
+	return pixelX >= getTargetTileX() && pixelX < getTargetTileX() + getTileLength() && pixelY >= getTargetTileY()
+		&& pixelY < getTargetTileY() + getTileLength();
     }
 
     /**
@@ -920,7 +915,7 @@ public class World {
      */
     @Raw
     void addSchool(School school) throws RuntimeException {
-	if (getNbOfSchools() == maxNbOfSchools)
+	if (getNbOfSchools() == Constants.worldMaxSchools)
 	    throw new RuntimeException();
 	allSchools.add(school);
 	school.world = this;

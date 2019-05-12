@@ -147,8 +147,7 @@ public abstract class GameObject {
 	if (getCurrentSprite() != null && (getCurrentSprite().getHeight() != sprite.getHeight()
 		|| getCurrentSprite().getWidth() != sprite.getWidth())) {
 	    final Mazub newMazub = new Mazub(getXPositionActual(), getYPositionActual(), sprite.getWidth(),
-		    sprite.getHeight(), 0, getMinSpeedMeters(), getMaxSpeedRunningMeters(), getMaxSpeedDuckingMeters(),
-		    true, getSpriteArray());
+		    sprite.getHeight(), 0, true, getSpriteArray());
 	    if (getWorld() != null) {
 		if (getWorld().canPlaceMazubFullCheck(newMazub, this)) {
 		    this.sprite = sprite;
@@ -864,7 +863,7 @@ public abstract class GameObject {
      *       acceleration | new.getVerticalAcceleration() == verticalAcceleration
      */
     public void setVerticalAcceleration(double verticalAcceleration) {
-	if (verticalAcceleration == 0 || verticalAcceleration == maxVerticalAcceleration)
+	if (verticalAcceleration == 0 || verticalAcceleration == Constants.maxVerticalAcceleration)
 	    this.verticalAcceleration = verticalAcceleration;
     }
 
@@ -872,11 +871,6 @@ public abstract class GameObject {
      * A variable to store the vertical acceleration of the GameObject
      */
     private double verticalAcceleration;
-
-    /**
-     * A variable to store the maximum vertical acceleration of the GameObject
-     */
-    protected final static double maxVerticalAcceleration = -10.0;
 
     /**
      * Returns whether the given alien is valid
@@ -983,8 +977,8 @@ public abstract class GameObject {
 		    return true;
 	    }
 
-	final GameObject newObject = new Mazub(getXPositionActual(), getYPositionActual() - 0.01, 1, 1, 0, 0, 0, 0,
-		false, getSpriteArray());
+	final GameObject newObject = new Mazub(getXPositionActual(), getYPositionActual() - 0.01, 1, 1, 0, false,
+		getSpriteArray());
 	if (!getWorld().canPlaceGameObjectAdvanceTime(newObject, this))
 	    return true;
 
@@ -999,7 +993,7 @@ public abstract class GameObject {
      */
     public void fall() {
 	if (getYPositionActual() > 0 || getWorld() == null)
-	    setVerticalAcceleration(maxVerticalAcceleration);
+	    setVerticalAcceleration(Constants.maxVerticalAcceleration);
 	if (getWorld() != null)
 	    for (final ImpassableTerrain feature : ImpassableTerrain.values())
 		for (int x = getXPositionPixel(); x < getXPositionPixel() + getXsize(); x++)

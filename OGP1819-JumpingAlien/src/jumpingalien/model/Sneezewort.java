@@ -25,29 +25,28 @@ public class Sneezewort extends Plant implements HorizontalMovement {
      * @param positionBottomY The y position of the bottom most pixel of Sneezewort
      * @param pixelSizeX      The width in pixels of Sneezewort
      * @param pixelSizeY      The height in pixels of Sneezewort
-     * @param verticalSpeed   The vertical speed of Sneezewort
-     * @param hitpoints       The hitpoints of Sneezewort
-     * @param secondsToLive   The maximum time Sneezewort lives
      * @param sprites         The sprites of Sneezewort
      * 
-     * @post ... | new.getSecondsToLive() == secondsToLive
+     * @post ... | new.getSecondsToLive() == Constants.sneezewortSecondsToLive
      * @post ... | new.getBoundaries() == new int[] { positionLeftX), (int)
-     *       (positionLeftX + 0.5 * (int) (100 * Math.abs(horizonalSpeed)))
+     *       (positionLeftX + 0.5 * (int) (100 *
+     *       Math.abs(Constants.sneezewortHorizontalSpeed)))
      * @post ... | new.getOrientation() == -1
-     * @post ... | new.getVerticalSpeedMeters() == Math.abs(horizontalSpeed)
+     * @post ... | new.getVerticalSpeedMeters() ==
+     *       Math.abs(Constants.sneezewortHorizontalSpeed)
      * 
      * @effect super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY,
-     *         horizontalSpeed, hitpoints, secondsToLive, 10, 0, 0, 0, 0, sprites)
+     *         Constants.sneezewortHorizontalSpeed, Constants.sneezewortHitPoints,
+     *         Constants.sneezewortSecondsToLive, 0.5, 0, 0, 0, 0, sprites)
      */
     @Raw
-    public Sneezewort(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, double horizontalSpeed,
-	    int hitpoints, double secondsToLive, Sprite[] sprites) {
-	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, horizontalSpeed, hitpoints, secondsToLive, 10, 0,
-		0, 0, 0, sprites);
+    public Sneezewort(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, Sprite[] sprites) {
+	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, Constants.sneezewortHorizontalSpeed,
+		Constants.sneezewortHitPoints, Constants.sneezewortSecondsToLive, 0.5, 0, 0, 0, 0, sprites);
 
-	setHorizontalSpeedMeters(-1 * Math.abs(horizontalSpeed));
+	setHorizontalSpeedMeters(-1 * Math.abs(Constants.sneezewortHorizontalSpeed));
 	setOrientation(-1);
-	setSecondsToLive(secondsToLive);
+	setSecondsToLive(Constants.sneezewortSecondsToLive);
 	boundaries = new int[] { (int) (getXPositionPixel() - 0.5 * Math.abs(getHorizontalSpeedPixels())),
 		getXPositionPixel() };
     }
@@ -63,7 +62,7 @@ public class Sneezewort extends Plant implements HorizontalMovement {
     @Override
     @Immutable
     public int[] getBoundaries() {
-        return boundaries;
+	return boundaries;
     }
 
     @Override

@@ -27,29 +27,28 @@ public class Skullcab extends Plant implements VerticalMovement {
      * @param positionBottomY The y position of the bottom most pixel of Skullcab
      * @param pixelSizeX      The width in pixels of Skullcab
      * @param pixelSizeY      The height in pixels of Skullcab
-     * @param verticalSpeed   The vertical speed of Skullcab
-     * @param hitpoints       The hitpoints of Skullcab
-     * @param secondsToLive   The maximum time Skullcab lives
      * @param sprites         The sprites of Skullcab
      * 
-     * @post ... | new.getSecondsToLive() == secondsToLive
+     * @post ... | new.getSecondsToLive() == Constants.skullcabSecondsToLive
      * @post ... | new.getBoundaries() == new int[] { positionBottomY), (int)
-     *       (positionBottomY + 0.5 * (int) (100 * Math.abs(verticalSpeed)))
+     *       (positionBottomY + 0.5 * (int) (100 *
+     *       Math.abs(Constants.skullcabVerticalSpeed)))
      * @post ... | new.getOrientation() == 1
-     * @post ... | new.getVerticalSpeedMeters() == Math.abs(verticalSpeed)
+     * @post ... | new.getVerticalSpeedMeters() ==
+     *       Math.abs(Constants.skullcabVerticalSpeed)
      * 
      * @effect super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY,
-     *         verticalSpeed, hitpoints, secondsToLive, 0, 0, 0, 0, 0, sprites)
+     *         Constants.skullcabVerticalSpeed, Constants.skullcabHitPoints,
+     *         Constants.skullcabSecondsToLive, 0, 0, 0, 0, 0, sprites)
      */
     @Raw
-    public Skullcab(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, double verticalSpeed,
-	    int hitpoints, double secondsToLive, Sprite[] sprites) {
-	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, verticalSpeed, hitpoints, secondsToLive, 0, 0, 0,
-		0, 0, sprites);
+    public Skullcab(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, Sprite[] sprites) {
+	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, Constants.skullcabVerticalSpeed,
+		Constants.skullcabHitPoints, Constants.skullcabSecondsToLive, 0, 0, 0, 0, 0, sprites);
 
-	setVerticalSpeedMeters(Math.abs(verticalSpeed));
+	setVerticalSpeedMeters(Math.abs(Constants.skullcabVerticalSpeed));
 	setOrientation(1);
-	setSecondsToLive(secondsToLive);
+	setSecondsToLive(Constants.skullcabSecondsToLive);
 	boundaries = new int[] { getYPositionPixel(),
 		(int) (getYPositionPixel() + 0.5 * (int) (100 * Math.abs(getVerticalSpeedMeters()))) };
     }
