@@ -32,6 +32,7 @@ import jumpingalien.util.Sprite;
  * @invar The sprites are valid sprites | isValidSpriteArray() == true
  * @invar The sprites in an array are all valid | for (sprite :
  *        getSpriteArray()) | isValidSprite(sprite) == true
+ * @invar ... | getHitpoints() >= 0 && getHitpoints() <= getMaxHitpoints()
  */
 public abstract class GameObject {
 
@@ -140,6 +141,7 @@ public abstract class GameObject {
      * 
      * @post The current sprite of this GameObject is the given sprite | this.sprite
      *       == sprite
+     * @effect setSizes()
      */
     protected void setSprite(Sprite sprite) {
 	if (!isValidSprite(sprite))
@@ -164,6 +166,12 @@ public abstract class GameObject {
 
     }
 
+    /**
+     * Sets the xSize en ySize after a sprite change
+     * 
+     * @post ... | new.getXSize() == getCurrentSprite().getWidth()
+     * @post ... | new.getYSize() == getCurrentSprite().getHeight()
+     */
     private void setSizes() {
 	setYSize(getCurrentSprite().getHeight());
 	setXSize(getCurrentSprite().getWidth());
@@ -177,6 +185,7 @@ public abstract class GameObject {
     /**
      * Returns the sprite array of a GameObject
      */
+    @Basic
     public Sprite[] getSpriteArray() {
 	return spriteArray.clone();
     }
@@ -204,6 +213,7 @@ public abstract class GameObject {
      * @post isTerminated()
      * @effect setHitpoints(0) && removeWorld()
      */
+    @Raw
     public void terminate() {
 	if (!isTerminated()) {
 	    isTerminated = true;
@@ -483,8 +493,9 @@ public abstract class GameObject {
      * @param hitpoints The hitpoints to set
      * 
      * @post if hitpoints <= 0 then this.hitpoints == 0
-     * @post if hitpoints >= 500 then this.hitpoints == 500
-     * @post if 0 < hitpoints < 500 then this.hitpoints == hitpoints
+     * @post if hitpoints >= getMaxHitpoints() then this.hitpoints ==
+     *       getMaxHitpoints()
+     * @post if 0 < hitpoints < getMaxHitpoints() then this.hitpoints == hitpoints
      */
     protected void setHitpoints(int hitpoints) {
 	if (hitpoints <= 0) {

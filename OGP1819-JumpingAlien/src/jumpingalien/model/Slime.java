@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 import jumpingalien.util.Sprite;
 
 /**
@@ -13,9 +14,14 @@ import jumpingalien.util.Sprite;
  * @author Sander Prenen
  * 
  * @version 1
+ * 
+ * @invar ... | this.id != other.id
+ * @invar ... | getOrientation() == 1 || getOrientation() == -1
+ * @invar ... | getVerticalSpeed() == 0
+ * @invar ... | getSpriteArray().length == 2
  *
  */
-public class Slime extends GameObject implements Comparable<Slime>, HorizontalMovement, VerticalMovement {
+public class Slime extends GameObject implements Comparable<Slime>, HorizontalMovement {
 
     /**
      * Creates a new slime
@@ -42,9 +48,12 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
      * @post ... | new.getIdentification() == id
      * @post ... | new.getOrientation() == 1
      * @post ... | new.getHorizontalAcceleration() == 0.7
+     * 
+     * @throws RuntimeException If the spriteArray is not valid
      */
+    @Raw
     public Slime(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, boolean tempObject, long id,
-	    School school, Sprite[] sprites) {
+	    School school, Sprite[] sprites) throws RuntimeException {
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, Constants.slimeHitPoints, Constants.slimeMaxHitPoints,
 		Constants.slimeMaxHorizontalSpeed, 0, 0, Constants.slimeMaxVerticalSpeed,
 		Constants.slimeHorizontalAcceleration, 0, tempObject, sprites);
@@ -136,7 +145,7 @@ public class Slime extends GameObject implements Comparable<Slime>, HorizontalMo
     }
 
     /**
-     * Compares the ID of two slimes to store thel in a treeset
+     * Compares the ID of two slimes to store the slime in a treeset
      */
     @Override
     public int compareTo(Slime other) {

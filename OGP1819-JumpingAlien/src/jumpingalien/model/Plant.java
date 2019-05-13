@@ -1,6 +1,8 @@
 package jumpingalien.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 import jumpingalien.util.Sprite;
 
 /**
@@ -11,6 +13,9 @@ import jumpingalien.util.Sprite;
  * 
  * @version 1
  *
+ * @invar ... | this.getOrientation() == 1 || this.getOrientation() == -1
+ * @invar The sprites are valid sprites | spriteArray.lenght == 2 &&
+ *        isValidSpriteArray()
  */
 public abstract class Plant extends GameObject {
 
@@ -49,10 +54,14 @@ public abstract class Plant extends GameObject {
      * @post ... | new.getBoundaries == int[] { (int) (getXPositionPixel() - 0.5 *
      *       Math.abs(getHorizontalSpeedPixels())), getXPositionPixel() }
      * @post ... | new.getOrientation() == -1
+     * 
+     * @throws RuntimeException If the spriteArray is not valid
      */
+    @Raw
     public Plant(int positionLeftX, int positionBottomY, int pixelSizeX, int pixelSizeY, double horizontalSpeed,
 	    int hitpoints, double secondsToLive, double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking,
-	    double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, Sprite... sprites) {
+	    double minHorizontalSpeed, double horizontalAcceleration, double verticalAcceleration, Sprite... sprites)
+	    throws RuntimeException {
 
 	super(positionLeftX, positionBottomY, pixelSizeX, pixelSizeY, hitpoints, hitpoints, maxHorizontalSpeedRunning,
 		maxHorizontalSpeedDucking, minHorizontalSpeed, 0.5, Constants.plantHorizontalAcceleration,
@@ -89,6 +98,7 @@ public abstract class Plant extends GameObject {
     /**
      * Returns the boundaries in which the plant will move.
      */
+    @Immutable
     public abstract int[] getBoundaries();
 
     /**

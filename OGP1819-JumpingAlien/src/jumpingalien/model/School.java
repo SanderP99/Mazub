@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+
 /**
  * A class that implements a school of slimes
  * 
@@ -13,6 +16,9 @@ import java.util.TreeSet;
  * 
  * @version 1
  *
+ * @invar ... | getMinIDSlime().getIdentification() == minID
+ * @invar ... | getMaxIDSlime().getIdentification() == maxID
+ * @invar ... | if slime.getSchool() == this then slimes.contains(slime)
  */
 public class School {
 
@@ -30,6 +36,7 @@ public class School {
      * 
      * @post ... | if world != null then new.world.getAllSchools().contains(this)
      */
+    @Raw
     public School(World world) {
 	if (world != null) {
 	    this.world = world;
@@ -50,6 +57,8 @@ public class School {
     /**
      * Returns the minimum ID of all the slimes in the school.
      */
+    @Basic
+    @Raw
     public long getMinID() {
 	return minID;
     }
@@ -62,7 +71,7 @@ public class School {
      * @post ... | new.getMinID() == identification
      */
     private void setMinID(long identification) {
-        minID = identification;
+	minID = identification;
     }
 
     /**
@@ -73,6 +82,8 @@ public class School {
     /**
      * Returns the maximum ID of all the slimes in the school.
      */
+    @Basic
+    @Raw
     public long getMaxID() {
 	return maxID;
     }
@@ -85,7 +96,7 @@ public class School {
      * @post ... | new.getMaxID() == identification
      */
     private void setMaxID(long identification) {
-        maxID = identification;
+	maxID = identification;
     }
 
     /**
@@ -97,7 +108,7 @@ public class School {
      * Returns the slime with the lowest ID in the school.
      */
     public Slime getMinIDSlime() {
-        return minIDSlime;
+	return minIDSlime;
     }
 
     /**
@@ -106,8 +117,8 @@ public class School {
      * @post ... | new.getMinIDSlime() == slime
      */
     private void setMinIDSlime(Slime slime) {
-        minIDSlime = slime;
-    
+	minIDSlime = slime;
+
     }
 
     /**
@@ -119,7 +130,7 @@ public class School {
      * Returns the slime with the highest ID in the school.
      */
     public Slime getMaxIDSlime() {
-        return maxIDSlime;
+	return maxIDSlime;
     }
 
     /**
@@ -128,8 +139,8 @@ public class School {
      * @post ... | new.getMaxIDSlime() == slime
      */
     private void setMaxIDSlime(Slime slime) {
-        maxIDSlime = slime;
-    
+	maxIDSlime = slime;
+
     }
 
     /**
@@ -140,6 +151,7 @@ public class School {
     /**
      * Returns a list with all the slimes in the school.
      */
+    @Basic
     public Collection<Slime> getAllSlimes() {
 	final List<Slime> allSlimes = new ArrayList<>();
 
@@ -163,6 +175,7 @@ public class School {
      * @post ... | if slime.getID() > getMaxID() then new.getMaxID() ==
      *       slime.getID() and new.getMaxIDSlime() == slime
      */
+    @Raw
     public void addSlime(Slime slime) {
 	if (slime.getIdentification() < getMinID()) {
 	    setMinID(slime.getIdentification());
@@ -190,29 +203,30 @@ public class School {
      * @post ... | if slime.getID() == getMaxID() then new.getMaxID() !=
      *       slime.getID() and new.getMaxIDSlime() != slime
      */
+    @Raw
     public void removeSlime(Slime slime) {
-        slimes.remove(slime);
-    
-        if (slimes.size() != 0) {
-            if (slime.getIdentification() == getMinID()) {
-        	minID = getMaxID();
-        	for (final Slime slimy : getAllSlimes())
-        	    if (slime.getIdentification() < getMinID())
-        		setMinID(slimy.getIdentification());
-            }
-            if (slime.getIdentification() == getMaxID()) {
-        	maxID = getMinID();
-        	for (final Slime slimy : getAllSlimes())
-        	    if (slime.getIdentification() < getMaxID())
-        		setMaxID(slimy.getIdentification());
-            }
-        } else {
-            setMaxID(0);
-            setMaxIDSlime(null);
-            setMinID(0);
-            setMinIDSlime(null);
-        }
-        slime.school = null;
+	slimes.remove(slime);
+
+	if (slimes.size() != 0) {
+	    if (slime.getIdentification() == getMinID()) {
+		minID = getMaxID();
+		for (final Slime slimy : getAllSlimes())
+		    if (slime.getIdentification() < getMinID())
+			setMinID(slimy.getIdentification());
+	    }
+	    if (slime.getIdentification() == getMaxID()) {
+		maxID = getMinID();
+		for (final Slime slimy : getAllSlimes())
+		    if (slime.getIdentification() < getMaxID())
+			setMaxID(slimy.getIdentification());
+	    }
+	} else {
+	    setMaxID(0);
+	    setMaxIDSlime(null);
+	    setMinID(0);
+	    setMinIDSlime(null);
+	}
+	slime.school = null;
     }
 
     /**
@@ -221,11 +235,11 @@ public class School {
      * @param slime The slime to check
      */
     public boolean hasSlime(Slime slime) {
-        if (slime.getIdentification() == getMaxID() || slime.getIdentification() == getMinID())
-            return true;
-        if (slimes.contains(slime))
-            return true;
-        return false;
+	if (slime.getIdentification() == getMaxID() || slime.getIdentification() == getMinID())
+	    return true;
+	if (slimes.contains(slime))
+	    return true;
+	return false;
     }
 
     /**
@@ -234,10 +248,10 @@ public class School {
      * @param id The ID to check
      */
     public boolean hasSlimeWithID(long id) {
-        for (final Slime slime : getAllSlimes())
-            if (slime.getIdentification() == id)
-        	return true;
-        return false;
+	for (final Slime slime : getAllSlimes())
+	    if (slime.getIdentification() == id)
+		return true;
+	return false;
     }
 
     /**
@@ -248,6 +262,7 @@ public class School {
     /**
      * Returns the world of the school.
      */
+    @Basic
     public World getWorld() {
 	return world;
     }
@@ -261,8 +276,8 @@ public class School {
      * @post ... | new.world.getAllSchools().contains(this)
      */
     public void setWorld(World world) {
-        this.world = world;
-        world.addSchool(this);
+	this.world = world;
+	world.addSchool(this);
     }
 
     /**
@@ -274,8 +289,8 @@ public class School {
      * @post ... | !new.world.getAllSchools().contains(this)
      */
     public void removeFromWorld() {
-        world.removeSchool(this);
-        world = null;
+	world.removeSchool(this);
+	world = null;
     }
 
     /**

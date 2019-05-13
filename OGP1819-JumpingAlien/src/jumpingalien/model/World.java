@@ -25,7 +25,10 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @invar The visibleWindowPosition of each World must be a valid
  *        visibleWindowPosition for any World. |
  *        isValidVisibleWindowPosition(getVisibleWindowPosition())
- * 
+ * @invar ... | getAllObjects().size() <= Constants.worldMaxNumberOfObjects
+ * @invar ... | getAllSchools().size() <= Constants.worldMaxNumberOfSchools
+ * @invar ... | PassableTerrain.contains(getGeologicalFeature(x,y)) ||
+ *        ImpassableTerrain.contains(getGeologicalFeature(x,y))
  * 
  */
 public class World {

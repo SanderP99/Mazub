@@ -13,9 +13,9 @@ import jumpingalien.util.Sprite;
  * 
  * @version 1
  *
- * @invar The sprites are valid sprites | spriteArray.lenght == 2 &&
- *        isValidSpriteArray()
- * @invar ... | this.getHorizontalSpeed() == 0
+ * @invar ... | this.getOrientation() == 1 || this.getOrientation() == -1
+ * @invar ... | getHorizontalSpeed() == 0
+ * @invar ... | getSecondsToLive() <= Constants.skullcabSecondsToLive
  *
  */
 public class Skullcab extends Plant implements VerticalMovement {

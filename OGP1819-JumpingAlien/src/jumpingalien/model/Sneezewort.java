@@ -12,9 +12,10 @@ import jumpingalien.util.Sprite;
  * 
  * @version 1
  * 
- * @invar The sprites are valid sprites | spriteArray.lenght == 2 &&
- *        isValidSpriteArray()
- * @invar ... | this.getVerticalSpeed() == 0
+ * @invar ... | this.getOrientation() == 1 || this.getOrientation() == -1
+ * @invar ... | getVerticalSpeed() == 0
+ * @invar ... | getSecondsToLive() <= Constants.sneezewortSecondsToLive
+ * 
  */
 public class Sneezewort extends Plant implements HorizontalMovement {
 

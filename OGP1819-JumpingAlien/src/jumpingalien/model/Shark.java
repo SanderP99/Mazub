@@ -3,6 +3,7 @@ package jumpingalien.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 /**
@@ -15,7 +16,8 @@ import jumpingalien.util.Sprite;
  * 
  * @invar The sprites are valid sprites | spriteArray.lenght == 3 &&
  *        isValidSpriteArray()
- *
+ * @invar ... | getTimeToRest() <= 1.0
+ * @invar ... | getTimeToMove() <= 0.5
  */
 public class Shark extends GameObject implements HorizontalMovement, VerticalMovement {
 
@@ -40,9 +42,11 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
      * @effect setTimeToRest(0.0)
      * 
      * @pre ... | sprites.length == 3
+     * 
+     * @throws RuntimeException If the spriteArray is not valid
      */
-    public Shark(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, boolean tempObject,
-	    Sprite[] sprites) {
+    public Shark(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, boolean tempObject, Sprite[] sprites)
+	    throws RuntimeException {
 	super(pixelLeftX, pixelBottomY, pixelSizeX, pixelSizeY, Constants.sharkHitPoints, Constants.sharkMaxHitPoints,
 		Constants.sharkMaxHorizontalSpeed, 0, Constants.sharkMinHorizontalSpeed,
 		Constants.sharkMaxVerticalSpeed, Constants.sharkHorizontalAcceleration,
@@ -238,6 +242,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     /**
      * Returns the time left to rest
      */
+    @Basic
     private double getTimeToRest() {
 	return timeToRest;
     }
@@ -262,6 +267,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     /**
      * Returns the time left to move
      */
+    @Basic
     private double getTimeToMove() {
 	return timeToMove;
     }
@@ -285,6 +291,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     /**
      * Returns the time since the death of the shark
      */
+    @Basic
     private double getTimeSinceDeath() {
 	return timeSinceDeath;
     }
@@ -338,6 +345,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     /**
      * Returns the time before the next hitpoints change
      */
+    @Basic
     private double getTimeBeforeNextHitpointsChange() {
 	return timeBeforeNextHitpointsChange;
     }
@@ -354,7 +362,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     }
 
     /**
-     * @post sprites.lenght == 3
+     * @post sprites.length == 3
      */
     @Override
     public boolean isValidSpriteArray(Sprite[] sprites) {
