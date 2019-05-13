@@ -119,6 +119,10 @@ public class Tests {
 	assertEquals(2, facade.getAllGameObjects(world_100_200).size());
 	facade.advanceWorldTime(world_100_200, 0.1);
 	assertEquals(0, facade.getActualPosition(newSlime)[0] - facade.getActualPosition(newSlime2)[0], LOW_PRECISION);
+	assertEquals((double) slimeHeigth / 100,
+		Math.abs(facade.getActualPosition(newSlime)[1] - facade.getActualPosition(newSlime2)[1]),
+		HIGH_PRECISION);
+
     }
 
     @Test
