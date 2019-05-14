@@ -2259,7 +2259,7 @@ class FullFacadeTest {
 	    facade.advanceWorldTime(world_100_200, 0.1);
 	    assertArrayEquals(new double[] { sharkInitXpos + 0.0075, sharkInitYpos + 0.15 },
 		    facade.getActualPosition(theShark), LOW_PRECISION);
-	    assertArrayEquals(new double[] { 0.15, 1.0 }, facade.getVelocity(theShark), LOW_PRECISION);
+	    assertArrayEquals(new double[] { 0.15, 1.0 }, facade.getVelocity(theShark), 0.05);
 	    assertArrayEquals(new double[] { 1.5, -10.0 }, facade.getAcceleration(theShark), LOW_PRECISION);
 	    if (facade.isTeamSolution())
 		assertEquals(sharkSprites[2], facade.getCurrentSprite(theShark));

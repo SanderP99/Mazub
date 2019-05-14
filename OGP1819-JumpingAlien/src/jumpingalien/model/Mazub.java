@@ -60,6 +60,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 		Constants.mazubMaxHorizontalSpeedDucking, Constants.mazubMinHorizontalSpeed,
 		Constants.mazubMaxVerticalSpeed, Constants.mazubHorizontalAcceleration,
 		Constants.maxVerticalAcceleration, advanceTime, sprites);
+
 	isDucking = false;
 	timeInWater = 0;
 	timeInMagma = 0;
@@ -664,8 +665,6 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 		    && ((Skullcab) object).getTimeSinceContactWithMazub() >= 0.6) {
 		changeHitPoints(50);
 		((GameObject) object).changeHitPoints(-1);
-//		    if (((GameObject) object).getHitpoints() <= 0)
-
 		((Skullcab) object).setTimeSinceContactWithMazub(0.0);
 	    }
 	    if (mazub.collidesWith((GameObject) object) && object instanceof Slime && !((GameObject) object).isDead()

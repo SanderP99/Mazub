@@ -603,7 +603,7 @@ public class World {
 	return true;
     }
 
-    public <T> boolean canPlaceGameObjectAdvanceTime(T Object, GameObject other) {
+    public <T> boolean canPlaceGameObjectAdvanceTime(T Object, T other) {
 	GameObject gameObject;
 	try {
 	    gameObject = (GameObject) Object;

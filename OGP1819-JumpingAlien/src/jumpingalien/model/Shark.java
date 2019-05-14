@@ -64,7 +64,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 	if (!isDead()) {
 	    while (dt >= timeStep && !isDead() && !isTerminated()) {
 		if (getTimeToMove() > 0)
-		    if (getTimeToMove() > timeStep) {
+		    if (getTimeToMove() >= timeStep) {
 			updatePosition(timeStep);
 			dt -= timeStep;
 			setTimeToMove(getTimeToMove() - timeStep);
@@ -74,6 +74,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 			setTimeToMove(0.0);
 			setTimeToRest(1.0);
 		    }
+
 		if (getTimeToRest() > 0)
 		    if (getTimeToRest() >= timeStep) {
 			rest(timeStep);
@@ -86,6 +87,7 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
 			setTimeToMove(0.5);
 			setOrientation(getOrientation() * -1);
 		    }
+
 	    }
 	    if (getTimeToMove() > dt) {
 		updatePosition(dt);
@@ -134,6 +136,9 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     }
 
     private void updatePosition(double dt) {
+
+	if (!isUnderWater())
+	    setVerticalAcceleration(Constants.maxVerticalAcceleration);
 	if (getOrientation() == -1)
 	    setSprite(getSpriteArray()[1]);
 	else if (getOrientation() == 1)
@@ -218,6 +223,10 @@ public class Shark extends GameObject implements HorizontalMovement, VerticalMov
     }
 
     private void rest(double dt) {
+	if (getVerticalSpeedMeters() > 0)
+	    setVerticalSpeedMeters(0);
+	if (!isUnderWater())
+	    setVerticalAcceleration(Constants.maxVerticalAcceleration);
 	setSprite(getSpriteArray()[0]);
 	setHorizontalSpeedMeters(0);
 	setHorizontalAcceleration(0);

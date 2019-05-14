@@ -88,7 +88,7 @@ public abstract class GameObject {
     GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
 	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, boolean tempObject,
-	    Sprite... sprites) {
+	    Sprite... sprites) throws RuntimeException {
 	this.tempObject = tempObject;
 	setYSize(pixelSizeY);
 	setXSize(pixelSizeX);
@@ -96,6 +96,7 @@ public abstract class GameObject {
 	xPosPixel = pixelLeftX;
 	setYPositionActual((double) pixelBottomY / 100);
 	yPosPixel = pixelBottomY;
+
 	setSpriteArray(sprites);
 	setMaxHitpoints(maxHitpoints);
 	setHitpoints(hitpoints);
@@ -1046,14 +1047,6 @@ public abstract class GameObject {
      * @post ... | sprites.length > 0
      * @post ... | for sprite in sprites : sprite.isValidSprite()
      */
-    public boolean isValidSpriteArray(Sprite[] sprites) {
-	if (sprites.length <= 0)
-	    return false;
-	for (final Sprite sprite : sprites)
-	    if (!sprite.canHaveAsHeight(sprite.getHeight()) || !sprite.canHaveAsName(sprite.getName())
-		    || !sprite.canHaveAsWidth(sprite.getWidth()))
-		return false;
-	return true;
-    }
+    public abstract boolean isValidSpriteArray(Sprite[] sprites);
 
 }
