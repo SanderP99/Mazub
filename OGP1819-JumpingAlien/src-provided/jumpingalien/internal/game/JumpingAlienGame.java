@@ -227,8 +227,8 @@ public class JumpingAlienGame extends Game {
 					obj.getX(),
 					obj.getY(),
 					school,
-					new Sprite[] { JumpingAlienSprites.SLIME_SPRITE_LEFT,
-							JumpingAlienSprites.SLIME_SPRITE_RIGHT });
+					new Sprite[] { JumpingAlienSprites.SLIME_SPRITE_RIGHT,
+							JumpingAlienSprites.SLIME_SPRITE_LEFT });
 			if (slime != null)
 				getFacade().addGameObject(slime, getWorld());
 			break;

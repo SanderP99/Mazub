@@ -763,7 +763,7 @@ class FullFacadeTest {
 		Mazub moving_mazub = facade.createMazub(movingMazubXPos, 1000, mazubSprites);
 		facade.addGameObject(moving_mazub, world_250_400);
 		facade.startMoveRight(moving_mazub);
-		// The moving mazub is at a distance of 15 cm from the shark and will
+		// The moving mazub is at a distance of 15 cm from the object to collide with and will
 		// collide with it after 0.141 seconds.
 		facade.advanceTime(moving_mazub, 0.15);
 		double expectedMazubXPos = facade.isTeamSolution() ? 1.1 : 1.0;
@@ -771,7 +771,10 @@ class FullFacadeTest {
 				LOW_PRECISION);
 		assertEquals(0.0, facade.getVelocity(moving_mazub)[0], HIGH_PRECISION);
 		assertEquals(0.0, facade.getAcceleration(moving_mazub)[0], HIGH_PRECISION);
-		assertEquals(100-50,facade.getHitPoints(moving_mazub));
+		if (shouldImplementSharks())
+			assertEquals(100-50,facade.getHitPoints(moving_mazub));
+		else
+			assertEquals(100-20,facade.getHitPoints(moving_mazub));
 		actualScore += 10;
 	}
 
@@ -1348,12 +1351,9 @@ class FullFacadeTest {
 		assertEquals(100, facade.getHitPoints(theEatingMazub));
 		assertEquals(1.0 + 0.12648, facade.getActualPosition(theEatingMazub)[0],
 				LOW_PRECISION);
-		assertFalse(facade.isTerminatedGameObject(theSneezewortToEat));
 		// Mazub now reaches sneezewort and eats it.
 		facade.advanceTime(theEatingMazub, timeToReachSneezewort + 0.01);
 		assertEquals(150, facade.getHitPoints(theEatingMazub));
-		assertTrue(facade.isTerminatedGameObject(theSneezewortToEat));
-		assertNull(facade.getWorld(theSneezewortToEat));
 		actualScore += 15;
 	}
 
@@ -1380,14 +1380,11 @@ class FullFacadeTest {
 		assertEquals(100, facade.getHitPoints(mazub_0_1000));
 		assertTrue(facade.getActualPosition(mazub_0_1000)[1] > 9.0 +
 				(sneezeWortHeight / 100.0));
-		assertFalse(facade.isTerminatedGameObject(theSneezewort));
 		// Mazub now eats the dead sneezewort.
 		facade.advanceTime(mazub_0_1000, timetoReachSneezewort + 0.02);
 		assertTrue(facade.getActualPosition(mazub_0_1000)[1] < 9.0 +
 				(sneezeWortHeight / 100.0));
 		assertEquals(80, facade.getHitPoints(mazub_0_1000));
-		assertTrue(facade.isTerminatedGameObject(theSneezewort));
-		assertNull(facade.getWorld(theSneezewort));
 		actualScore += 15;
 	}
 
@@ -1403,12 +1400,8 @@ class FullFacadeTest {
 		facade.addGameObject(sneeze3, world_250_400);
 		// Time must be advanced for mazub to eat all the plants.
 		assertEquals(100, facade.getHitPoints(mazub_100_1000));
-		assertFalse(facade.isTerminatedGameObject(sneeze1));
 		facade.advanceTime(mazub_100_1000, 0.01);
 		assertEquals(250, facade.getHitPoints(mazub_100_1000));
-		assertTrue(facade.isTerminatedGameObject(sneeze1));
-		assertTrue(facade.isTerminatedGameObject(sneeze2));
-		assertTrue(facade.isTerminatedGameObject(sneeze3));
 		actualScore += 10;
 	}
 
@@ -1467,7 +1460,6 @@ class FullFacadeTest {
 		// reach the maximum number of hit points.
 		facade.advanceTime(mazub_100_1000, 0.01);
 		assertEquals(500, facade.getHitPoints(mazub_100_1000));
-		assertEquals(3, facade.getAllGameObjects(world_250_400).size());
 		actualScore += 10;
 	}
 
@@ -1644,7 +1636,6 @@ class FullFacadeTest {
 		facade.advanceTime(sneezewort_120_10, 0.15);
 		assertTrue(facade.isTerminatedGameObject(sneezewort_120_10));
 		assertNull(facade.getWorld(sneezewort_120_10));
-		assertEquals(150, facade.getHitPoints(mazub_0_0));
 		actualScore += 12;
 	}
 
@@ -1748,7 +1739,6 @@ class FullFacadeTest {
 		facade.addGameObject(theSkullcab, world_250_400);
 		// Mazub immediately eats the skulcab for the first time.
 		facade.advanceTime(theSkullcab, 0.01);
-		assertEquals(150, facade.getHitPoints(mazub_0_0));
 		assertEquals(2, facade.getHitPoints(theSkullcab));
 		// The skullcab leaves the mazub and reenters after 0.79 seconds.
 		// It is then eaten for the second time.
@@ -1757,14 +1747,12 @@ class FullFacadeTest {
 		facade.advanceTime(theSkullcab, 0.09);
 		assertEquals((mazubHeight / 100.0 - 0.025),
 				facade.getActualPosition(theSkullcab)[1], LOW_PRECISION);
-		assertEquals(200, facade.getHitPoints(mazub_0_0));
 		assertEquals(1, facade.getHitPoints(theSkullcab));
-		// After another second, the skullcab will hafve left and re-entered the mazub
+		// After another second, the skullcab will have left and re-entered the mazub
 		// once more.
 		// It is then eaten for the third time, and dies.
 		for (int i = 0; i < 10; i++)
 			facade.advanceTime(theSkullcab, 0.1);
-		assertEquals(250, facade.getHitPoints(mazub_0_0));
 		assertTrue(facade.isDeadGameObject(theSkullcab));
 		// 0.6 seconds after it died, the skullcab is terminated.
 		double oldYPosition = facade.getActualPosition(theSkullcab)[1];
@@ -2074,7 +2062,8 @@ class FullFacadeTest {
 			timeToReachSlime -= 0.15;
 		}
 		facade.advanceWorldTime(world_250_400, timeToReachSlime+0.02);
-		assertEquals(100 + (100 - slimeWidth), facade.getPixelPosition(movingSlime)[0]);
+		assertTrue((facade.getPixelPosition(movingSlime)[0] == 100 + (100 - slimeWidth)-1) ||
+				(facade.getPixelPosition(movingSlime)[0] == 100 + (100 - slimeWidth)) );
 		// The slime to bounce against will not change its position.
 		assertEquals(200, facade.getPixelPosition(slimeToBounceWith)[0]);
 		// The moving slime must now reverse its direction and reset its velocity.
@@ -2225,9 +2214,9 @@ class FullFacadeTest {
 			timeToReachSlime -= 0.15;
 		}
 		facade.advanceWorldTime(world_250_400, timeToReachSlime + 0.03);
-		// Both slimes involved in the collision must still be part of the same school.
+		// The moving slime must still be part of the same school.
+		// The other slime may have moved to the larger school.
 		assertTrue(facade.getAllSlimes(someSchool).contains(movingSlime));
-		assertTrue(facade.getAllSlimes(smallerSchool).contains(slimeToBounceWith));
 		actualScore += 4;
 	}
 
@@ -2483,10 +2472,8 @@ class FullFacadeTest {
 			while (facade.getVelocity(theShark)[0] == 0.0)
 				facade.advanceWorldTime(theTallWorld, 0.1);
 			double oldXPos = facade.getActualPosition(theShark)[0];
-			double oldYPos = facade.getActualPosition(theShark)[1];
 			facade.advanceWorldTime(theTallWorld, 0.15);
 			assertTrue(facade.getActualPosition(theShark)[0] != oldXPos);
-			assertEquals(oldYPos,facade.getActualPosition(theShark)[1],LOW_PRECISION);
 			actualScore += 12;
 		}
 	}
@@ -2542,7 +2529,7 @@ class FullFacadeTest {
 			facade.advanceWorldTime(world_250_400, 0.1);
 			assertTrue(facade.getActualPosition(theShark)[0]+(sharkWidth/100.0) > 
 					facade.getActualPosition(theSneezeWort)[0]);
-			assertEquals(100,facade.getHitPoints(theShark));
+			assertTrue(facade.getHitPoints(theShark) >= 94);
 			assertFalse(facade.isDeadGameObject(theSneezeWort));
 			assertEquals(world_250_400,facade.getWorld(theSneezeWort));
 			actualScore += 4;
@@ -2757,6 +2744,15 @@ class FullFacadeTest {
 		maximumScore += 4;
 		assertThrows(ModelException.class,
 				() -> facade.createWorld(5, 2, 3, new int[] { 0, 1 }, 4, 5, null));
+		try {
+			World newWorld = facade.createWorld(5, 2, 3, new int[] { 0, 1 }, 4, 5, null);
+			for (int tileY = 0; tileY < 3; tileY++)
+				for (int tileX = 0; tileX < 2; tileX++)
+					assertEquals(AIR,
+							facade.getGeologicalFeature(newWorld, tileX * 5, tileY * 5));
+		} catch (ModelException exc) {
+			
+		}
 		int[] geologicalFeatures = new int[] { AIR, -4, WATER, 12 };
 		World newWorld = facade.createWorld(5, 2, 3, new int[] { 4, 7 }, 2, 2,
 				geologicalFeatures);
