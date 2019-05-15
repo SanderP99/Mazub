@@ -44,6 +44,7 @@ public abstract class GameObject {
      * @param pixelSizeX                The width of the GameObject in pixels
      * @param pixelSizeY                The height of the GameObject in pixels.
      * @param hitpoints                 The hitpoints of the GameObject
+     * @param maxHitpoints		The maximum number of hitpoints of the GameObject
      * @param maxHorizontalSpeedRunning The maximal horizontal speed of GameObject
      *                                  while running given in meters/second
      * @param maxHorizontalSpeedDucking The maximal horizontal speed of GameObejct
