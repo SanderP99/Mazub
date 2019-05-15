@@ -508,7 +508,23 @@ public class World {
 	return PassableTerrain.AIR.getValue();
 
     }
-//TODO
+
+    /**
+     * Sets the geological feature at a given position
+     * 
+     * @param pixelX            The x pixel of the feature to set
+     * @param pixelY            The y pixel of the feature to set
+     * @param geologicalFeature The feature to set
+     *
+     * @pre ... | isValidPixelYPosition(pixelY)
+     * @pre ... | isValidPixelXPosition(pixelX)
+     * 
+     * @post ... | new.getGeologicalFeature(int pixelX, int pixelY) ==
+     *       geologicalFeature.getValue()
+     * @post ... | if (!isValidGeologicalFeature(geologicalFeature) then
+     *       new.getGeologicalFeature(int pixelX, int pixelY) ==
+     *       PassableTerrain.AIR.getValue()
+     */
     public void setGeologicalFeature(int pixelX, int pixelY, int geologicalFeature) {
 	if (!isValidGeologicalFeature(geologicalFeature))
 	    geologicalFeature = PassableTerrain.AIR.getValue();
@@ -599,7 +615,7 @@ public class World {
 	}
 	return true;
     }
-//TODO
+
     public <T> boolean canPlaceGameObjectAdvanceTime(T Object, T other) {
 	GameObject gameObject;
 	try {
@@ -637,7 +653,7 @@ public class World {
 	}
 	return true;
     }
-//TODO
+
     public boolean canPlaceMazubFullCheck(GameObject gameObject, GameObject other) {
 	if (!(gameObject instanceof Plant))
 	    for (final Object object : getAllObjects())
@@ -936,7 +952,7 @@ public class World {
     }
 
     /**
-     * Returns all the schools in the world.* 
+     * Returns all the schools in the world.*
      */
     @Basic
     public Set<School> getAllSchools() {
@@ -946,7 +962,10 @@ public class World {
 
 	return allTheSchools;
     }
-//TODO
+
+    /**
+     * Returns a new iterator for all the schools
+     */
     private Iterator<School> getIteratorAllSchools() {
 	return new Iterator<School>() {
 

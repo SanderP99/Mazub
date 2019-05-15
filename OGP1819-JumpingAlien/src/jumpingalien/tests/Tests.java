@@ -10,10 +10,8 @@ import org.junit.jupiter.api.Test;
 import jumpingalien.facade.Facade;
 import jumpingalien.facade.IFacade;
 import jumpingalien.internal.gui.sprites.JumpingAlienSprites;
-import jumpingalien.model.Mazub;
 import jumpingalien.model.School;
 import jumpingalien.model.Slime;
-import jumpingalien.model.Sneezewort;
 import jumpingalien.model.World;
 import jumpingalien.util.ModelException;
 import jumpingalien.util.Sprite;
@@ -33,12 +31,6 @@ public class Tests {
     // Variable referencing the facade.
     IFacade facade = new Facade();
 
-    // Variables referencing some predefined mazub's
-    private static Mazub mazub_0_0, mazub_0_1000, mazub_100_0, mazub_100_1000, mazub_20_45;
-
-    // Variables referencing some predefined sneezeworts.
-    private static Sneezewort sneezewort_120_10;
-
     // Variables referencing some predefined schools.
     private static School someSchool;
 
@@ -46,12 +38,11 @@ public class Tests {
     // for skullcabs, for slimes and for sharks.
     private static Sprite[] mazubSprites;
     private static Sprite[] sneezewortSprites;
-    private static Sprite[] skullcabSprites;
     private static Sprite[] slimeSprites;
     private static Sprite[] sharkSprites;
 
     // Variable referencing a predefined world.
-    private static World world_100_200, world_250_400;
+    private static World world_100_200;
 
     @BeforeAll
     static void setUpBeforeClass() throws Exception {
@@ -68,8 +59,6 @@ public class Tests {
 		new Sprite("Moving Left 4", 90, 45), new Sprite("Moving Left 5", 90, 45), };
 	sneezewortSprites = new Sprite[] { new Sprite("Sneezewort Moving Left", 40, 30),
 		new Sprite("Sneezewort Moving Right", 40, 30) };
-	skullcabSprites = new Sprite[] { new Sprite("Scullcab Moving Up", 50, 40),
-		new Sprite("Scullcab Moving Down", 50, 40) };
 	slimeSprites = new Sprite[] { new Sprite("Slime Moving Right", 60, 60),
 		new Sprite("Slime Moving Left", 60, 60) };
 	sharkSprites = new Sprite[] { new Sprite("Shark Resting", 70, 30), new Sprite("Shark Moving Left", 70, 30),
@@ -85,14 +74,7 @@ public class Tests {
     @BeforeEach
     void setUp() throws Exception {
 	facade.cleanAllSlimeIds();
-	mazub_0_0 = facade.createMazub(0, 0, mazubSprites);
-	mazub_0_1000 = facade.createMazub(0, 1000, mazubSprites);
-	mazub_100_0 = facade.createMazub(100, 0, mazubSprites);
-	mazub_100_1000 = facade.createMazub(100, 1000, mazubSprites);
-	mazub_20_45 = facade.createMazub(20, 45, mazubSprites);
-	sneezewort_120_10 = facade.createSneezewort(120, 10, sneezewortSprites);
 	world_100_200 = facade.createWorld(10, 100, 200, new int[] { 10, 20 }, 20, 10);
-	world_250_400 = facade.createWorld(5, 250, 400, new int[] { 33, 222 }, 25, 40);
 	someSchool = facade.createSchool(world_100_200);
     }
 

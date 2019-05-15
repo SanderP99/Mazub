@@ -97,10 +97,13 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * @post ... | timeSinceDeath == 0
      * @post ... | getTimeBeforeSpriteChange() == Constants.frameRate
      * 
-     * @effect ... | super(X_pos, Y_pos, X_size, Y_size, Constants.mazubHitPoints, Constants.mazubMaxHitPoints,
-		Constants.mazubMaxHorizontalSpeedRunning, Constants.mazubMaxHorizontalSpeedDucking,
-		Constants.mazubMinHorizontalSpeed, Constants.mazubMaxVerticalSpeed,
-		Constants.mazubHorizontalAcceleration, Constants.maxVerticalAcceleration, advanceTime, sprites)
+     * @effect ... | super(X_pos, Y_pos, X_size, Y_size, Constants.mazubHitPoints,
+     *         Constants.mazubMaxHitPoints,
+     *         Constants.mazubMaxHorizontalSpeedRunning,
+     *         Constants.mazubMaxHorizontalSpeedDucking,
+     *         Constants.mazubMinHorizontalSpeed, Constants.mazubMaxVerticalSpeed,
+     *         Constants.mazubHorizontalAcceleration,
+     *         Constants.maxVerticalAcceleration, advanceTime, sprites)
      */
     public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, boolean advanceTime,
 	    Sprite... sprites) {
@@ -129,8 +132,8 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * @post ... | new.isMoving == true
      * @post ... | new.getHorizontalAcceleration() == direction *
      *       maxHorizontalAcceleration
-     * @post ... | new.getXSize() == getCurrentSprite().getWidth()
-     * @post ... | new.getYSize() == getCurrentSprite().getHeight()
+     * 
+     * @effect setSizes()
      */
     public void startMove(int direction) {
 	assert isValidGameObject();
@@ -145,19 +148,16 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 
 	if (direction == 1 && !isJumping && !isFalling && !isDucking) {
 	    setSprite(spriteArray[8]);
-	    setSizes(); //TODO
+	    setSizes();
 	} else if (direction == -1 && !isJumping && !isFalling && !isDucking) {
 	    setSprite(spriteArray[9 + getSpriteLoopSize(spriteArray)]);
-	    setYSize(getCurrentSprite().getHeight());
-	    setXSize(getCurrentSprite().getWidth());
+	    setSizes();
 	} else if (direction == 1 && !isJumping && isDucking && !isFalling) {
 	    setSprite(spriteArray[6]);
-	    setYSize(getCurrentSprite().getHeight());
-	    setXSize(getCurrentSprite().getWidth());
+	    setSizes();
 	} else if (direction == -1 && !isJumping && isDucking && !isFalling) {
 	    setSprite(spriteArray[7]);
-	    setYSize(getCurrentSprite().getHeight());
-	    setXSize(getCurrentSprite().getWidth());
+	    setSizes();
 	}
 
     }
@@ -677,11 +677,21 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 	    }
 	}
     }
-	//TODO
+
+    /**
+     * Returns the time before the next sprite change while walking
+     */
     private double getTimeBeforeSpriteChange() {
 	return timeBeforeSpriteChange;
     }
 
+    /**
+     * Sets the time before the next sprite change while walking
+     * 
+     * @param time The time to set
+     * 
+     * @post ... | new.getTimeBeforeNextSpriteChange() == time
+     */
     private void setTimeBeforeSpriteChange(double time) {
 	timeBeforeSpriteChange = time;
 
@@ -714,7 +724,10 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 	    throw new RuntimeException();
 	return (sprites.length - 10) / 2;
     }
-//TODO
+
+    /**
+     * A variable to store how long mazub has been dead.
+     */
     double timeSinceDeath = 0;
 
     /**
@@ -726,13 +739,29 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * A boolean to store if the Mazub is the player of its world
      */
     boolean isPlayer;
-//TODO
+
+    /**
+     * A variable to store how long it takes before mazub can lose hitpoints due to
+     * contact with slimes or sharks
+     */
     private double timeBeforeNextHitpointsChange = 0;
 
+    /**
+     * Returns the time before mazub can lose hitpoints due to contact with slimes
+     * or sharks
+     */
     private double getTimeBeforeNextHitpointsChange() {
 	return timeBeforeNextHitpointsChange;
     }
 
+    /**
+     * Sets the time before mazub can lose hitpoints due to contact with slimes or
+     * sharks
+     * 
+     * @param dt The time to set
+     * 
+     * @post ... | new.getTimeBeforeNextHitpointsChange() == dt
+     */
     public void setTimeBeforeNextHitpointsChange(double dt) {
 	timeBeforeNextHitpointsChange = dt;
 

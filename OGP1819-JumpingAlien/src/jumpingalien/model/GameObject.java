@@ -44,7 +44,8 @@ public abstract class GameObject {
      * @param pixelSizeX                The width of the GameObject in pixels
      * @param pixelSizeY                The height of the GameObject in pixels.
      * @param hitpoints                 The hitpoints of the GameObject
-     * @param maxHitpoints		The maximum number of hitpoints of the GameObject
+     * @param maxHitpoints              The maximum number of hitpoints of the
+     *                                  GameObject
      * @param maxHorizontalSpeedRunning The maximal horizontal speed of GameObject
      *                                  while running given in meters/second
      * @param maxHorizontalSpeedDucking The maximal horizontal speed of GameObejct
@@ -122,8 +123,9 @@ public abstract class GameObject {
      * 
      * @param sprite The sprite to check
      *
-     * @post sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
-     *		&& sprite.canHaveAsName(sprite.getName())
+     * @post sprite.canHaveAsHeight(sprite.getHeight()) &&
+     *       sprite.canHaveAsWidth(sprite.getWidth()) &&
+     *       sprite.canHaveAsName(sprite.getName())
      */
     public static boolean isValidSprite(Sprite sprite) {
 	return sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
@@ -143,8 +145,8 @@ public abstract class GameObject {
      * 
      * @param sprite The sprite to set
      * 
-     * @post The current sprite of this GameObject is the given sprite if the sprite can be changed | this.sprite
-     *       == sprite
+     * @post The current sprite of this GameObject is the given sprite if the sprite
+     *       can be changed | this.sprite == sprite
      * @effect setSizes()
      */
     protected void setSprite(Sprite sprite) {
@@ -175,7 +177,7 @@ public abstract class GameObject {
      * @post ... | new.getXSize() == getCurrentSprite().getWidth()
      * @post ... | new.getYSize() == getCurrentSprite().getHeight()
      */
-    private void setSizes() {
+    protected void setSizes() {
 	setYSize(getCurrentSprite().getHeight());
 	setXSize(getCurrentSprite().getWidth());
     }
@@ -215,7 +217,8 @@ public abstract class GameObject {
      * 
      * @post isTerminated()
      * @effect setHitpoints(0) && removeWorld()
-     * @effect if instance of Slime then removeSchool() && allIDs.remove(getIdentification())
+     * @effect if instance of Slime then removeSchool() &&
+     *         allIDs.remove(getIdentification())
      */
     @Raw
     public void terminate() {
