@@ -19,8 +19,6 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 
     private double timeBeforeSpriteChange;
 
-//    private final static double frameRate = 0.075;
-
     /**
      * Initialize a new player with a given position (X_pos, Y_pos), a given size
      * (X_size, Y_size), speed and sprites. .
@@ -43,7 +41,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * @post ... | timeInMagma == 0
      * @post ... | timeInGas == 0
      * @post ... | timeSinceDeath == 0
-     * @post ... | getTimeBeforeSpriteChange() == frameRate
+     * @post ... | getTimeBeforeSpriteChange() == Constants.frameRate
      * 
      * @effect ... | super((int) (X_pos * 100), (int) (Y_pos * 100), X_size, Y_size,
      *         Constants.mazubHitPoints, Constants.mazubMaxHitPoints,
@@ -97,11 +95,12 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * @post ... | timeInMagma == 0
      * @post ... | timeInGas == 0
      * @post ... | timeSinceDeath == 0
-     * @post ... | getTimeBeforeSpriteChange() == frameRate
+     * @post ... | getTimeBeforeSpriteChange() == Constants.frameRate
      * 
-     * @effect ... | super(X_pos, Y_pos, X_size, Y_size, 100, 500,
-     *         maxSpeedRunningMeters, maxSpeedDuckingMeters, minSpeedMeters, 8.0,
-     *         0.9, -10.0, advanceTime, sprites)
+     * @effect ... | super(X_pos, Y_pos, X_size, Y_size, Constants.mazubHitPoints, Constants.mazubMaxHitPoints,
+		Constants.mazubMaxHorizontalSpeedRunning, Constants.mazubMaxHorizontalSpeedDucking,
+		Constants.mazubMinHorizontalSpeed, Constants.mazubMaxVerticalSpeed,
+		Constants.mazubHorizontalAcceleration, Constants.maxVerticalAcceleration, advanceTime, sprites)
      */
     public Mazub(int X_pos, int Y_pos, int X_size, int Y_size, double horizontalSpeedMeters, boolean advanceTime,
 	    Sprite... sprites) {
@@ -146,8 +145,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 
 	if (direction == 1 && !isJumping && !isFalling && !isDucking) {
 	    setSprite(spriteArray[8]);
-	    setYSize(getCurrentSprite().getHeight());
-	    setXSize(getCurrentSprite().getWidth());
+	    setSizes(); //TODO
 	} else if (direction == -1 && !isJumping && !isFalling && !isDucking) {
 	    setSprite(spriteArray[9 + getSpriteLoopSize(spriteArray)]);
 	    setYSize(getCurrentSprite().getHeight());
@@ -679,7 +677,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 	    }
 	}
     }
-
+	//TODO
     private double getTimeBeforeSpriteChange() {
 	return timeBeforeSpriteChange;
     }
@@ -716,7 +714,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
 	    throw new RuntimeException();
 	return (sprites.length - 10) / 2;
     }
-
+//TODO
     double timeSinceDeath = 0;
 
     /**
@@ -728,7 +726,7 @@ public class Mazub extends GameObject implements HorizontalMovement, VerticalMov
      * A boolean to store if the Mazub is the player of its world
      */
     boolean isPlayer;
-
+//TODO
     private double timeBeforeNextHitpointsChange = 0;
 
     private double getTimeBeforeNextHitpointsChange() {
