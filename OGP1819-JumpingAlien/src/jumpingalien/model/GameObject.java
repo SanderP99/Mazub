@@ -67,7 +67,6 @@ public abstract class GameObject {
      *         setHorizontalAcceleration(0) && setOverlappingTiles()
      * 
      * @pre ... | sprites.length > 0
-     * @pre ... |
      * 
      * @post ... | this.maxHorizontalAcceleration == horizontalAcceleration
      * @post ... | this.maxVerticalAcceleration == verticalAcceleration
@@ -89,7 +88,7 @@ public abstract class GameObject {
     GameObject(int pixelLeftX, int pixelBottomY, int pixelSizeX, int pixelSizeY, int hitpoints, int maxHitpoints,
 	    double maxHorizontalSpeedRunning, double maxHorizontalSpeedDucking, double minHorizontalSpeed,
 	    double maxVerticalSpeed, double horizontalAcceleration, double verticalAcceleration, boolean tempObject,
-	    Sprite... sprites) throws RuntimeException {
+	    Sprite... sprites) {
 	this.tempObject = tempObject;
 	setYSize(pixelSizeY);
 	setXSize(pixelSizeX);
@@ -122,6 +121,9 @@ public abstract class GameObject {
      * Returns whether the given sprite is valid
      * 
      * @param sprite The sprite to check
+     *
+     * @post sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
+     *		&& sprite.canHaveAsName(sprite.getName())
      */
     public static boolean isValidSprite(Sprite sprite) {
 	return sprite.canHaveAsHeight(sprite.getHeight()) && sprite.canHaveAsWidth(sprite.getWidth())
@@ -141,7 +143,7 @@ public abstract class GameObject {
      * 
      * @param sprite The sprite to set
      * 
-     * @post The current sprite of this GameObject is the given sprite | this.sprite
+     * @post The current sprite of this GameObject is the given sprite if the sprite can be changed | this.sprite
      *       == sprite
      * @effect setSizes()
      */
@@ -165,7 +167,6 @@ public abstract class GameObject {
 	    this.sprite = sprite;
 	    setSizes();
 	}
-
     }
 
     /**
@@ -214,6 +215,7 @@ public abstract class GameObject {
      * 
      * @post isTerminated()
      * @effect setHitpoints(0) && removeWorld()
+     * @effect if instance of Slime then removeSchool() && allIDs.remove(getIdentification())
      */
     @Raw
     public void terminate() {
@@ -337,7 +339,6 @@ public abstract class GameObject {
 	    if (!isValidActualXPosition(xPosMeter))
 		terminate();
 	}
-
     }
 
     /**
@@ -728,6 +729,7 @@ public abstract class GameObject {
      * Sets the vertical speed to the given speed
      * 
      * @param verticalSpeedMeters The vertical speed that needs to be set
+     *
      * @post If the absolute value of the given speed is less than the maximum speed
      *       then the new speed is equal to the given speed | if
      *       Math.abs(verticalSpeedMeters) <= getMaxVerticalSpeedMeters() then
@@ -1043,7 +1045,6 @@ public abstract class GameObject {
      * Checks if the array of sprites is valid for the GameObject
      * 
      * @param sprites The sprites of the GameObject
-     * 
      * 
      * @post ... | sprites.length > 0
      * @post ... | for sprite in sprites : sprite.isValidSprite()
