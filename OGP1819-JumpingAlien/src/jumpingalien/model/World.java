@@ -29,7 +29,6 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @invar ... | getAllSchools().size() <= Constants.worldMaxNumberOfSchools
  * @invar ... | PassableTerrain.contains(getGeologicalFeature(x,y)) ||
  *        ImpassableTerrain.contains(getGeologicalFeature(x,y))
- * 
  */
 public class World {
 
@@ -190,6 +189,7 @@ public class World {
      * visibleWindowPosition for any World.
      * 
      * @param visibleWindowPosition The visibleWindowPosition to check.
+     *
      * @return | result == !(visibleWindowPosition.length != 2) &&
      *         !(visibleWindowPosition[0] < 0 || visibleWindowPosition[1] < 0) &&
      *         !(visibleWindowPosition[0] + this.getVisibleWindowWidth() >
@@ -451,9 +451,6 @@ public class World {
      * @param geologicalFeature The geological feature to set
      */
     private static boolean isValidGeologicalFeature(int geologicalFeature) {
-//	return geologicalFeature == AIR || geologicalFeature == SOLID_GROUND || geologicalFeature == WATER
-//		|| geologicalFeature == MAGMA || geologicalFeature == GAS || geologicalFeature == ICE;
-
 	for (final PassableTerrain feature : PassableTerrain.values())
 	    if (feature.getValue() == geologicalFeature)
 		return true;
@@ -493,7 +490,7 @@ public class World {
 
     /**
      * Returns the geological feature at the given pixel position. 0 for AIR, 1 for
-     * SOLID_GROUND, 2 for WATER and 3 for MAGMA
+     * SOLID_GROUND, 2 for WATER, 3 for MAGMA, 4 for ICE and 5 for GAS
      * 
      * @param tile_cord The coordinate to check
      * 
@@ -511,7 +508,7 @@ public class World {
 	return PassableTerrain.AIR.getValue();
 
     }
-
+//TODO
     public void setGeologicalFeature(int pixelX, int pixelY, int geologicalFeature) {
 	if (!isValidGeologicalFeature(geologicalFeature))
 	    geologicalFeature = PassableTerrain.AIR.getValue();
@@ -602,7 +599,7 @@ public class World {
 	}
 	return true;
     }
-
+//TODO
     public <T> boolean canPlaceGameObjectAdvanceTime(T Object, T other) {
 	GameObject gameObject;
 	try {
@@ -640,7 +637,7 @@ public class World {
 	}
 	return true;
     }
-
+//TODO
     public boolean canPlaceMazubFullCheck(GameObject gameObject, GameObject other) {
 	if (!(gameObject instanceof Plant))
 	    for (final Object object : getAllObjects())
@@ -819,7 +816,7 @@ public class World {
 	return 0.01 / (velocityRoot + accelerationRoot * deltaT);
     }
 
-    public void advanceWorldTime(double dt) throws RuntimeException {
+    public void advanceWorldTime(double dt) throws IllegalArgumentException {
 	if (dt < 0)
 	    throw new IllegalArgumentException();
 	if (dt > 0.2)
@@ -939,7 +936,7 @@ public class World {
     }
 
     /**
-     * Returns all the schools in the world.
+     * Returns all the schools in the world.* 
      */
     @Basic
     public Set<School> getAllSchools() {
@@ -949,7 +946,7 @@ public class World {
 
 	return allTheSchools;
     }
-
+//TODO
     private Iterator<School> getIteratorAllSchools() {
 	return new Iterator<School>() {
 
